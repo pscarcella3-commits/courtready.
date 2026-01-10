@@ -1,124 +1,64 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CourtReady Ultimate</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; --win: #d4ff00; --loss: #ff3333; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
-        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
-        .active { display: flex; }
-        .content-scroll { padding-bottom: 180px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
-        .choice-btn { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 8px; color: white; cursor: pointer; transition: 0.2s; }
-        .choice-btn.selected { border-color: var(--neon); background: rgba(212, 255, 0, 0.1); color: var(--neon); }
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
-        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; cursor: pointer; }
-        .nav-item.active { color: var(--neon); }
-        .video-container { border-radius: 15px; overflow: hidden; height: 200px; background: #0a0a0a; margin-top: 12px; border: 1px solid #222; position: relative; display: flex; align-items: center; justify-content: center; }
-        .tag { font-size: 9px; background: #333; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; font-weight: 800; }
-    </style>
-</head>
-<body>
-
-    <div id="onboarding" style="display:none; background:#000; position:fixed; inset:0; z-index:2000; padding:40px 25px;">
-        <h1 style="font-weight:900; color:var(--neon)">CONFIGURA IL COACH</h1>
-        <p>Scegli il tuo obiettivo principale:</p>
-        <div class="choice-btn" onclick="setProfile('weak', 'Explosiveness', this)">Esplosività</div>
-        <div class="choice-btn" onclick="setProfile('weak', 'Stamina', this)">Resistenza</div>
-        <div class="choice-btn" onclick="setProfile('weak', 'Stability', this)">Stabilità/Prevenzione</div>
-        <button class="btn-neon" onclick="finishOnboarding()">GENERA DATABASE</button>
-    </div>
-
-    <div id="train" class="view active">
-        <div class="content-scroll">
-            <div style="padding: 50px 25px 10px;">
-                <h2 style="font-size: 32px; font-weight: 900;">Train Lab</h2>
-                <div class="card" style="margin: 15px 0; border: 1px solid var(--neon);">
-                    <p style="font-size: 11px; font-weight: 900; margin-bottom: 10px;">WORKOUT DI OGGI</p>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="choice-btn" style="flex:1" onclick="generateTraining('body')">Corpo Libero</button>
-                        <button class="choice-btn" style="flex:1" onclick="generateTraining('tools')">Attrezzi</button>
-                    </div>
-                </div>
-            </div>
-            <div id="training-plan"></div>
+<div id="workout-player" class="view" style="background: #000; position: fixed; inset: 0; z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+    <button onclick="closeWorkout()" style="position: absolute; top: 50px; right: 20px; background: none; border: none; color: white;"><i data-lucide="x"></i></button>
+    
+    <div id="player-category" style="color: var(--neon); font-size: 12px; font-weight: 800; letter-spacing: 2px;">STAMINA FOCUS</div>
+    <h2 id="player-ex-title" style="font-size: 38px; font-weight: 900; margin: 10px 0; text-align: center; text-transform: uppercase;">LATERAL SKATERS</h2>
+    
+    <div class="video-container" style="width: 100%; height: 45vh; border: 2px solid var(--neon); box-shadow: 0 0 20px rgba(212,255,0,0.2);">
+        <div id="animation-3d-placeholder" style="color: #222;">
+            <i data-lucide="play" size="60"></i>
         </div>
     </div>
 
-    <nav class="nav-bar">
-        <div class="nav-item active"><i data-lucide="zap"></i><span>TRAIN</span></div>
-    </nav>
+    <div id="timer-display" style="font-size: 80px; font-weight: 900; margin: 30px 0; font-variant-numeric: tabular-nums;">00:40</div>
+    
+    <div style="width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden;">
+        <div id="timer-progress" style="width: 100%; height: 100%; background: var(--neon); transition: linear 1s;"></div>
+    </div>
 
-    <script>
-        lucide.createIcons();
-        let profile = JSON.parse(localStorage.getItem('cr_profile')) || { weak: 'Explosiveness' };
+    <div style="margin-top: 40px; display: flex; gap: 20px;">
+        <button class="choice-btn" style="border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><i data-lucide="skip-back"></i></button>
+        <button id="play-pause-btn" class="btn-neon" style="width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i data-lucide="pause"></i></button>
+        <button class="choice-btn" style="border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><i data-lucide="skip-forward"></i></button>
+    </div>
+</div>
 
-        // DATABASE ESTESO (Esempio della struttura per arrivare a 50+)
-        const EX_DATABASE = {
-            body: [
-                { t: "Lateral Skaters", d: "Spinta laterale per recupero palla.", cat: "Explosiveness" },
-                { t: "Spider-Man Crawls", d: "Mobilità dell'anca e stabilità core.", cat: "Stability" },
-                { t: "Split Squat Jumps", d: "Esplosività verticale per il servizio.", cat: "Explosiveness" },
-                { t: "Burpees con Rotazione", d: "Resistenza e agilità nel cambio direzione.", cat: "Stamina" },
-                { t: "Plank Shoulder Taps", d: "Anti-rotazione per core solido.", cat: "Stability" },
-                { t: "Copenhagen Plank", d: "Rinforzo adduttori (prevenzione).", cat: "Stability" },
-                { t: "Shadow Tennis Scatti", d: "Simulazione dritto + scatto indietro.", cat: "Explosiveness" },
-                { t: "Frog Jumps", d: "Potenza esplosiva delle gambe.", cat: "Explosiveness" },
-                { t: "Pike Pushups", d: "Forza spalle per il servizio.", cat: "Stability" },
-                { t: "Bear Crawl", d: "Coordinazione e forza funzionale.", cat: "Stamina" },
-                { t: "Single Leg Deadlift (Body)", d: "Equilibrio e catena posteriore.", cat: "Stability" },
-                { t: "Mountain Climbers", d: "Agilità dei piedi e resistenza.", cat: "Stamina" }
-                // ... aggiungere fino a 25-30 esercizi corpo libero
-            ],
-            tools: [
-                { t: "MedBall Slam", d: "Potenza esplosiva braccia/core.", cat: "Explosiveness" },
-                { t: "Kettlebell Swing", d: "Potenza anche per colpi da fondo.", cat: "Explosiveness" },
-                { t: "Resistance Band Sprints", d: "Velocità contro resistenza.", cat: "Explosiveness" },
-                { t: "Box Jumps", d: "Reattività plantare e potenza.", cat: "Explosiveness" },
-                { t: "Gomito del Tennista Drill", d: "Rinforzo avambraccio con elastico.", cat: "Stability" },
-                { t: "Trazioni (Pull Ups)", d: "Forza trazione per schiena.", cat: "Stability" },
-                { t: "Dumbbell Lunge Twist", d: "Dritto caricato con peso.", cat: "Stability" },
-                { t: "Battle Ropes", d: "Resistenza lattacida braccia.", cat: "Stamina" },
-                { t: "Deadlift", d: "Forza massima catena posteriore.", cat: "Explosiveness" },
-                { t: "Goblet Squat", d: "Stabilità e forza arti inferiori.", cat: "Stability" },
-                { t: "Palla Medica Rotazionale", d: "Simulazione accelerazione rovescio.", cat: "Explosiveness" },
-                { t: "TRX Rows", d: "Postura e salute scapolare.", cat: "Stability" }
-                // ... aggiungere fino a 25-30 esercizi con attrezzi
-            ]
-        };
+<script>
+    // LOGICA DEL TIMER E VOCE COACH
+    let timerInterval;
+    let timeLeft = 40;
 
-        function generateTraining(mode) {
-            const plan = document.getElementById('training-plan');
-            const userGoal = profile.weak;
+    function startWorkout(exercises) {
+        document.getElementById('workout-player').style.display = 'flex';
+        playCoachVoice("Iniziamo l'allenamento. Primo esercizio: " + exercises[0].t);
+        runTimer();
+    }
+
+    function runTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-display').innerText = "00:" + (timeLeft < 10 ? "0" : "") + timeLeft;
+            document.getElementById('timer-progress').style.width = (timeLeft / 40 * 100) + "%";
             
-            // Logica: Prendiamo 3 esercizi del goal principale + 3 esercizi random per varietà
-            const db = EX_DATABASE[mode];
-            const primary = db.filter(e => e.cat === userGoal).sort(() => 0.5 - Math.random()).slice(0, 3);
-            const variety = db.filter(e => e.cat !== userGoal).sort(() => 0.5 - Math.random()).slice(0, 3);
-            const todayWorkout = [...primary, ...variety];
+            if(timeLeft === 3) playCoachVoice("3... 2... 1... Pausa!");
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                // Passa al prossimo esercizio o riposo
+            }
+        }, 1000);
+    }
 
-            plan.innerHTML = `<p style="padding:0 25px; font-size:10px; font-weight:900; color:var(--neon)">TARGET: ${userGoal.toUpperCase()} + VARIED</p>`;
-            
-            todayWorkout.forEach(ex => {
-                plan.innerHTML += `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="margin:0; font-weight:900; font-size:18px;">${ex.t}</h3>
-                        <span class="tag">${ex.cat}</span>
-                    </div>
-                    <p style="font-size:12px; color:#777; margin-top:8px;">${ex.d}</p>
-                    <div class="video-container">
-                        <i data-lucide="play" style="color:#222" size="40"></i>
-                        <span style="position:absolute; bottom:10px; font-size:10px; color:#444;">3D ANIMATION PLACEHOLDER</span>
-                    </div>
-                </div>`;
-            });
-            lucide.createIcons();
-        }
-    </script>
-</body>
-</html>
+    function playCoachVoice(text) {
+        // Usa la sintesi vocale del telefono
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'it-IT';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function closeWorkout() {
+        clearInterval(timerInterval);
+        window.speechSynthesis.cancel();
+        document.getElementById('workout-player').style.display = 'none';
+    }
+</script>
