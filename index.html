@@ -13,7 +13,7 @@
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 180px; }
 
-        /* LOGO TENNIS GEOMETRIC */
+        /* LOGO TENNIS GEOMETRIC (Originale) */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
         .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
         .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
@@ -23,34 +23,38 @@
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
         
-        /* ANALYTICS GRID */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-item { background: #0c0c0c; padding: 15px; border-radius: 15px; border: 1px solid #222; }
-        .stat-val { font-size: 22px; font-weight: 900; color: var(--neon); display: block; }
-        .stat-label { font-size: 9px; color: #555; text-transform: uppercase; font-weight: 800; }
+        /* ANALYTICS BOX (Stile Pulito) */
+        .analytics-box { background: linear-gradient(145deg, #1a1a1a, #0a0a0a); border: 1px solid var(--neon); }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .stat-circle { width: 60px; height: 60px; border: 4px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+        .stat-circle span { font-size: 14px; font-weight: 900; }
+        .progress-mini { height: 4px; background: #222; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { background: var(--neon); height: 100%; width: 0%; transition: 1s ease; }
 
-        /* PROGRESS BAR CHART */
-        .bar-container { height: 8px; background: #222; border-radius: 4px; margin: 10px 0; overflow: hidden; display: flex; }
-        .bar-fill-win { height: 100%; background: var(--win); transition: 0.5s; }
-        .bar-fill-loss { height: 100%; background: var(--loss); transition: 0.5s; }
-
-        /* BOX PUNTEGGIO */
+        /* BOX PUNTEGGIO ORIGINALI */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
-        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; }
+        .set-title { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .score-split { display: flex; justify-content: space-around; align-items: center; }
+        .score-box { display: flex; flex-direction: column; align-items: center; }
+        .score-box label { font-size: 9px; color: #444; margin-bottom: 4px; font-weight: 900; }
+        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; outline: none; }
 
         /* HISTORY */
         .history-item { border-left: 4px solid #333; background: #0c0c0c; padding: 18px; border-radius: 0 15px 15px 0; margin-bottom: 12px; }
         .history-item.win { border-color: var(--win); }
         .history-item.loss { border-color: var(--loss); }
-        .res-tag { font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
+        .res-tag { font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
         .win .res-tag { background: var(--win); color: black; }
         .loss .res-tag { background: var(--loss); color: white; }
 
         /* NAVBAR */
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
-        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; }
         .nav-item.active { color: var(--neon); }
+        
+        input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 20px; }
+        textarea { width: 100%; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; margin-top: 10px; resize: none; }
     </style>
 </head>
 <body>
@@ -61,79 +65,51 @@
                 <div class="court-logo"></div>
                 <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
             </div>
-            
-            <div class="card">
+            <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%);">
                 <small style="color:#555; font-weight: 800;">CONDITIONING SCORE</small>
                 <div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
-                <div id="status-text" style="color:var(--neon); font-size: 11px; font-weight: 700;">READY TO ANALYZE</div>
             </div>
-
-            <div style="padding: 0 20px;">
-                <p style="font-size: 11px; color: #444; font-weight: 900; text-transform: uppercase;">Recenti</p>
-                <div id="quick-history"></div>
-            </div>
+            <div style="padding: 0 20px;"><div id="quick-history"></div></div>
         </div>
     </div>
 
     <div id="match" class="view">
         <div class="content-scroll">
-            <div style="padding: 50px 25px 20px;">
+            <div style="padding: 50px 25px 10px;">
                 <h2 style="font-size: 32px; margin: 0; font-weight: 900;">Match Lab</h2>
             </div>
 
-            <div class="card" style="border-color: var(--neon);">
-                <span class="stat-label">Performance Analytics</span>
-                <div class="bar-container" id="win-loss-bar">
-                    <div class="bar-fill-win" style="width: 50%;"></div>
-                    <div class="bar-fill-loss" style="width: 50%;"></div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-item"><span class="stat-label">Vinte</span><span class="stat-val" id="st-win">0</span></div>
-                    <div class="stat-item"><span class="stat-label">Perse</span><span class="stat-val" id="st-loss" style="color:var(--loss)">0</span></div>
-                    <div class="stat-item"><span class="stat-label">Set Vinti</span><span class="stat-val" id="st-set-w">0</span></div>
-                    <div class="stat-item"><span class="stat-label">Game Vinti</span><span class="stat-val" id="st-game-w">0</span></div>
+            <div class="card analytics-box" id="analytics-section" style="display:none;">
+                <div style="font-size: 11px; font-weight: 900; letter-spacing: 1px; color: #888;">SEASON ANALYTICS</div>
+                <div class="stat-row">
+                    <div class="stat-circle" id="win-pct-circle"><span>0%</span></div>
+                    <div style="flex: 1; padding-left: 20px;">
+                        <div style="display:flex; justify-content:space-between; font-size: 12px; font-weight: 800;">
+                            <span>VITTORIE</span><span id="win-count">0</span>
+                        </div>
+                        <div class="progress-mini"><div class="progress-fill" id="win-bar"></div></div>
+                        <div style="display:flex; justify-content:space-between; font-size: 12px; font-weight: 800; margin-top:10px;">
+                            <span>GAME VINTI</span><span id="game-count">0</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="card">
-                <span style="font-size: 10px; font-weight: 900; color: #555; display: block; margin-bottom: 15px;">NUOVO REPORT</span>
+                <label style="font-weight: 900; font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD</label>
                 <div class="set-container">
-                    <div class="set-macro">
-                        <small style="font-size:9px">SET 1</small>
-                        <div style="display:flex; gap:5px; justify-content:center; margin-top:5px;">
-                            <input type="number" id="s1i" value="0">
-                            <input type="number" id="s1a" value="0">
-                        </div>
-                    </div>
-                    <div class="set-macro">
-                        <small style="font-size:9px">SET 2</small>
-                        <div style="display:flex; gap:5px; justify-content:center; margin-top:5px;">
-                            <input type="number" id="s2i" value="0">
-                            <input type="number" id="s2a" value="0">
-                        </div>
-                    </div>
-                    <div class="set-macro">
-                        <small style="font-size:9px">SET 3</small>
-                        <div style="display:flex; gap:5px; justify-content:center; margin-top:5px;">
-                            <input type="number" id="s3i" value="0">
-                            <input type="number" id="s3a" value="0">
-                        </div>
-                    </div>
+                    <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div></div></div>
+                    <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div></div></div>
+                    <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s3i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s3a" value="0"></div></div></div>
                 </div>
-
-                <div style="margin-bottom: 20px;">
-                    <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:#666; margin-bottom:5px;">
-                        <span>Stanchezza</span><span id="pv">50%</span>
-                    </div>
-                    <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
-                </div>
-
-                <textarea id="m-notes" rows="3" placeholder="Note tecniche per l'IA..."></textarea>
-                <button class="btn-neon" style="margin-top:20px" onclick="saveMatch()">SALVA E ANALIZZA</button>
+                <div class="range-label"><span>Stanchezza Fisica</span><span id="pv">50%</span></div>
+                <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
+                <textarea id="m-notes" rows="3" placeholder="Note per l'IA..."></textarea>
+                <button class="btn-neon" style="margin-top: 25px;" onclick="saveMatch()">SALVA REPORT</button>
             </div>
 
             <div style="padding: 0 20px; margin-top: 20px;">
-                <p style="font-size: 11px; color: #444; font-weight: 900; text-transform: uppercase;">Cronologia</p>
+                <p style="font-size: 11px; color: #444; font-weight: 900; text-transform: uppercase;">Storico</p>
                 <div id="full-history"></div>
             </div>
         </div>
@@ -170,39 +146,28 @@
                 notes: document.getElementById('m-notes').value,
                 date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'})
             };
-            
             let sW = 0, sL = 0;
             if(m.s1i > m.s1a) sW++; else if(m.s1a > m.s1i) sL++;
             if(m.s2i > m.s2a) sW++; else if(m.s2a > m.s2i) sL++;
             if(m.s3i > m.s3a) sW++; else if(m.s3a > m.s3i) sL++;
-            
             m.result = sW > sL ? 'VIT' : 'SCO';
-            m.setW = sW; m.setL = sL;
             m.gameW = m.s1i + m.s2i + m.s3i;
-            m.gameL = m.s1a + m.s2a + m.s3a;
-
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
-            
-            document.getElementById('main-score').innerText = (100 - (m.phys/2)).toFixed(1);
             showView('home');
         }
 
         function updateAnalytics() {
             if(matches.length === 0) return;
+            document.getElementById('analytics-section').style.display = 'block';
             const wins = matches.filter(m => m.result === 'VIT').length;
-            const loss = matches.length - wins;
-            const setW = matches.reduce((acc, m) => acc + m.setW, 0);
-            const gameW = matches.reduce((acc, m) => acc + m.gameW, 0);
+            const totalGames = matches.reduce((acc, m) => acc + m.gameW, 0);
+            const winPct = Math.round((wins / matches.length) * 100);
             
-            document.getElementById('st-win').innerText = wins;
-            document.getElementById('st-loss').innerText = loss;
-            document.getElementById('st-set-w').innerText = setW;
-            document.getElementById('st-game-w').innerText = gameW;
-            
-            const winPct = (wins / matches.length) * 100;
-            document.querySelector('.bar-fill-win').style.width = winPct + '%';
-            document.querySelector('.bar-fill-loss').style.width = (100 - winPct) + '%';
+            document.getElementById('win-count').innerText = wins + " / " + matches.length;
+            document.getElementById('game-count').innerText = totalGames;
+            document.getElementById('win-pct-circle').querySelector('span').innerText = winPct + "%";
+            document.getElementById('win-bar').style.width = winPct + "%";
         }
 
         function renderHistory() {
@@ -210,19 +175,17 @@
                 <div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}">
                     <span class="res-tag">${m.result}</span>
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span style="font-weight:900; font-size:16px;">${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}</span>
+                        <span style="font-weight:900; font-size:18px;">${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}</span>
                         <span style="font-size:10px; color:#555">${m.date}</span>
                     </div>
                 </div>
             `).join('');
             document.getElementById('full-history').innerHTML = html;
             if(document.getElementById('quick-history')) document.getElementById('quick-history').innerHTML = html.slice(0, 1);
+            if(matches.length > 0) document.getElementById('main-score').innerText = (100 - (matches[0].phys/2)).toFixed(1);
         }
 
-        if(matches.length > 0) {
-            updateAnalytics();
-            renderHistory();
-        }
+        if(matches.length > 0) renderHistory();
     </script>
 </body>
 </html>
