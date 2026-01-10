@@ -6,223 +6,177 @@
     <title>CourtReady Ultimate</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; --win: #d4ff00; --loss: #ff3333; }
+        :root { --neon: #d4ff00; --bg: #000; --card: #121212; --border: #222; --win: #d4ff00; --loss: #ff3333; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* LOGO GEOMETRICO BLINDATO */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
         .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
         .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
         .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); }
 
         .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; }
-        .active { display: flex; }
-        .content-scroll { padding-bottom: 180px; }
+        .view.active { display: flex; }
+        .content-scroll { padding-bottom: 160px; }
 
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; font-size: 16px; margin-top: 15px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 22px; margin: 10px 20px; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; font-size: 16px; margin-top: 15px; }
         
-        .choice-btn { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 8px; color: white; cursor: pointer; font-weight: 700; text-align: left; width: 100%; box-sizing: border-box; }
-        .choice-btn.selected { border-color: var(--neon); background: rgba(212, 255, 0, 0.1); color: var(--neon); }
+        .choice-btn { background: #0a0a0a; border: 1px solid #222; padding: 18px; border-radius: 15px; margin-bottom: 10px; color: white; cursor: pointer; font-weight: 800; text-align: left; width: 100%; box-sizing: border-box; }
+        .choice-btn.selected { border-color: var(--neon); background: rgba(212, 255, 0, 0.05); color: var(--neon); }
 
-        /* MATCH LAB BLINDATA */
-        .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
-        .set-macro { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
-        .score-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: none; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 18px; }
+        /* MATCH LAB SETS */
+        .set-container { display: flex; gap: 10px; margin-bottom: 25px; }
+        .set-macro { flex: 1; background: #080808; border: 1px solid #1a1a1a; border-radius: 18px; padding: 12px 5px; text-align: center; }
+        .score-box { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .score-box input { width: 40px; height: 40px; background: #151515; border: 1px solid #252525; border-radius: 10px; color: var(--neon); text-align: center; font-weight: 900; font-size: 20px; outline: none; }
 
-        input[type=range] { width: 100%; accent-color: var(--neon); margin: 10px 0 15px; cursor: pointer; }
-        textarea { width: 100%; background: #111; border: 1px solid #222; border-radius: 12px; color: white; padding: 12px; box-sizing: border-box; font-family: inherit; resize: none; min-height: 80px; }
+        input[type=range] { width: 100%; accent-color: var(--neon); margin: 12px 0 22px; cursor: pointer; height: 8px; }
+        textarea { width: 100%; background: #080808; border: 1px solid #1a1a1a; border-radius: 18px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; resize: none; min-height: 100px; }
+
+        /* STORICO */
+        .match-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .match-badge { padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: 900; }
 
         /* TRAIN LIST */
         .ex-card { background: #111; border: 1px solid #222; border-radius: 20px; padding: 15px; margin-bottom: 15px; }
-        .video-box { width: 100%; height: 150px; background: #000; border-radius: 12px; margin-top: 10px; overflow: hidden; border: 1px solid #333; }
+        .video-box { width: 100%; height: 160px; background: #000; border-radius: 15px; margin-top: 10px; border: 1px solid #333; overflow: hidden; }
 
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
-        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .nav-bar { position: fixed; bottom: 35px; left: 25px; right: 25px; height: 80px; background: rgba(10,10,10,0.98); border-radius: 30px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.05); z-index: 1000; backdrop-filter: blur(10px); }
+        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 9px; font-weight: 800; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
 
-        #onboarding { position: fixed; inset: 0; background: #000; z-index: 6000; padding: 40px 25px; display: none; overflow-y: auto; }
+        #onboarding { position: fixed; inset: 0; background: #000; z-index: 6000; padding: 45px 30px; display: none; overflow-y: auto; }
         #workout-player { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
     </style>
 </head>
 <body>
 
     <div id="onboarding">
-        <div class="logo-wrap" style="padding:0; margin-bottom:30px;"><div class="court-logo"></div><h1 style="font-weight:900; font-size:24px;">COURTREADY</h1></div>
-        <div id="q-steps">
-            <p style="font-size:10px; font-weight:900; color:var(--neon); text-transform:uppercase;">Livello di gioco</p>
-            <div class="choice-btn" onclick="setQ('lv','Agonista',this)">Agonista / Avanzato</div>
-            <div class="choice-btn" onclick="setQ('lv','Club',this)">Club / Amatoriale</div>
-
-            <p style="font-size:10px; font-weight:900; color:var(--neon); text-transform:uppercase; margin-top:20px;">Frequenza Allenamento</p>
-            <div class="choice-btn" onclick="setQ('freq','1-2',this)">1-2 volte a settimana</div>
-            <div class="choice-btn" onclick="setQ('freq','3-5',this)">3-5 volte a settimana</div>
-
-            <p style="font-size:10px; font-weight:900; color:var(--neon); text-transform:uppercase; margin-top:20px;">Infortuni?</p>
-            <div class="choice-btn" onclick="setQ('inj','Si',this)">Sì, ho dei fastidi</div>
-            <div class="choice-btn" onclick="setQ('inj','No',this)">No, tutto ok</div>
-
-            <button class="btn-neon" style="margin-top:30px;" onclick="saveOnboarding()">CREA PROFILO</button>
-        </div>
+        <div class="logo-wrap" style="padding:0; margin-bottom:45px;"><div class="court-logo"></div><h1 style="font-weight:900;">COURTREADY</h1></div>
+        <p style="font-size:10px; font-weight:900; color:var(--neon); text-transform:uppercase;">Livello</p>
+        <div class="choice-btn" onclick="setQ('lv','Pro',this)">Agonista</div>
+        <div class="choice-btn" onclick="setQ('lv','Club',this)">Club</div>
+        <p style="font-size:10px; font-weight:900; color:var(--neon); text-transform:uppercase; margin-top:25px;">Frequenza</p>
+        <div class="choice-btn" onclick="setQ('freq','1-2',this)">1-2 Volte</div>
+        <div class="choice-btn" onclick="setQ('freq','3+',this)">3+ Volte</div>
+        <button class="btn-neon" style="margin-top:40px;" onclick="saveOnboarding()">GENERA PROFILO</button>
     </div>
 
     <div id="home" class="view active">
         <div class="content-scroll">
-            <div class="logo-wrap"><div class="court-logo"></div><div style="font-weight:900; font-style:italic;">COURTREADY</div></div>
-            <div class="card">
-                <small style="color:#555; font-weight:800;">PLAYER STATUS</small>
-                <div style="font-size:60px; font-weight:900; margin:5px 0;" id="h-total-score">--</div>
-                <div style="color:var(--neon); font-size:11px; font-weight:900;">READY TO TRAIN</div>
-            </div>
+            <div class="logo-wrap"><div class="court-logo"></div><div style="font-weight:900;">COURTREADY</div></div>
+            <div class="card"><small style="color:#555; font-weight:900;">INDEX</small><div style="font-size:72px; font-weight:900;" id="h-score">--</div></div>
         </div>
     </div>
 
     <div id="match" class="view">
         <div class="content-scroll">
-            <div style="padding:50px 25px 10px;"><h2 style="font-size:32px; font-weight:900;">Match Lab</h2></div>
-            
-            <div class="card" style="border-color:#333;">
-                <div style="display:flex; justify-content:space-around; text-align:center;">
-                    <div><div id="m-wins" style="font-size:26px; font-weight:900; color:var(--win);">0</div><div style="font-size:9px; color:#555;">WIN</div></div>
-                    <div><div id="m-loss" style="font-size:26px; font-weight:900; color:var(--loss);">0</div><div style="font-size:9px; color:#555;">LOSS</div></div>
-                </div>
-            </div>
-
+            <div style="padding:55px 25px 15px;"><h2 style="font-size:36px; font-weight:900;">Match Lab</h2></div>
             <div class="card">
-                <p style="font-size:10px; font-weight:900; color:#555; margin-bottom:15px;">SCORE REPORT</p>
-                <div class="set-container">
-                    <div class="set-macro"><span style="font-size:9px; color:#444;">SET 1</span><div style="display:flex; justify-content:center; gap:5px; margin-top:5px;"><div class="score-box"><input type="number" id="s1i" value="0"></div><div class="score-box"><input type="number" id="s1a" value="0"></div></div></div>
-                    <div class="set-macro"><span style="font-size:9px; color:#444;">SET 2</span><div style="display:flex; justify-content:center; gap:5px; margin-top:5px;"><div class="score-box"><input type="number" id="s2i" value="0"></div><div class="score-box"><input type="number" id="s2a" value="0"></div></div></div>
-                    <div class="set-macro"><span style="font-size:9px; color:#444;">SET 3</span><div style="display:flex; justify-content:center; gap:5px; margin-top:5px;"><div class="score-box"><input type="number" id="s3i" value="0"></div><div class="score-box"><input type="number" id="s3a" value="0"></div></div></div>
+                <div style="display:flex; justify-content:space-around; text-align:center;">
+                    <div><div id="m-wins" style="font-size:32px; font-weight:900; color:var(--win);">0</div><div style="font-size:9px; color:#555;">WIN</div></div>
+                    <div><div id="m-loss" style="font-size:32px; font-weight:900; color:var(--loss);">0</div><div style="font-size:9px; color:#555;">LOSS</div></div>
                 </div>
-
-                <p style="font-size:10px; font-weight:900; color:#555;">ANALISI PERFORMANCE</p>
-                <label style="font-size:11px; color:#888;">Stanchezza Fisica</label><input type="range" id="m-stanchezza">
-                <label style="font-size:11px; color:#888;">Focus Mentale</label><input type="range" id="m-focus">
-                
-                <p style="font-size:10px; font-weight:900; color:#555;">NOTE IA (TESTO LIBERO)</p>
-                <textarea id="m-ia-notes" placeholder="Descrivi il match per l'IA (es: difficoltà sul rovescio, vento forte...)"></textarea>
-
-                <button class="btn-neon" onclick="saveMatch()">SALVA MATCH REPORT</button>
             </div>
+            <div class="card">
+                <div class="set-container">
+                    <div class="set-macro"><span>Set 1</span><div style="display:flex; justify-content:center; gap:8px; margin-top:10px;"><div class="score-box"><input type="number" id="s1i" value="0"></div><div class="score-box"><input type="number" id="s1a" value="0"></div></div></div>
+                    <div class="set-macro"><span>Set 2</span><div style="display:flex; justify-content:center; gap:8px; margin-top:10px;"><div class="score-box"><input type="number" id="s2i" value="0"></div><div class="score-box"><input type="number" id="s2a" value="0"></div></div></div>
+                    <div class="set-macro"><span>Set 3</span><div style="display:flex; justify-content:center; gap:8px; margin-top:10px;"><div class="score-box"><input type="number" id="s3i" value="0"></div><div class="score-box"><input type="number" id="s3a" value="0"></div></div></div>
+                </div>
+                <label style="font-size:11px; color:#555;">Stanchezza</label><input type="range" id="m-stanc">
+                <label style="font-size:11px; color:#555;">Focus</label><input type="range" id="m-foc">
+                <textarea id="m-notes" placeholder="Note IA (Testo Libero)..."></textarea>
+                <button class="btn-neon" onclick="saveMatch()">SALVA E ANALIZZA</button>
+            </div>
+            <div id="history-container" style="padding:0 20px;"></div>
         </div>
     </div>
 
     <div id="train" class="view">
         <div class="content-scroll">
-            <div style="padding:50px 25px 10px;"><h2 style="font-size:32px; font-weight:900;">Train Lab</h2></div>
+            <div style="padding:55px 25px 15px;"><h2 style="font-size:36px; font-weight:900;">Train Lab</h2></div>
             <div id="train-step1" class="card">
-                <p style="font-size:10px; font-weight:900; color:#555;">ATTREZZI</p>
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
                     <button class="choice-btn" style="flex:1; text-align:center;" id="t-body" onclick="setTM('body')">Body</button>
                     <button class="choice-btn" style="flex:1; text-align:center;" id="t-tools" onclick="setTM('tools')">Tools</button>
                 </div>
-                <button class="btn-neon" style="background:#fff;" onclick="genTrain(false)">MODALITÀ STANDARD</button>
-                <button class="btn-neon" style="margin-top:10px;" onclick="genTrain(true)">🔥 MODALITÀ SFIDAMI</button>
+                <button class="btn-neon" style="background:#fff;" onclick="genT(false)">STANDARD</button>
+                <button class="btn-neon" style="margin-top:10px;" onclick="genT(true)">🔥 SFIDAMI</button>
             </div>
-
             <div id="train-step2" style="display:none; padding:0 20px;">
                 <div id="ex-list"></div>
-                <button class="btn-neon" style="height:100px; font-size:24px; margin:20px 0 80px;" onclick="startWorkout()">INIZIA TRAIN</button>
+                <button class="btn-neon" style="height:110px; font-size:24px; margin-bottom:100px;" onclick="startTrain()">INIZIA TRAIN</button>
             </div>
         </div>
     </div>
 
     <div id="workout-player">
-        <h2 id="p-title" style="font-size:30px; font-weight:900;">ESERCIZIO</h2>
-        <div class="video-box" style="height:40vh; border-color:var(--neon); margin:30px 0;"><iframe id="p-video" width="100%" height="100%" frameborder="0"></iframe></div>
-        <div id="p-timer" style="font-size:100px; font-weight:900; color:var(--neon);">00:30</div>
+        <h2 id="p-title" style="font-size:32px; font-weight:900;">ESERCIZIO</h2>
+        <div class="video-box" style="height:45vh; border-color:var(--neon); margin:30px 0;"><iframe id="p-video" width="100%" height="100%" frameborder="0"></iframe></div>
+        <div id="p-timer" style="font-size:110px; font-weight:900; color:var(--neon);">00:30</div>
     </div>
 
     <nav class="nav-bar">
-        <div class="nav-item active" id="nav-home" onclick="showV('home',this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
-        <div class="nav-item" id="nav-match" onclick="showV('match',this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
-        <div class="nav-item" id="nav-train" onclick="showV('train',this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+        <div class="nav-item active" onclick="showV('home',this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
+        <div class="nav-item" onclick="showV('match',this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
+        <div class="nav-item" onclick="showV('train',this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
     </nav>
 
     <script>
         lucide.createIcons();
         let profile = JSON.parse(localStorage.getItem('cr_profile'));
-        let tMode = 'body', isSfida = false, wTimer;
+        let tMode = 'body', isSfida = false;
 
         const DB = {
-            body: Array.from({length: 25}, (_, i) => ({t:`Agilità Corpo ${i+1}`, d:"Esercizio per migliorare il posizionamento.", v:"https://www.youtube.com/embed/nI_m_X2p6fU"})),
-            tools: Array.from({length: 25}, (_, i) => ({t:`Potenza Attrezzi ${i+1}`, d:"Lavoro esplosivo con resistenza.", v:"https://www.youtube.com/embed/yX0jI-Ue2M0"}))
+            body: Array.from({length: 25}, (_, i) => ({t:`Body Ex ${i+1}`, d:"Descrizione tecnica tennistica.", v:"https://www.youtube.com/embed/nI_m_X2p6fU"})),
+            tools: Array.from({length: 25}, (_, i) => ({t:`Tool Ex ${i+1}`, d:"Descrizione tecnica tennistica.", v:"https://www.youtube.com/embed/yX0jI-Ue2M0"}))
         };
 
-        function setQ(k, v, el) {
-            profile = profile || {}; profile[k] = v;
-            el.parentNode.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        function saveOnboarding() {
-            if(!profile || !profile.lv || !profile.freq) { alert("Seleziona tutti i campi!"); return; }
-            localStorage.setItem('cr_profile', JSON.stringify(profile));
-            document.getElementById('onboarding').style.display = 'none';
-        }
-
+        function setQ(k,v,el) { profile = profile || {}; profile[k]=v; el.parentNode.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected')); el.classList.add('selected'); }
+        function saveOnboarding() { localStorage.setItem('cr_profile', JSON.stringify(profile)); document.getElementById('onboarding').style.display='none'; }
         function setTM(m) { tMode = m; document.getElementById('t-body').classList.toggle('selected', m==='body'); document.getElementById('t-tools').classList.toggle('selected', m==='tools'); }
 
-        function genTrain(sfida) {
-            isSfida = sfida;
-            document.getElementById('train-step1').style.display='none';
-            const cont = document.getElementById('ex-list');
-            cont.innerHTML = DB[tMode].slice(0, 10).map(ex => `
-                <div class="ex-card">
-                    <h3 style="margin:0; color:var(--neon); font-weight:900;">${ex.t}</h3>
-                    <p style="font-size:12px; color:#666; margin:8px 0;">${ex.d}</p>
-                    <div class="video-box"><iframe width="100%" height="100%" src="${ex.v}" frameborder="0"></iframe></div>
-                </div>
+        function genT(s) {
+            isSfida = s; document.getElementById('train-step1').style.display='none';
+            document.getElementById('ex-list').innerHTML = DB[tMode].slice(0,10).map(ex => `
+                <div class="ex-card"><h2 style="margin:0; color:var(--neon);">${ex.t}</h2><p style="font-size:12px; color:#777;">${ex.d}</p><div class="video-box"><iframe width="100%" height="100%" src="${ex.v}" frameborder="0"></iframe></div></div>
             `).join('');
             document.getElementById('train-step2').style.display='block';
         }
 
-        function startWorkout() {
+        function startTrain() {
             document.getElementById('workout-player').style.display='flex';
-            const ex = DB[tMode][0];
-            document.getElementById('p-title').innerText = ex.t;
+            const ex = DB[tMode][0]; document.getElementById('p-title').innerText = ex.t;
             document.getElementById('p-video').src = ex.v + "?autoplay=1&mute=1";
-            speak(isSfida ? "MODALITÀ SFIDA! Spingi." : "Iniziamo l'allenamento.");
             let s = isSfida ? 50 : 30;
-            wTimer = setInterval(() => {
-                s--;
-                document.getElementById('p-timer').innerText = "00:" + (s<10?'0':'') + s;
-                if(s<=0) { clearInterval(wTimer); document.getElementById('workout-player').style.display='none'; speak("Sessione finita."); }
-            }, 1000);
+            const timer = setInterval(() => { s--; document.getElementById('p-timer').innerText = "00:" + (s<10?'0':'') + s; if(s<=0) { clearInterval(timer); document.getElementById('workout-player').style.display='none'; }}, 1000);
         }
 
         function saveMatch() {
-            let h = JSON.parse(localStorage.getItem('cr_matches')) || [];
-            h.unshift({win: Math.random() > 0.5});
-            localStorage.setItem('cr_matches', JSON.stringify(h));
-            updateStats();
-            showV('home');
-            speak("Match registrato. IA aggiornata.");
+            const h = JSON.parse(localStorage.getItem('cr_matches')) || [];
+            const newMatch = { win: Math.random()>0.5, score: `${document.getElementById('s1i').value}-${document.getElementById('s1a').value}`, date: new Date().toLocaleDateString() };
+            h.unshift(newMatch); localStorage.setItem('cr_matches', JSON.stringify(h));
+            updateMatchUI(); showV('home');
         }
 
-        function updateStats() {
-            let h = JSON.parse(localStorage.getItem('cr_matches')) || [];
-            document.getElementById('m-wins').innerText = h.filter(x=>x.win).length;
-            document.getElementById('m-loss').innerText = h.filter(x=>!x.win).length;
+        function updateMatchUI() {
+            const h = JSON.parse(localStorage.getItem('cr_matches')) || [];
+            document.getElementById('m-wins').innerText = h.filter(m => m.win).length;
+            document.getElementById('m-loss').innerText = h.filter(m => !m.win).length;
+            document.getElementById('history-container').innerHTML = h.map(m => `
+                <div class="match-card"><div><small>${m.date}</small><h4>${m.score}</h4></div><div class="match-badge ${m.win?'win-bg':'loss-bg'}" style="color:${m.win?'var(--neon)':'var(--loss)'}">${m.win?'WIN':'LOSS'}</div></div>
+            `).join('');
         }
 
-        function showV(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        function showV(id,el) {
+            document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
             if(el) el.classList.add('active');
-            if(id==='train') { document.getElementById('train-step1').style.display='block'; document.getElementById('train-step2').style.display='none'; }
         }
 
-        function speak(t) { const u = new SpeechSynthesisUtterance(t); u.lang='it-IT'; window.speechSynthesis.speak(u); }
-
-        window.onload = () => {
-            if(!profile) document.getElementById('onboarding').style.display = 'block';
-            updateStats();
-            lucide.createIcons();
-        };
+        window.onload = () => { if(!profile) document.getElementById('onboarding').style.display='block'; updateMatchUI(); lucide.createIcons(); };
     </script>
 </body>
 </html>
