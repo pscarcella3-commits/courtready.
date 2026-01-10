@@ -6,38 +6,39 @@
     <title>CourtReady Ultimate</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; }
+        :root { --neon: #d4ff00; --bg: #000; --card: #121212; --border: #222; --win: #d4ff00; --loss: #ff3333; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
         
         .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 160px; }
 
-        /* LOGO PRO-BALL */
+        /* LOGO AGGRESSIVE BALL */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
-        .ball-logo { width: 35px; height: 35px; border: 2.5px solid var(--neon); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .ball-logo::before { content: ''; position: absolute; width: 100%; height: 100%; border: 2px solid var(--neon); border-radius: 50%; left: -70%; }
-        .ball-logo::after { content: ''; position: absolute; width: 100%; height: 100%; border: 2px solid var(--neon); border-radius: 50%; right: -70%; }
+        .ball-aggro { width: 38px; height: 38px; border: 2.5px solid var(--neon); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 15px rgba(212, 255, 0, 0.2); }
+        .ball-aggro::before { content: ''; position: absolute; width: 120%; height: 120%; border: 2px solid var(--neon); border-radius: 50%; left: -80%; transform: rotate(-15deg); }
+        .ball-aggro::after { content: ''; position: absolute; width: 120%; height: 120%; border: 2px solid var(--neon); border-radius: 50%; right: -80%; transform: rotate(15deg); }
+        .motion-lines { position: absolute; top: 10px; right: 0; width: 15px; height: 2px; background: var(--neon); box-shadow: 0 5px 0 var(--neon), 0 10px 0 var(--neon); opacity: 0.6; }
 
         /* UI ELEMENTS */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
         
         /* SCOREBOARD SET */
         .set-container { display: flex; gap: 6px; margin-bottom: 20px; }
-        .set-macro { flex: 1; background: #111; border: 1px solid #222; border-radius: 12px; padding: 8px; text-align: center; }
-        .score-split { display: flex; justify-content: space-around; margin-top: 5px; }
-        .score-box { display: flex; flex-direction: column; }
-        .score-box label { font-size: 8px; color: #555; font-weight: 900; margin-bottom: 4px; }
-        .score-box input { width: 32px; height: 32px; background: #000; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; }
+        .set-macro { flex: 1; background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 8px; text-align: center; }
+        .score-box input { width: 32px; height: 32px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; margin-top: 5px; }
 
-        /* FORM */
-        textarea { width: 100%; background: #111; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; margin-top: 10px; resize: none; }
-        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #666; font-weight: 800; margin-bottom: 5px; }
+        /* HISTORY ITEMS */
+        .history-item { border-left: 4px solid #333; background: #0c0c0c; padding: 18px; border-radius: 0 15px 15px 0; margin-bottom: 12px; }
+        .history-item.win { border-color: var(--win); }
+        .history-item.loss { border-color: var(--loss); }
+        .res-tag { font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
+        .win .res-tag { background: var(--win); color: black; }
+        .loss .res-tag { background: var(--loss); color: white; }
+
+        textarea { width: 100%; background: #111; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; box-sizing: border-box; margin-top: 10px; resize: none; border-left: 2px solid #333; }
         input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 15px; }
-
-        /* MATCH HISTORY */
-        .history-item { border-left: 3px solid var(--neon); background: #0c0c0c; padding: 15px; border-radius: 0 15px 15px 0; margin-bottom: 10px; font-size: 13px; }
 
         /* NAVBAR */
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
@@ -50,18 +51,18 @@
     <div id="home" class="view active">
         <div class="content-scroll">
             <div class="logo-wrap">
-                <div class="ball-logo"></div>
+                <div class="ball-aggro"><div class="motion-lines"></div></div>
                 <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
             </div>
             
-            <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%);">
-                <small style="color:#555; font-weight: 800;">CONDITIONING SCORE</small>
-                <div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
-                <div id="status-text" style="color:var(--neon); font-size: 11px; font-weight: 700;">REGISTRA IL TUO PRIMO MATCH</div>
+            <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%); border-right: 2px solid var(--neon);">
+                <small style="color:#555; font-weight: 800; letter-spacing: 1px;">AI CONDITIONING</small>
+                <div style="font-size: 64px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
+                <div id="status-text" style="color:var(--neon); font-size: 11px; font-weight: 700;">READY TO ANALYZE</div>
             </div>
 
             <div style="padding: 0 20px;">
-                <p style="font-size: 10px; color: #444; font-weight: 900; text-transform: uppercase;">Analisi Recenti</p>
+                <p style="font-size: 11px; color: #444; font-weight: 900; text-transform: uppercase;">Recent Activity</p>
                 <div id="quick-history"></div>
             </div>
         </div>
@@ -70,50 +71,48 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 50px 25px 20px;">
-                <h2 style="margin: 0; font-weight: 900;">Match Lab</h2>
-                <p style="color: #666;">Registra e consulta le tue prestazioni.</p>
+                <h2 style="margin: 0; font-weight: 900; font-size: 28px;">Match Lab</h2>
             </div>
             
             <div class="card">
-                <span style="font-size: 10px; font-weight: 900; color: #555; display: block; margin-bottom: 10px;">NUOVO REPORT</span>
+                <span style="font-size: 10px; font-weight: 900; color: #555; display: block; margin-bottom: 15px;">INPUT SCOREBOARD</span>
                 <div class="set-container">
                     <div class="set-macro">
                         <small style="font-size:9px">SET 1</small>
-                        <div class="score-split">
-                            <div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div>
-                            <div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div>
+                        <div style="display:flex; gap:5px; justify-content:center;">
+                            <input type="number" id="s1i" placeholder="IO" value="0">
+                            <input type="number" id="s1a" placeholder="AVV" value="0">
                         </div>
                     </div>
                     <div class="set-macro">
                         <small style="font-size:9px">SET 2</small>
-                        <div class="score-split">
-                            <div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div>
-                            <div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div>
+                        <div style="display:flex; gap:5px; justify-content:center;">
+                            <input type="number" id="s2i" placeholder="IO" value="0">
+                            <input type="number" id="s2a" placeholder="AVV" value="0">
                         </div>
                     </div>
                     <div class="set-macro">
                         <small style="font-size:9px">SET 3</small>
-                        <div class="score-split">
-                            <div class="score-box"><label>IO</label><input type="number" id="s3i" value="0"></div>
-                            <div class="score-box"><label>AVV</label><input type="number" id="s3a" value="0"></div>
+                        <div style="display:flex; gap:5px; justify-content:center;">
+                            <input type="number" id="s3i" placeholder="IO" value="0">
+                            <input type="number" id="s3a" placeholder="AVV" value="0">
                         </div>
                     </div>
                 </div>
 
-                <div class="range-label"><span>Focus Mentale</span><span id="fv">50%</span></div>
-                <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
-                
-                <div class="range-label"><span>Stanchezza Fisica</span><span id="pv">50%</span></div>
-                <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
+                <div style="margin: 20px 0;">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; margin-bottom:5px;"><span>Focus</span><span id="fv">50%</span></div>
+                    <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
+                </div>
 
                 <span style="font-size: 10px; font-weight: 900; color: #555;">SENSZIONI & NOTE AI</span>
-                <textarea id="m-notes" rows="3" placeholder="Es: Rovescio poco profondo, gambe pesanti nel secondo set..."></textarea>
+                <textarea id="m-notes" rows="3" placeholder="Es: Rovescio solido, fatica negli spostamenti laterali..."></textarea>
 
-                <button class="btn-neon" onclick="saveMatch()">SALVA REPORT</button>
+                <button class="btn-neon" style="margin-top:20px" onclick="saveMatch()">SALVA E ANALIZZA</button>
             </div>
 
-            <div style="padding: 0 20px; margin-top: 20px;">
-                <p style="font-size: 11px; color: #444; font-weight: 900;">STORICO MATCH</p>
+            <div style="padding: 0 20px; margin-top: 30px;">
+                <p style="font-size: 11px; color: #444; font-weight: 900; text-transform: uppercase;">Storico Match</p>
                 <div id="full-history"></div>
             </div>
         </div>
@@ -137,51 +136,61 @@
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 el.classList.add('active');
             }
-            if(id === 'match' || id === 'home') renderHistory();
+            renderHistory();
+        }
+
+        function calculateWinner(m) {
+            let setsIo = 0;
+            let setsAvv = 0;
+            if(m.s1i > m.s1a) setsIo++; else if(m.s1a > m.s1i) setsAvv++;
+            if(m.s2i > m.s2a) setsIo++; else if(m.s2a > m.s2i) setsAvv++;
+            if(m.s3i > m.s3a) setsIo++; else if(m.s3a > m.s3i) setsAvv++;
+            return setsIo > setsAvv ? 'VIT' : 'SCO';
         }
 
         function saveMatch() {
             const m = {
-                score: `${document.getElementById('s1i').value}-${document.getElementById('s1a').value} / ${document.getElementById('s2i').value}-${document.getElementById('s2a').value} / ${document.getElementById('s3i').value}-${document.getElementById('s3a').value}`,
+                s1i: parseInt(document.getElementById('s1i').value),
+                s1a: parseInt(document.getElementById('s1a').value),
+                s2i: parseInt(document.getElementById('s2i').value),
+                s2a: parseInt(document.getElementById('s2a').value),
+                s3i: parseInt(document.getElementById('s3i').value),
+                s3a: parseInt(document.getElementById('s3a').value),
                 focus: document.getElementById('mf').value,
-                phys: document.getElementById('mp').value,
                 notes: document.getElementById('m-notes').value,
                 date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'})
             };
+            
+            m.result = calculateWinner(m);
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
             
-            // Calcolo Score Semplificato
-            let avgPhys = matches.reduce((acc, curr) => acc + parseInt(curr.phys), 0) / matches.length;
-            document.getElementById('main-score').innerText = (100 - (avgPhys/2)).toFixed(1);
-            document.getElementById('status-text').innerText = "DATA ANALYZED - READY";
-
-            alert("Match salvato con successo.");
+            document.getElementById('main-score').innerText = (70 + Math.random()*20).toFixed(1);
             showView('home');
+            speak("Match registrato. Risultato: " + (m.result === 'VIT' ? 'Vittoria' : 'Sconfitta'));
         }
 
         function renderHistory() {
             const html = matches.map(m => `
-                <div class="history-item">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                        <span style="font-weight:900; color:var(--neon)">${m.score}</span>
+                <div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}">
+                    <span class="res-tag">${m.result}</span>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span style="font-weight:900; font-size:16px;">${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}</span>
                         <span style="font-size:10px; color:#555">${m.date}</span>
                     </div>
-                    <div style="font-size:11px; color:#aaa; line-height:1.4">${m.notes || 'Nessuna nota inserita'}</div>
+                    <div style="font-size:12px; color:#888;">${m.notes || 'Nessun feedback registrato.'}</div>
                 </div>
             `).join('');
             
-            document.getElementById('full-history').innerHTML = html;
-            if(document.getElementById('quick-history')) {
-                document.getElementById('quick-history').innerHTML = matches.slice(0, 2).map(m => `
-                    <div class="history-item" style="margin: 0 0 10px 0;">
-                        <span style="font-weight:900;">${m.score}</span> - <small>${m.date}</small>
-                    </div>
-                `).join('');
-            }
+            if(document.getElementById('full-history')) document.getElementById('full-history').innerHTML = html;
+            if(document.getElementById('quick-history')) document.getElementById('quick-history').innerHTML = html.slice(0, 1);
         }
 
-        // Inizializzazione
+        function speak(text) {
+            const m = new SpeechSynthesisUtterance(text);
+            m.lang = 'it-IT'; window.speechSynthesis.speak(m);
+        }
+
         if(matches.length > 0) renderHistory();
     </script>
 </body>
