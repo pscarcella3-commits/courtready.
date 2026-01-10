@@ -3,80 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CourtReady Elite</title>
+    <title>CourtReady Ultimate</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
     <style>
-        :root { --neon: #d4ff00; --bg: #000; --card: #121212; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
+        :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
         
-        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; padding-bottom: 120px; }
+        /* Navigazione */
+        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; padding-bottom: 120px; animation: fadeIn 0.4s ease; }
         .view.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Logo Custom SVG */
-        .logo-box { display: flex; align-items: center; gap: 12px; padding: 50px 25px 20px; }
-        .court-icon { width: 32px; height: 24px; border: 2px solid var(--neon); position: relative; border-radius: 2px; }
-        .court-icon::after { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
+        /* LOGO CUSTOM */
+        .logo-wrap { display: flex; align-items: center; gap: 10px; padding: 40px 25px 10px; }
+        .cr-logo { width: 35px; height: 35px; border: 3px solid var(--neon); position: relative; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--neon); font-size: 18px; }
+        .cr-logo::after { content: ''; position: absolute; width: 100%; height: 2px; background: var(--neon); top: 50%; }
 
-        /* UI Elements */
-        .hero { margin: 20px; padding: 30px; background: linear-gradient(145deg, #1a1a1a, #000); border-radius: 30px; border: 1px solid #222; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; text-transform: uppercase; margin-top: 15px; }
-        
-        /* Mind Gym Game */
-        #target { width: 80px; height: 80px; background: var(--neon); border-radius: 50%; position: absolute; display: none; box-shadow: 0 0 30px var(--neon); }
+        /* ONBOARDING ESTESO */
+        #onboarding { position: fixed; inset: 0; background: var(--bg); z-index: 10000; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        .ob-step { display: none; }
+        .ob-step.active { display: block; animation: slideIn 0.4s ease; }
+        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* NavBar */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; }
+        /* CARDS & BUTTONS */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; width: 100%; text-align: left; font-size: 15px; }
+        .btn-outline:active { border-color: var(--neon); color: var(--neon); }
+
+        /* NAVBAR */
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(15,15,15,0.9); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 999; }
+        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; transition: 0.3s; text-decoration: none; }
         .nav-item.active { color: var(--neon); }
+
+        input, select { background: #222; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="home" class="view active">
-        <div class="logo-box">
-            <div class="court-icon"></div>
-            <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
+    <div id="onboarding">
+        <div class="ob-step active" id="ob1">
+            <div class="cr-logo" style="margin: 0 auto 20px;">CR</div>
+            <h1 style="text-align: center;">Benvenuto Pro.</h1>
+            <p style="color: #666; text-align: center;">Costruiamo il tuo profilo atletico basato sui tuoi dati reali.</p>
+            <button class="btn-neon" onclick="nextOb(1, 2)">INIZIA IL SETUP</button>
         </div>
-        <div class="hero">
-            <small style="color:#666; letter-spacing:2px;">NEURO-SCORE</small>
-            <div style="font-size: 54px; font-weight: 900;" id="score-display">--</div>
-            <p style="color:var(--neon); font-size: 12px; font-weight: 800;">READY TO TRAIN</p>
+
+        <div class="ob-step" id="ob2">
+            <h2>Qual è il tuo livello?</h2>
+            <button class="btn-outline" onclick="saveData('lvl', 'Amatoriale'); nextOb(2,3)">Amatoriale (Club)</button>
+            <button class="btn-outline" onclick="saveData('lvl', 'Agonista'); nextOb(2,3)">Agonista / Quarta Categoria</button>
+            <button class="btn-outline" onclick="saveData('lvl', 'Pro'); nextOb(2,3)">Pro / Seconda Categoria</button>
         </div>
-        <div style="padding: 20px;">
-            <button class="btn-neon" onclick="showView('mind')">Inizia Mind Gym</button>
+
+        <div class="ob-step" id="ob3">
+            <h2>Area di miglioramento?</h2>
+            <button class="btn-outline" onclick="saveData('focus', 'Reattività'); nextOb(3,4)">Reattività (Split Step)</button>
+            <button class="btn-outline" onclick="saveData('focus', 'Potenza'); nextOb(3,4)">Potenza (Servizio/Dritto)</button>
+            <button class="btn-outline" onclick="saveData('focus', 'Resistenza'); nextOb(3,4)">Resistenza (Terzo Set)</button>
+        </div>
+
+        <div class="ob-step" id="ob4">
+            <h2>Hai infortuni recenti?</h2>
+            <button class="btn-outline" onclick="saveData('injury', 'No'); finishOb()">No, sono al 100%</button>
+            <button class="btn-outline" onclick="saveData('injury', 'Spalla'); finishOb()">Spalla / Gomito</button>
+            <button class="btn-outline" onclick="saveData('injury', 'Ginocchio'); finishOb()">Ginocchio / Caviglia</button>
         </div>
     </div>
 
-    <div id="mind" class="view" style="background: #000; justify-content: center; align-items: center;">
-        <div id="mind-intro" style="text-align: center; padding: 20px;">
-            <i data-lucide="brain" size="48" color="var(--neon)"></i>
-            <h2>MIND GYM</h2>
-            <p style="color:#666">Tocca il bersaglio neon il più velocemente possibile quando appare.</p>
-            <button class="btn-neon" onclick="startMindGame()">START TEST</button>
+    <div id="home" class="view">
+        <div class="logo-wrap">
+            <div class="cr-logo">CR</div>
+            <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
         </div>
-        <div id="target" onclick="hitTarget()"></div>
-        <div id="reaction-result" style="display:none; text-align:center;">
-            <h1 id="ms-res" style="color:var(--neon); font-size: 48px;"></h1>
-            <p>Velocità di reazione media</p>
-            <button class="btn-neon" onclick="showView('home')">TORNA ALLA DASHBOARD</button>
+        
+        <div class="card" style="background: linear-gradient(145deg, #1a1a1a, #000);">
+            <small style="color:#666; font-weight: 800; letter-spacing: 1px;">MY CONDITION</small>
+            <div style="font-size: 50px; font-weight: 900; margin: 5px 0;" id="main-score">82.5</div>
+            <div style="color:var(--neon); font-size: 12px; font-weight: 700;">LIVE ANALYSIS ATTIVA</div>
         </div>
+
+        <div style="padding: 0 20px;">
+            <p style="color: #444; font-size: 11px; font-weight: 900; text-transform: uppercase;">Tracker Partite</p>
+            <div class="card" onclick="showView('match')" style="cursor:pointer; display:flex; align-items:center; gap:15px; background: #111;">
+                <i data-lucide="plus-circle" color="var(--neon)"></i>
+                <span>Registra nuovo Match</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="match" class="view">
+        <div style="padding: 50px 25px 20px;">
+            <h2>Diario Match</h2>
+            <p style="color: #666;">I dati del match influenzeranno i tuoi prossimi allenamenti.</p>
+        </div>
+        
+        <div class="card">
+            <label>Risultato</label>
+            <select id="match-res">
+                <option>Vittoria</option>
+                <option>Sconfitta</option>
+            </select>
+            
+            <label>Sensazione Fisica (1-10)</label>
+            <input type="number" id="match-phys" placeholder="Es: 7">
+            
+            <label>Note Tecniche</label>
+            <input type="text" id="match-note" placeholder="Es: Lento sulle gambe">
+            
+            <button class="btn-neon" onclick="saveMatch()">SALVA MATCH</button>
+        </div>
+    </div>
+
+    <div id="stats" class="view">
+        <div style="padding: 50px 25px 20px;">
+            <h2>Storico & Analisi</h2>
+        </div>
+        <div id="match-list" style="padding: 0 5px;">
+            </div>
     </div>
 
     <div class="nav-bar">
         <div class="nav-item active" onclick="showView('home', this)"><i data-lucide="home"></i><span>HOME</span></div>
-        <div class="nav-item" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
-        <div class="nav-item" onclick="showView('mind', this)"><i data-lucide="target"></i><span>MIND</span></div>
-        <div class="nav-item"><i data-lucide="bar-chart-3"></i><span>STATS</span></div>
+        <div class="nav-item" onclick="showView('match', this)"><i data-lucide="clipboard-list"></i><span>MATCH</span></div>
+        <div class="nav-item" onclick="showView('stats', this)"><i data-lucide="bar-chart-2"></i><span>STATS</span></div>
+        <div class="nav-item"><i data-lucide="user"></i><span>PROFILE</span></div>
     </div>
 
     <script>
         lucide.createIcons();
+        let userProfile = JSON.parse(localStorage.getItem('cr_profile')) || {};
+        let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
 
-        // Variabili Game
-        let startTime, reactionTimes = [];
-        let hits = 0;
+        // Gestione Onboarding
+        if(userProfile.lvl) {
+            document.getElementById('onboarding').style.display = 'none';
+            document.getElementById('home').classList.add('active');
+        }
 
+        function nextOb(c, n) {
+            document.getElementById('ob'+c).classList.remove('active');
+            document.getElementById('ob'+n).classList.add('active');
+        }
+
+        function saveData(key, val) {
+            userProfile[key] = val;
+            localStorage.setItem('cr_profile', JSON.stringify(userProfile));
+        }
+
+        function finishOb() {
+            document.getElementById('onboarding').style.transform = 'translateY(-100%)';
+            setTimeout(() => {
+                document.getElementById('onboarding').style.display = 'none';
+                showView('home');
+                speak("Profilo creato. Analizzo i tuoi dati per il primo workout.");
+            }, 600);
+        }
+
+        // Navigazione
         function showView(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -84,53 +168,40 @@
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 el.classList.add('active');
             }
+            if(id === 'stats') renderMatches();
         }
 
-        // Logica Mind Gym
-        function startMindGame() {
-            document.getElementById('mind-intro').style.display = 'none';
-            document.getElementById('reaction-result').style.display = 'none';
-            hits = 0;
-            reactionTimes = [];
-            spawnTarget();
+        // Match Logic
+        function saveMatch() {
+            const m = {
+                res: document.getElementById('match-res').value,
+                phys: document.getElementById('match-phys').value,
+                note: document.getElementById('match-note').value,
+                date: new Date().toLocaleDateString()
+            };
+            matches.unshift(m);
+            localStorage.setItem('cr_matches', JSON.stringify(matches));
+            alert("Match Salvato! Il tuo conditioning score verrà ricalcolato.");
+            showView('home');
         }
 
-        function spawnTarget() {
-            const t = document.getElementById('target');
-            const x = Math.random() * (window.innerWidth - 100) + 10;
-            const y = Math.random() * (window.innerHeight - 200) + 50;
-            t.style.left = x + 'px';
-            t.style.top = y + 'px';
-            setTimeout(() => {
-                t.style.display = 'block';
-                startTime = Date.now();
-            }, Math.random() * 2000 + 500);
-        }
-
-        function hitTarget() {
-            const diff = Date.now() - startTime;
-            reactionTimes.push(diff);
-            document.getElementById('target').style.display = 'none';
-            hits++;
-            if(hits < 5) {
-                spawnTarget();
-            } else {
-                endGame();
-            }
-        }
-
-        function endGame() {
-            const avg = Math.round(reactionTimes.reduce((a,b) => a+b) / 5);
-            document.getElementById('ms-res').innerText = avg + "ms";
-            document.getElementById('reaction-result').style.display = 'block';
-            document.getElementById('score-display').innerText = Math.round(1000 - avg) / 10;
-            speak("Test completato. La tua reazione è di " + avg + " millisecondi.");
+        function renderMatches() {
+            const list = document.getElementById('match-list');
+            list.innerHTML = matches.map(m => `
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:var(--neon); font-weight:bold;">${m.res}</span>
+                        <small color="#666">${m.date}</small>
+                    </div>
+                    <div style="margin-top:10px; font-size:14px;">Fisico: ${m.phys}/10</div>
+                    <div style="color:#888; font-size:12px; font-style:italic;">${m.note}</div>
+                </div>
+            `).join('');
         }
 
         function speak(text) {
             const m = new SpeechSynthesisUtterance(text);
-            m.lang = 'it-IT';
-            window.speechSynthesis.speak(m);
+            m.lang = 'it-IT'; window.speechSynthesis.speak(m);
         }
     </script>
 </body>
