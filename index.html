@@ -9,41 +9,39 @@
         :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
         
-        /* Navigazione Viste */
-        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; animation: fadeIn 0.3s ease; }
+        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         .view.active { display: flex; }
-        /* Padding extra per non far coprire i pulsanti dalla Nav-Bar */
-        .content-scroll { padding-bottom: 150px; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .content-scroll { padding-bottom: 160px; }
 
-        /* NUOVO LOGO TENNIS GEOMETRIC */
+        /* LOGO PRO-BALL */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
-        .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
-        .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
-        .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); }
+        .ball-logo { width: 35px; height: 35px; border: 2.5px solid var(--neon); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .ball-logo::before { content: ''; position: absolute; width: 100%; height: 100%; border: 2px solid var(--neon); border-radius: 50%; left: -70%; }
+        .ball-logo::after { content: ''; position: absolute; width: 100%; height: 100%; border: 2px solid var(--neon); border-radius: 50%; right: -70%; }
 
         /* UI ELEMENTS */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(212, 255, 0, 0.15); }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
         
-        /* DOPPIO BOX PUNTEGGIO */
-        .set-container { display: flex; gap: 8px; margin-bottom: 15px; }
-        .set-macro { flex: 1; background: #111; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
-        .set-title { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .score-split { display: flex; justify-content: space-around; align-items: center; }
-        .score-box { display: flex; flex-direction: column; align-items: center; }
-        .score-box label { font-size: 9px; color: #444; margin-bottom: 4px; font-weight: 900; }
-        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; outline: none; }
-        .score-box input:focus { border-color: var(--neon); }
+        /* SCOREBOARD SET */
+        .set-container { display: flex; gap: 6px; margin-bottom: 20px; }
+        .set-macro { flex: 1; background: #111; border: 1px solid #222; border-radius: 12px; padding: 8px; text-align: center; }
+        .score-split { display: flex; justify-content: space-around; margin-top: 5px; }
+        .score-box { display: flex; flex-direction: column; }
+        .score-box label { font-size: 8px; color: #555; font-weight: 900; margin-bottom: 4px; }
+        .score-box input { width: 32px; height: 32px; background: #000; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; }
 
-        /* SLIDERS */
-        .range-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 700; }
-        input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 20px; }
+        /* FORM */
+        textarea { width: 100%; background: #111; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; margin-top: 10px; resize: none; }
+        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #666; font-weight: 800; margin-bottom: 5px; }
+        input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 15px; }
+
+        /* MATCH HISTORY */
+        .history-item { border-left: 3px solid var(--neon); background: #0c0c0c; padding: 15px; border-radius: 0 15px 15px 0; margin-bottom: 10px; font-size: 13px; }
 
         /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.9); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
-        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; text-decoration: none; }
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
+        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
     </style>
 </head>
@@ -52,21 +50,19 @@
     <div id="home" class="view active">
         <div class="content-scroll">
             <div class="logo-wrap">
-                <div class="court-logo"></div>
-                <div style="font-weight: 900; font-style: italic; font-size: 20px; letter-spacing: -1px;">COURT<span style="color:var(--neon)">READY</span></div>
+                <div class="ball-logo"></div>
+                <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
             </div>
             
             <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%);">
-                <small style="color:#555; font-weight: 800; letter-spacing: 1px;">CONDITIONING SCORE</small>
-                <div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">78.0</div>
-                <div style="color:var(--neon); font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:5px;">
-                    <i data-lucide="activity" size="14"></i> STATUS: PRONTO AL TRAIN
-                </div>
+                <small style="color:#555; font-weight: 800;">CONDITIONING SCORE</small>
+                <div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
+                <div id="status-text" style="color:var(--neon); font-size: 11px; font-weight: 700;">REGISTRA IL TUO PRIMO MATCH</div>
             </div>
 
-            <div class="card" onclick="showView('match')" style="border-style: dashed; border-color: #333; text-align: center; padding: 30px;">
-                <i data-lucide="plus" color="var(--neon)" style="margin-bottom:10px"></i>
-                <div style="font-weight: 800; font-size: 14px;">NUOVO MATCH REPORT</div>
+            <div style="padding: 0 20px;">
+                <p style="font-size: 10px; color: #444; font-weight: 900; text-transform: uppercase;">Analisi Recenti</p>
+                <div id="quick-history"></div>
             </div>
         </div>
     </div>
@@ -74,46 +70,51 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 50px 25px 20px;">
-                <h2 style="font-size: 32px; margin: 0; font-weight: 900;">Match Report</h2>
-                <p style="color: #666;">Analisi dettagliata della prestazione.</p>
+                <h2 style="margin: 0; font-weight: 900;">Match Lab</h2>
+                <p style="color: #666;">Registra e consulta le tue prestazioni.</p>
             </div>
             
             <div class="card">
-                <label style="font-weight: 900; font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD SET</label>
-                
+                <span style="font-size: 10px; font-weight: 900; color: #555; display: block; margin-bottom: 10px;">NUOVO REPORT</span>
                 <div class="set-container">
                     <div class="set-macro">
-                        <span class="set-title">SET 1</span>
+                        <small style="font-size:9px">SET 1</small>
                         <div class="score-split">
-                            <div class="score-box"><label>IO</label><input type="number" id="s1-io" value="0"></div>
-                            <div class="score-box"><label>AVV</label><input type="number" id="s1-avv" value="0"></div>
+                            <div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div>
+                            <div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div>
                         </div>
                     </div>
                     <div class="set-macro">
-                        <span class="set-title">SET 2</span>
+                        <small style="font-size:9px">SET 2</small>
                         <div class="score-split">
-                            <div class="score-box"><label>IO</label><input type="number" id="s2-io" value="0"></div>
-                            <div class="score-box"><label>AVV</label><input type="number" id="s2-avv" value="0"></div>
+                            <div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div>
+                            <div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div>
                         </div>
                     </div>
                     <div class="set-macro">
-                        <span class="set-title">SET 3</span>
+                        <small style="font-size:9px">SET 3</small>
                         <div class="score-split">
-                            <div class="score-box"><label>IO</label><input type="number" id="s3-io" value="0"></div>
-                            <div class="score-box"><label>AVV</label><input type="number" id="s3-avv" value="0"></div>
+                            <div class="score-box"><label>IO</label><input type="number" id="s3i" value="0"></div>
+                            <div class="score-box"><label>AVV</label><input type="number" id="s3a" value="0"></div>
                         </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <div class="range-label"><span>Focus Mentale</span><span id="f-val">50%</span></div>
-                    <input type="range" id="m-focus" min="0" max="100" value="50" oninput="document.getElementById('f-val').innerText = this.value + '%'">
-                    
-                    <div class="range-label"><span>Stanchezza Fisica</span><span id="p-val">50%</span></div>
-                    <input type="range" id="m-phys" min="0" max="100" value="50" oninput="document.getElementById('p-val').innerText = this.value + '%'">
-                </div>
+                <div class="range-label"><span>Focus Mentale</span><span id="fv">50%</span></div>
+                <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
+                
+                <div class="range-label"><span>Stanchezza Fisica</span><span id="pv">50%</span></div>
+                <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
+
+                <span style="font-size: 10px; font-weight: 900; color: #555;">SENSZIONI & NOTE AI</span>
+                <textarea id="m-notes" rows="3" placeholder="Es: Rovescio poco profondo, gambe pesanti nel secondo set..."></textarea>
 
                 <button class="btn-neon" onclick="saveMatch()">SALVA REPORT</button>
+            </div>
+
+            <div style="padding: 0 20px; margin-top: 20px;">
+                <p style="font-size: 11px; color: #444; font-weight: 900;">STORICO MATCH</p>
+                <div id="full-history"></div>
             </div>
         </div>
     </div>
@@ -136,25 +137,52 @@
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 el.classList.add('active');
             }
+            if(id === 'match' || id === 'home') renderHistory();
         }
 
         function saveMatch() {
             const m = {
-                score: `${document.getElementById('s1-io').value}-${document.getElementById('s1-avv').value}, ${document.getElementById('s2-io').value}-${document.getElementById('s2-avv').value}`,
-                focus: document.getElementById('m-focus').value,
-                phys: document.getElementById('m-phys').value,
-                date: new Date().toLocaleDateString()
+                score: `${document.getElementById('s1i').value}-${document.getElementById('s1a').value} / ${document.getElementById('s2i').value}-${document.getElementById('s2a').value} / ${document.getElementById('s3i').value}-${document.getElementById('s3a').value}`,
+                focus: document.getElementById('mf').value,
+                phys: document.getElementById('mp').value,
+                notes: document.getElementById('m-notes').value,
+                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'})
             };
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
-            speak("Dati salvati. Il sistema sta ricalcolando la tua condizione.");
+            
+            // Calcolo Score Semplificato
+            let avgPhys = matches.reduce((acc, curr) => acc + parseInt(curr.phys), 0) / matches.length;
+            document.getElementById('main-score').innerText = (100 - (avgPhys/2)).toFixed(1);
+            document.getElementById('status-text').innerText = "DATA ANALYZED - READY";
+
+            alert("Match salvato con successo.");
             showView('home');
         }
 
-        function speak(text) {
-            const m = new SpeechSynthesisUtterance(text);
-            m.lang = 'it-IT'; window.speechSynthesis.speak(m);
+        function renderHistory() {
+            const html = matches.map(m => `
+                <div class="history-item">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span style="font-weight:900; color:var(--neon)">${m.score}</span>
+                        <span style="font-size:10px; color:#555">${m.date}</span>
+                    </div>
+                    <div style="font-size:11px; color:#aaa; line-height:1.4">${m.notes || 'Nessuna nota inserita'}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('full-history').innerHTML = html;
+            if(document.getElementById('quick-history')) {
+                document.getElementById('quick-history').innerHTML = matches.slice(0, 2).map(m => `
+                    <div class="history-item" style="margin: 0 0 10px 0;">
+                        <span style="font-weight:900;">${m.score}</span> - <small>${m.date}</small>
+                    </div>
+                `).join('');
+            }
         }
+
+        // Inizializzazione
+        if(matches.length > 0) renderHistory();
     </script>
 </body>
 </html>
