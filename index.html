@@ -6,127 +6,128 @@
     <title>CourtReady Ultimate</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; --danger: #ff4444; }
+        :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
         
-        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; padding-bottom: 120px; animation: fadeIn 0.4s ease; }
+        /* Navigazione Viste */
+        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; animation: fadeIn 0.3s ease; }
         .view.active { display: flex; }
+        /* Padding extra per non far coprire i pulsanti dalla Nav-Bar */
+        .content-scroll { padding-bottom: 150px; }
+        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* NUOVO LOGO TECH */
+        /* NUOVO LOGO TENNIS GEOMETRIC */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
-        .tech-logo { width: 40px; height: 40px; border: 2px solid var(--neon); border-radius: 50% 0 50% 0; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212, 255, 0, 0.2); }
-        .tech-logo::after { content: ''; position: absolute; width: 80%; height: 2px; background: var(--neon); transform: rotate(-45deg); }
+        .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
+        .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
+        .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); }
 
         /* UI ELEMENTS */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 20px; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; width: 100%; text-align: left; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(212, 255, 0, 0.15); }
         
-        /* INPUTS SPECIALI */
-        .score-input-group { display: flex; gap: 10px; margin-top: 10px; }
-        .set-box { background: #222; border: 1px solid #333; border-radius: 10px; padding: 10px; flex: 1; text-align: center; }
-        .set-box input { width: 30px; background: transparent; border: none; color: var(--neon); font-weight: 900; font-size: 18px; text-align: center; }
-        
-        input, select { background: #222; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
-        
-        .range-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 5px; }
-        input[type=range] { accent-color: var(--neon); }
+        /* DOPPIO BOX PUNTEGGIO */
+        .set-container { display: flex; gap: 8px; margin-bottom: 15px; }
+        .set-macro { flex: 1; background: #111; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
+        .set-title { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .score-split { display: flex; justify-content: space-around; align-items: center; }
+        .score-box { display: flex; flex-direction: column; align-items: center; }
+        .score-box label { font-size: 9px; color: #444; margin-bottom: 4px; font-weight: 900; }
+        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; outline: none; }
+        .score-box input:focus { border-color: var(--neon); }
+
+        /* SLIDERS */
+        .range-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 700; }
+        input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 20px; }
 
         /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 999; }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; text-decoration: none; }
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.9); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
+        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; text-decoration: none; }
         .nav-item.active { color: var(--neon); }
     </style>
 </head>
 <body>
 
     <div id="home" class="view active">
-        <div class="logo-wrap">
-            <div class="tech-logo"></div>
-            <div style="font-weight: 900; font-style: italic; font-size: 20px; letter-spacing: -1px;">COURT<span style="color:var(--neon)">READY</span></div>
-        </div>
-        
-        <div class="card" style="background: radial-gradient(circle at top right, #1a1a1a, #000);">
-            <small style="color:#666; font-weight: 800; letter-spacing: 1px;">CONDITIONING SCORE</small>
-            <div style="font-size: 56px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
-            <div id="trend" style="font-size: 12px; font-weight: 700; color: var(--neon);">IN ATTESA DI DATI MATCH</div>
-        </div>
+        <div class="content-scroll">
+            <div class="logo-wrap">
+                <div class="court-logo"></div>
+                <div style="font-weight: 900; font-style: italic; font-size: 20px; letter-spacing: -1px;">COURT<span style="color:var(--neon)">READY</span></div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%);">
+                <small style="color:#555; font-weight: 800; letter-spacing: 1px;">CONDITIONING SCORE</small>
+                <div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">78.0</div>
+                <div style="color:var(--neon); font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:5px;">
+                    <i data-lucide="activity" size="14"></i> STATUS: PRONTO AL TRAIN
+                </div>
+            </div>
 
-        <div style="padding: 0 20px;">
-            <p style="color: #444; font-size: 11px; font-weight: 900; text-transform: uppercase;">Azione Rapida</p>
-            <div class="card" onclick="showView('match')" style="cursor:pointer; display:flex; align-items:center; gap:15px; background: #111; border-style: dashed;">
-                <i data-lucide="trophy" color="var(--neon)"></i>
-                <span>Analizza Match Giocato</span>
+            <div class="card" onclick="showView('match')" style="border-style: dashed; border-color: #333; text-align: center; padding: 30px;">
+                <i data-lucide="plus" color="var(--neon)" style="margin-bottom:10px"></i>
+                <div style="font-weight: 800; font-size: 14px;">NUOVO MATCH REPORT</div>
             </div>
         </div>
     </div>
 
     <div id="match" class="view">
-        <div style="padding: 50px 25px 20px;">
-            <h2 style="font-size: 28px; margin: 0;">Report Match</h2>
-            <p style="color: #666;">Dettaglia il punteggio e il tuo stato mentale.</p>
-        </div>
-        
-        <div class="card">
-            <label style="font-weight: 800; font-size: 12px; color: var(--neon);">PUNTEGGIO SET</label>
-            <div class="score-input-group">
-                <div class="set-box"><small>Set 1</small><br><input type="text" id="s1" placeholder="0-0"></div>
-                <div class="set-box"><small>Set 2</small><br><input type="text" id="s2" placeholder="0-0"></div>
-                <div class="set-box"><small>Set 3</small><br><input type="text" id="s3" placeholder="0-0"></div>
+        <div class="content-scroll">
+            <div style="padding: 50px 25px 20px;">
+                <h2 style="font-size: 32px; margin: 0; font-weight: 900;">Match Report</h2>
+                <p style="color: #666;">Analisi dettagliata della prestazione.</p>
             </div>
-
-            <div style="margin-top: 25px;">
-                <div class="range-label"><span>Focus Mentale</span><span id="focus-val">50%</span></div>
-                <input type="range" id="match-focus" min="0" max="100" value="50" oninput="document.getElementById('focus-val').innerText = this.value + '%'">
-            </div>
-
-            <div style="margin-top: 15px;">
-                <div class="range-label"><span>Stanchezza Fisica</span><span id="phys-val">50%</span></div>
-                <input type="range" id="match-fatigue" min="0" max="100" value="50" oninput="document.getElementById('phys-val').innerText = this.value + '%'">
-            </div>
-
-            <label style="margin-top: 20px; display: block;">Avversario (Stile)</label>
-            <select id="opp-style">
-                <option>Regolarista</option>
-                <option>Attaccante</option>
-                <option>Mancino</option>
-                <option>Altro</option>
-            </select>
             
-            <button class="btn-neon" onclick="saveMatch()">SALVA E ANALIZZA</button>
+            <div class="card">
+                <label style="font-weight: 900; font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD SET</label>
+                
+                <div class="set-container">
+                    <div class="set-macro">
+                        <span class="set-title">SET 1</span>
+                        <div class="score-split">
+                            <div class="score-box"><label>IO</label><input type="number" id="s1-io" value="0"></div>
+                            <div class="score-box"><label>AVV</label><input type="number" id="s1-avv" value="0"></div>
+                        </div>
+                    </div>
+                    <div class="set-macro">
+                        <span class="set-title">SET 2</span>
+                        <div class="score-split">
+                            <div class="score-box"><label>IO</label><input type="number" id="s2-io" value="0"></div>
+                            <div class="score-box"><label>AVV</label><input type="number" id="s2-avv" value="0"></div>
+                        </div>
+                    </div>
+                    <div class="set-macro">
+                        <span class="set-title">SET 3</span>
+                        <div class="score-split">
+                            <div class="score-box"><label>IO</label><input type="number" id="s3-io" value="0"></div>
+                            <div class="score-box"><label>AVV</label><input type="number" id="s3-avv" value="0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <div class="range-label"><span>Focus Mentale</span><span id="f-val">50%</span></div>
+                    <input type="range" id="m-focus" min="0" max="100" value="50" oninput="document.getElementById('f-val').innerText = this.value + '%'">
+                    
+                    <div class="range-label"><span>Stanchezza Fisica</span><span id="p-val">50%</span></div>
+                    <input type="range" id="m-phys" min="0" max="100" value="50" oninput="document.getElementById('p-val').innerText = this.value + '%'">
+                </div>
+
+                <button class="btn-neon" onclick="saveMatch()">SALVA REPORT</button>
+            </div>
         </div>
     </div>
 
-    <div id="stats" class="view">
-        <div style="padding: 50px 25px 20px;">
-            <h2>Data Analysis</h2>
-            <p id="stats-summary" style="color: #666; font-size: 14px;"></p>
-        </div>
-        <div id="match-list"></div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="showView('home', this)"><i data-lucide="home"></i><span>HOME</span></div>
-        <div class="nav-item" onclick="showView('match', this)"><i data-lucide="clipboard-list"></i><span>MATCH</span></div>
-        <div class="nav-item" onclick="showView('stats', this)"><i data-lucide="bar-chart-2"></i><span>STATS</span></div>
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="showView('home', this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
+        <div class="nav-item" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
         <div class="nav-item"><i data-lucide="zap"></i><span>TRAIN</span></div>
-    </div>
+        <div class="nav-item"><i data-lucide="user"></i><span>PROFILE</span></div>
+    </nav>
 
     <script>
         lucide.createIcons();
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-
-        function updateScore() {
-            if(matches.length > 0) {
-                // Calcolo simulato del Conditioning Score basato sui match
-                let lastPhys = parseInt(matches[0].fatigue);
-                let score = 100 - (lastPhys * 0.5);
-                document.getElementById('main-score').innerText = score.toFixed(1);
-                document.getElementById('trend').innerText = "LIVE SCORE AGGIORNATO";
-            }
-        }
-        updateScore();
 
         function showView(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -135,45 +136,19 @@
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 el.classList.add('active');
             }
-            if(id === 'stats') renderMatches();
         }
 
         function saveMatch() {
             const m = {
-                s1: document.getElementById('s1').value,
-                s2: document.getElementById('s2').value,
-                s3: document.getElementById('s3').value,
-                focus: document.getElementById('match-focus').value,
-                fatigue: document.getElementById('match-fatigue').value,
-                opp: document.getElementById('opp-style').value,
+                score: `${document.getElementById('s1-io').value}-${document.getElementById('s1-avv').value}, ${document.getElementById('s2-io').value}-${document.getElementById('s2-avv').value}`,
+                focus: document.getElementById('m-focus').value,
+                phys: document.getElementById('m-phys').value,
                 date: new Date().toLocaleDateString()
             };
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
-            updateScore();
-            speak("Match registrato. Calcolo dell'intensità per il prossimo allenamento.");
+            speak("Dati salvati. Il sistema sta ricalcolando la tua condizione.");
             showView('home');
-        }
-
-        function renderMatches() {
-            const list = document.getElementById('match-list');
-            list.innerHTML = matches.map(m => `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
-                        <span style="color:var(--neon); font-weight:900;">MATCH REPORT</span>
-                        <small style="color:#666;">${m.date}</small>
-                    </div>
-                    <div style="display:flex; gap:10px; margin-bottom: 15px;">
-                        <span class="set-box">${m.s1}</span>
-                        <span class="set-box">${m.s2}</span>
-                        <span class="set-box">${m.s3}</span>
-                    </div>
-                    <div style="font-size: 12px; color: #888;">
-                        Focus: ${m.focus}% | Fatica: ${m.fatigue}% | Vs: ${m.opp}
-                    </div>
-                </div>
-            `).join('');
-            document.getElementById('stats-summary').innerText = `Hai registrato ${matches.length} match nell'ultimo periodo.`;
         }
 
         function speak(text) {
