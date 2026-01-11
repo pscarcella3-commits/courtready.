@@ -9,32 +9,33 @@
         :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; --win: #d4ff00; --loss: #ff3333; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* VIEWS */
-        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; }
+        .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 120px; }
 
-        /* UI COMPONENTS */
+        /* CARDS & UI */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
         
-        /* TIMER SCREEN (FULL IMMERSIVE) */
-        #timer-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; box-sizing: border-box; }
-        .exit-btn { position: absolute; top: 40px; right: 25px; color: #555; background: #111; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        /* MATCH LAB (BLINDATA) */
+        .set-row { display: flex; gap: 8px; margin-bottom: 15px; }
+        .set-box { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 12px; padding: 10px; text-align: center; }
+        .score-input { width: 30px; background: #1a1a1a; border: 1px solid #333; color: var(--neon); text-align: center; font-weight: 900; border-radius: 5px; }
+
+        /* TRAIN IMMERSIVE (AVATAR AREA) */
+        #immersive-train { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .avatar-viewport { width: 100%; height: 300px; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); border-radius: 30px; margin: 20px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #222; position: relative; }
         
-        .anim-container { width: 100%; height: 250px; background: #0a0a0a; border-radius: 25px; margin: 20px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #111; }
-        .avatar-placeholder { width: 120px; height: 200px; border: 3px solid var(--neon); border-radius: 50px 50px 20px 20px; position: relative; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.5; transform: scale(0.95); } }
+        /* Placeholder Animazione Avatar */
+        .digital-human { width: 80px; height: 160px; border: 3px solid var(--neon); border-radius: 40px; position: relative; animation: trainer-jump 0.8s infinite alternate ease-in-out; }
+        @keyframes trainer-jump { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
-        .progress-bar-wrap { width: 100%; height: 6px; background: #111; border-radius: 3px; margin: 20px 0; overflow: hidden; }
-        #progress-fill { width: 0%; height: 100%; background: var(--neon); transition: width 1s linear; }
+        .timer-display { font-size: 90px; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--neon); margin: 0; }
+        .progress-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
 
-        .timer-big { font-size: 80px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; margin: 10px 0; }
-        .status-label { text-transform: uppercase; letter-spacing: 4px; font-weight: 800; color: var(--neon); }
-
-        /* NAV BAR */
-        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.9); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 1000; }
-        .nav-item { color: #444; cursor: pointer; }
+        /* NAV */
+        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.9); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; }
+        .nav-item { color: #444; }
         .nav-item.active { color: var(--neon); }
     </style>
 </head>
@@ -42,20 +43,13 @@
 
     <div id="home" class="view active">
         <div class="content-scroll" style="padding-top:40px;">
-            <div style="padding: 0 25px;"><h2 style="font-weight:900; margin:0;">Dashboard</h2></div>
-            <div class="card" style="background: linear-gradient(135deg, #1a1a1a, #000); border: 1px solid var(--neon);">
-                <small style="color:#555; font-weight:800;">CONDITIONING SCORE</small>
-                <div style="font-size: 55px; font-weight: 900;" id="main-score">--</div>
+            <div style="padding: 0 25px;"><h2 style="font-weight:900;">Home</h2></div>
+            <div class="card" style="border:1px solid var(--neon);">
+                <small style="color:#555;">CONDITIONING SCORE</small>
+                <div style="font-size: 50px; font-weight: 900;" id="score-val">--</div>
             </div>
-            
             <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">ULTIMO MATCH</small></div>
-            <div id="home-last-match"></div>
-
-            <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">IL TUO PIANO DI OGGI</small></div>
-            <div class="card" onclick="showV('train')" style="cursor:pointer; border-left: 4px solid var(--neon);">
-                <div style="font-weight:900; color:var(--neon); font-size:18px;">SPEED & AGILITY</div>
-                <p style="color:#555; margin:5px 0 0 0; font-size:12px;">Basato sulla tua nota: "Lento sulla palla"</p>
-            </div>
+            <div id="home-match-slot"></div>
         </div>
     </div>
 
@@ -63,52 +57,50 @@
         <div class="content-scroll" style="padding-top:40px;">
             <div style="padding: 0 25px;"><h2 style="font-weight:900;">Match Lab</h2></div>
             <div class="card">
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <input type="number" id="s1i" placeholder="Io" style="flex:1; background:#000; border:1px solid #333; color:var(--neon); padding:15px; text-align:center; border-radius:10px;">
-                    <input type="number" id="s1a" placeholder="Avv" style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:15px; text-align:center; border-radius:10px;">
+                <div class="set-row">
+                    <div class="set-box">S1<br><input class="score-input" id="s1i">:<input class="score-input" id="s1a"></div>
+                    <div class="set-box">S2<br><input class="score-input" id="s2i">:<input class="score-input" id="s2a"></div>
+                    <div class="set-box">S3<br><input class="score-input" id="s3i">:<input class="score-input" id="s3a"></div>
                 </div>
-                <textarea id="m-notes" placeholder="Note: attenzione, focus, gambe lente..." style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:15px; border-radius:10px; box-sizing:border-box;"></textarea>
-                <button class="btn-neon" onclick="saveMatch()" style="margin-top:15px;">REGISTRA MATCH</button>
+                <textarea id="m-notes" placeholder="Note tecniche..." style="width:100%; background:#000; color:white; border:1px solid #333; padding:10px; border-radius:10px;"></textarea>
+                <button class="btn-neon" onclick="saveMatch()" style="margin-top:15px;">SALVA</button>
             </div>
-            <div id="full-history-list"></div>
+            <div id="history-list"></div>
         </div>
     </div>
 
     <div id="train" class="view">
         <div class="content-scroll" style="padding-top:40px;">
             <div style="padding: 0 25px;"><h2 style="font-weight:900;">Train Lab</h2></div>
-            <div id="train-setup">
-                <div class="card">
-                    <button class="btn-neon" onclick="generateWorkout()">GENERA SESSIONE SMART</button>
-                    <p style="font-size:10px; color:#444; text-align:center; margin-top:10px;">L'IA analizzerà l'ultimo match per scegliere gli esercizi</p>
-                </div>
+            <div id="setup-train" class="card">
+                <button class="btn-neon" onclick="generateWorkout()">GENERA ALLENAMENTO</button>
             </div>
-            <div id="workout-ready" style="display:none; padding: 0 20px;">
-                <div id="ex-list"></div>
-                <button class="btn-neon" onclick="startImmersive()" style="height:80px; margin-bottom:100px;">START ALLENAMENTO</button>
+            <div id="ready-train" style="display:none; padding:20px;">
+                <div id="list-ex"></div>
+                <button class="btn-neon" onclick="openImmersive()" style="height:80px; margin-top:20px;">START IMMERSIVE</button>
             </div>
         </div>
     </div>
 
-    <div id="timer-screen">
-        <div class="exit-btn" onclick="stopImmersive()"><i data-lucide="x"></i></div>
+    <div id="immersive-train">
+        <div style="width:100%; display:flex; justify-content:flex-end;">
+            <button onclick="closeImmersive()" style="background:#222; border:none; color:white; border-radius:50%; width:40px; height:40px;">X</button>
+        </div>
         
-        <div class="status-label" id="t-status">Preparati</div>
-        <div class="timer-big" id="t-clock">05</div>
-
-        <div class="anim-container">
-            <div class="avatar-placeholder"></div>
-            <div style="position:absolute; color:var(--neon); font-size:10px; bottom:10px; font-weight:800;">DIGITAL TRAINER</div>
+        <div class="avatar-viewport">
+            <div class="digital-human"></div>
+            <div style="position:absolute; bottom:15px; color:var(--neon); font-size:10px; font-weight:800; letter-spacing:2px;">ESECUZIONE CORRETTA</div>
         </div>
 
         <div style="text-align:center;">
-            <h2 id="t-ex-name" style="margin:0; font-size:28px; font-weight:900;">ESERCIZIO</h2>
-            <p id="t-ex-desc" style="color:#555; margin:5px 0 20px 0;">Descrizione breve del movimento</p>
+            <p id="imm-status" style="color:var(--neon); font-weight:800; letter-spacing:3px; margin:0;">LAVORO</p>
+            <h1 class="timer-display" id="imm-clock">30</h1>
+            <h2 id="imm-name" style="margin:0; text-transform:uppercase;">SQUAT JUMP</h2>
         </div>
 
-        <div class="progress-bar-wrap"><div id="progress-fill"></div></div>
-        
-        <div id="t-next" style="color:var(--neon); font-weight:800; font-size:12px; text-transform:uppercase;">PROSSIMO: --</div>
+        <div style="margin-top:auto; width:100%; text-align:center;">
+            <p id="imm-next" style="color:#444; font-weight:800;">PROSSIMO: --</p>
+        </div>
     </div>
 
     <nav class="nav-bar">
@@ -119,129 +111,64 @@
 
     <script>
         lucide.createIcons();
-        let matches = JSON.parse(localStorage.getItem('cr_v2')) || [];
-        let workout = [], currentIdx = 0, timerObj;
-
-        const exerciseDB = [
-            {id:1, n:"Squat Jump", d:"Esplosività verticale", c:"speed"},
-            {id:2, n:"Scaletta Rapida", d:"Agilità piedi frequenza", c:"speed"},
-            {id:3, n:"Split Step Drill", d:"Reattività al balzo", c:"focus"},
-            {id:4, n:"Plank Reach", d:"Stabilità core e spalle", c:"power"},
-            {id:5, n:"Lateral Bounds", d:"Spinta laterale tecnica", c:"speed"}
-        ];
+        let matches = JSON.parse(localStorage.getItem('cr_final')) || [];
+        let timer;
 
         function showV(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-            refreshUI();
+            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+            refresh();
         }
 
+        // MATCH LAB (FUNZIONI BLINDATE)
         function saveMatch() {
             const m = {
                 id: Date.now(),
-                sI: document.getElementById('s1i').value || 0,
-                sA: document.getElementById('s1a').value || 0,
+                s1: [document.getElementById('s1i').value, document.getElementById('s1a').value],
+                s2: [document.getElementById('s2i').value, document.getElementById('s2a').value],
+                s3: [document.getElementById('s3i').value, document.getElementById('s3a').value],
                 notes: document.getElementById('m-notes').value,
                 date: new Date().toLocaleDateString('it-IT')
             };
             matches.unshift(m);
-            localStorage.setItem('cr_v2', JSON.stringify(matches));
+            localStorage.setItem('cr_final', JSON.stringify(matches));
             showV('home');
         }
 
-        function refreshUI() {
-            const homeLast = document.getElementById('home-last-match');
+        function refresh() {
+            const homeSlot = document.getElementById('home-match-slot');
             if(matches.length > 0) {
                 const l = matches[0];
-                homeLast.innerHTML = `<div class="card" style="margin:0 20px; border-left:4px solid ${l.sI > l.sA ? 'var(--win)':'var(--loss)'}">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:900; font-size:20px;">${l.sI} - ${l.sA}</span>
-                        <small style="color:#555;">${l.date}</small>
-                    </div>
-                </div>`;
-                document.getElementById('main-score').innerText = (l.sI > l.sA) ? "82.5" : "74.0";
+                homeSlot.innerHTML = `<div class="card"><b>ULTIMO MATCH</b><br>${l.s1[0]}-${l.s1[1]} / ${l.s2[0]}-${l.s2[1]}</div>`;
+                document.getElementById('score-val').innerText = "81.0";
             }
-            document.getElementById('full-history-list').innerHTML = matches.map(m => `<div class="card" style="margin:10px 20px; font-size:14px;"><b>${m.sI}-${m.sA}</b> • ${m.date}</div>`).join('');
+            document.getElementById('history-list').innerHTML = matches.map(m => `<div class="card">${m.date}: ${m.s1[0]}-${m.s1[1]}</div>`).join('');
         }
 
+        // TRAIN LAB (NUOVA SEZIONE IMMERSIVA)
         function generateWorkout() {
-            const note = matches.length > 0 ? matches[0].notes.toLowerCase() : "";
-            let filtered = exerciseDB;
-            if(note.includes('lento')) filtered = exerciseDB.filter(ex => ex.c === 'speed');
-            
-            workout = [...filtered].sort(() => 0.5 - Math.random()).slice(0, 4);
-            document.getElementById('ex-list').innerHTML = workout.map(ex => `<div class="card" style="margin:10px 0;"><b>${ex.n}</b><br><small style="color:#555">${ex.d}</small></div>`).join('');
-            document.getElementById('train-setup').style.display = 'none';
-            document.getElementById('workout-ready').style.display = 'block';
+            document.getElementById('list-ex').innerHTML = `<div class="card">SQUAT JUMPS</div><div class="card">PLANK</div>`;
+            document.getElementById('setup-train').style.display = 'none';
+            document.getElementById('ready-train').style.display = 'block';
         }
 
-        function startImmersive() {
-            document.getElementById('timer-screen').style.display = 'flex';
-            currentIdx = 0;
-            playSet();
-        }
-
-        function playSet() {
-            if(currentIdx >= workout.length) { stopImmersive(); return; }
-            
-            let time = 30; // 30 secondi di lavoro
-            const ex = workout[currentIdx];
-            document.getElementById('t-status').innerText = "Lavoro";
-            document.getElementById('t-status').style.color = "var(--neon)";
-            document.getElementById('t-ex-name').innerText = ex.n;
-            document.getElementById('t-ex-desc').innerText = ex.d;
-            document.getElementById('t-next').innerText = workout[currentIdx+1] ? "PROSSIMO: " + workout[currentIdx+1].n : "QUASI FINITO!";
-
-            // Voce (blindata)
-            speak("Inizia " + ex.n);
-
-            timerObj = setInterval(() => {
-                time--;
-                document.getElementById('t-clock').innerText = time < 10 ? "0"+time : time;
-                document.getElementById('progress-fill').style.width = ((30-time)/30*100) + "%";
-                
-                if(time <= 0) {
-                    clearInterval(timerObj);
-                    playRest();
-                }
+        function openImmersive() {
+            document.getElementById('immersive-train').style.display = 'flex';
+            let c = 30;
+            timer = setInterval(() => {
+                c--;
+                document.getElementById('imm-clock').innerText = c;
+                if(c<=0) closeImmersive();
             }, 1000);
         }
 
-        function playRest() {
-            let time = 15; // 15 secondi di riposo
-            document.getElementById('t-status').innerText = "Riposo";
-            document.getElementById('t-status').style.color = "#ff3333";
-            document.getElementById('progress-fill').style.width = "0%";
-            speak("Riposo");
-
-            timerObj = setInterval(() => {
-                time--;
-                document.getElementById('t-clock').innerText = time < 10 ? "0"+time : time;
-                if(time <= 0) {
-                    clearInterval(timerObj);
-                    currentIdx++;
-                    playSet();
-                }
-            }, 1000);
+        function closeImmersive() {
+            clearInterval(timer);
+            document.getElementById('immersive-train').style.display = 'none';
         }
 
-        function stopImmersive() {
-            clearInterval(timerObj);
-            document.getElementById('timer-screen').style.display = 'none';
-            showV('home');
-        }
-
-        function speak(txt) {
-            const msg = new SpeechSynthesisUtterance(txt);
-            msg.lang = 'it-IT';
-            window.speechSynthesis.speak(msg);
-        }
-
-        window.onload = refreshUI;
+        window.onload = refresh;
     </script>
 </body>
 </html>
