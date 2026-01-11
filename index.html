@@ -119,4 +119,155 @@
                     <button class="choice-btn" id="t-mix" style="text-align:center;" onclick="setMode('mix')">MIX (BODY + TOOLS)</button>
                     
                     <label class="range-label" style="margin-top:20px;">DURATA SESSIONE</label>
-                    <div style="display:grid; grid-template-columns:
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:20px;">
+                        <button class="choice-btn" id="d-1" onclick="setDuration(1)">FLASH<br>10m</button>
+                        <button class="choice-btn selected" id="d-2" onclick="setDuration(2)">PRO<br>20m</button>
+                        <button class="choice-btn" id="d-3" onclick="setDuration(3)">ELITE<br>30m</button>
+                    </div>
+
+                    <div class="range-label"><span>Tua Energia</span><span id="ev">70%</span></div>
+                    <input type="range" id="t-energy" min="0" max="100" value="70" oninput="document.getElementById('ev').innerText = this.value + '%'">
+
+                    <button class="btn-neon" onclick="generateWorkout()">GENERA ALLENAMENTO</button>
+                </div>
+            </div>
+            <div id="workout-list" style="display:none; padding: 0 20px;">
+                <div class="card" style="background:var(--neon); color:#000; text-align:center; padding:15px; margin: 20px 0;">
+                    <div id="summary-text" style="font-weight:900; font-size:14px;"></div>
+                </div>
+                <div id="ex-container"></div>
+                <button class="btn-neon" style="height:80px; margin-bottom:100px;">START SESSION</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active" id="nav-home" onclick="showView('home', this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
+        <div class="nav-item" id="nav-match" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
+        <div class="nav-item" id="nav-train" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+        let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
+        let trainMode = 'body';
+        let rounds = 2;
+
+        const db = {
+            body: [
+                {n: "Squat Jump", d: "Esplosività per il servizio."},
+                {n: "Affondi Laterali", d: "Recupero palle larghe."},
+                {n: "Plank Rotazionale", d: "Core per torsione dritto."},
+                {n: "Shadow Tennis", d: "Footwork e tecnica a vuoto."},
+                {n: "Burpees", d: "Cardio e split-step."},
+                {n: "Mountain Climbers", d: "Velocità piedi."},
+                {n: "Single Leg Balance", d: "Equilibrio caricamenti."},
+                {n: "Affondi Incrociati", d: "Stabilità glutei."},
+                {n: "Spider Crawl", d: "Mobilità anche."},
+                {n: "V-Ups", d: "Addominali esplosivi."},
+                {n: "Push-ups", d: "Forza spinta braccia."},
+                {n: "Spostamenti a V", d: "Attacco e difesa."},
+                {n: "Box Squat", d: "Forza gambe base."},
+                {n: "Saltelli Split", d: "Reattività risposta."},
+                {n: "Tuck Jumps", d: "Potenza verticale."}
+            ],
+            tools: [
+                {n: "MedBall Slam", d: "Potenza smash."},
+                {n: "Scaletta (In-Out)", d: "Agilità piedi."},
+                {n: "Elastico Spalle", d: "Prevenzione cuffia."},
+                {n: "Corda", d: "Ritmo e coordinazione."},
+                {n: "Russian Twist Peso", d: "Potenza rotazione."},
+                {n: "Affondi Manubri", d: "Forza resistente."},
+                {n: "Swing Kettlebell", d: "Catena posteriore."},
+                {n: "Box Jump", d: "Esplosività salto."},
+                {n: "Battle Ropes", d: "Resistenza braccia."},
+                {n: "Palla Medica Lat", d: "Trasferimento peso."},
+                {n: "Deadlift", d: "Forza totale."},
+                {n: "Scaletta Lateral", d: "Spostamenti tecnici."},
+                {n: "Bicep Curl Press", d: "Forza braccia/spalle."},
+                {n: "Grip Squeezer", d: "Presa racchetta."},
+                {n: "Sprint Elastico", d: "Accelerazione."}
+            ]
+        };
+
+        function showView(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if(el) el.classList.add('active');
+            renderHistory();
+            updateAnalytics();
+        }
+
+        function setMode(m) {
+            trainMode = m;
+            document.querySelectorAll('#train-setup .choice-btn[id^="t-"]').forEach(b => b.classList.remove('selected'));
+            document.getElementById('t-' + m).classList.add('selected');
+        }
+
+        function setDuration(r) {
+            rounds = r;
+            document.querySelectorAll('#train-setup .choice-btn[id^="d-"]').forEach(b => b.classList.remove('selected'));
+            document.getElementById('d-' + r).classList.add('selected');
+        }
+
+        function generateWorkout() {
+            const container = document.getElementById('ex-container');
+            const energy = document.getElementById('t-energy').value;
+            container.innerHTML = '';
+            let pool = trainMode === 'mix' ? [...db.body, ...db.tools] : db[trainMode];
+            let shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 8);
+            
+            document.getElementById('summary-text').innerText = `${rounds} ROUNDS • ${rounds*10} MINUTI TOTALI`;
+            shuffled.forEach((ex, i) => {
+                const rest = energy < 40 ? "30s" : "15s";
+                container.innerHTML += `<div class="ex-card"><h3>${ex.n}</h3><p>${ex.d}</p><div class="ex-meta"><span>⏱ 45s LAVORO</span><span>🔄 ${rest} REST</span></div></div>`;
+                if(i === 7 && rounds > 1) container.innerHTML += `<div style="text-align:center; padding:15px; color:var(--neon); border:1px dashed var(--neon); border-radius:15px; margin-bottom:15px; font-weight:800; font-size:12px;">PAUSA TRA ROUND: 90s</div>`;
+            });
+            document.getElementById('train-setup').style.display = 'none';
+            document.getElementById('workout-list').style.display = 'block';
+        }
+
+        function resetTrain() {
+            document.getElementById('train-setup').style.display = 'block';
+            document.getElementById('workout-list').style.display = 'none';
+        }
+
+        function saveMatch() {
+            const m = {
+                s1i: parseInt(document.getElementById('s1i').value), s1a: parseInt(document.getElementById('s1a').value),
+                s2i: parseInt(document.getElementById('s2i').value), s2a: parseInt(document.getElementById('s2a').value),
+                s3i: parseInt(document.getElementById('s3i').value), s3a: parseInt(document.getElementById('s3a').value),
+                phys: document.getElementById('mp').value, date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'})
+            };
+            let sW = 0, sL = 0;
+            if(m.s1i > m.s1a) sW++; else if(m.s1a > m.s1i) sL++;
+            if(m.s2i > m.s2a) sW++; else if(m.s2a > m.s2i) sL++;
+            if(m.s3i > m.s3a) sW++; else if(m.s3a > m.s3i) sL++;
+            m.result = sW > sL ? 'VIT' : 'SCO';
+            matches.unshift(m);
+            localStorage.setItem('cr_matches', JSON.stringify(matches));
+            showView('home'); 
+        }
+
+        function updateAnalytics() {
+            if(matches.length === 0) return;
+            document.getElementById('analytics-section').style.display = 'block';
+            const wins = matches.filter(m => m.result === 'VIT').length;
+            const winPct = Math.round((wins / matches.length) * 100);
+            document.getElementById('win-count').innerText = wins + " / " + matches.length;
+            document.getElementById('win-pct-circle').innerText = winPct + "%";
+            document.getElementById('win-bar').style.width = winPct + "%";
+        }
+
+        function renderHistory() {
+            const html = matches.map(m => `<div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}"><span class="res-tag">${m.result}</span><div style="display:flex; justify-content:space-between;"><span style="font-weight:900; font-size:18px;">${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a}</span><span style="font-size:10px; color:#555">${m.date}</span></div></div>`).join('');
+            if(document.getElementById('full-history')) document.getElementById('full-history').innerHTML = html;
+            if(document.getElementById('quick-history')) document.getElementById('quick-history').innerHTML = html.slice(0, 1);
+            if(matches.length > 0) document.getElementById('main-score').innerText = (100 - (matches[0].phys/2)).toFixed(1);
+        }
+
+        window.onload = () => { renderHistory(); updateAnalytics(); };
+    </script>
+</body>
+</html>
