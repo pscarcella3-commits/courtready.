@@ -7,52 +7,69 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --neon: #d4ff00; --bg: #000; --card: #151515; --border: #222; --win: #d4ff00; --loss: #ff3333; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
         
         .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 180px; }
 
-        /* CARDS & LOGO (BLINDATI) */
+        /* --- SEZIONE MATCH LAB: ORIGINALE E BLINDATA --- */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
         .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
         .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
         .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
-
-        /* MATCH LAB (BLINDATO) */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
+        .set-title { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .score-split { display: flex; justify-content: space-around; align-items: center; }
+        .score-box { display: flex; flex-direction: column; align-items: center; }
+        .score-box label { font-size: 9px; color: #444; margin-bottom: 4px; font-weight: 900; }
         .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; outline: none; }
+        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #666; font-weight: 800; margin-bottom: 12px; }
         input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 25px; }
-        .history-item { border-left: 4px solid #333; background: #0c0c0c; padding: 18px; border-radius: 0 15px 15px 0; margin-bottom: 12px; }
-        .history-item.win { border-color: var(--win); }
-        .history-item.loss { border-color: var(--loss); }
+        textarea { width: 100%; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; margin-top: 10px; resize: none; }
 
-        /* TRAIN LAB SETUP */
+        /* --- NUOVO CONTAINER PER VIDEO/IMMAGINI REALISTICHE --- */
+        .real-avatar-stage {
+            width: 100%;
+            height: 300px; /* Altezza aumentata per visibilità */
+            margin: 20px 0;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+            background: radial-gradient(circle at center, #222 0%, #000 100%);
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stile per l'immagine o il video che verrà caricato */
+        .trainer-visual {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Assicura che l'immagine riempia il box */
+            opacity: 0.8;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Animazione "respiro" per rendere vivo il segnaposto statico */
+        .trainer-visual.active-pulse {
+            animation: pulse-visual 2s infinite ease-in-out;
+        }
+        @keyframes pulse-visual {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* UI TRAIN LAB STRUCTURE (INALTERATA) */
         .option-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 15px 0 25px; }
         .opt-btn { background: #0c0c0c; border: 1px solid #222; padding: 12px; border-radius: 15px; color: #555; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; }
         .opt-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
-
-        /* AVATAR EVOLUTO (PEZZI SEPARATI) */
-        .avatar-box { width: 150px; height: 220px; position: relative; }
-        .av-head { width: 30px; height: 30px; background: var(--neon); border-radius: 50%; position: absolute; left: 60px; top: 10px; }
-        .av-torso { width: 40px; height: 70px; background: var(--neon); border-radius: 10px; position: absolute; left: 55px; top: 45px; }
-        .av-arm-l, .av-arm-r { width: 12px; height: 60px; background: var(--neon); border-radius: 6px; position: absolute; top: 45px; }
-        .av-arm-l { left: 38px; } .av-arm-r { left: 100px; }
-        .av-leg-l, .av-leg-r { width: 14px; height: 70px; background: var(--neon); border-radius: 6px; position: absolute; top: 110px; }
-        .av-leg-l { left: 55px; } .av-leg-r { left: 81px; }
-
-        /* ANIMAZIONE SQUAT */
-        .anim-squat .av-torso, .anim-squat .av-head, .anim-squat .av-arm-l, .anim-squat .av-arm-r { animation: squat-move 1.2s infinite ease-in-out; }
-        .anim-squat .av-leg-l, .anim-squat .av-leg-r { animation: leg-bend 1.2s infinite ease-in-out; }
-        @keyframes squat-move { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(50px); } }
-        @keyframes leg-bend { 0%, 100% { height: 70px; } 50% { height: 30px; transform: translateY(10px); } }
-
-        /* IMMERSIVE UI */
-        #immersive-train { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; align-items: center; padding: 40px 25px; box-sizing: border-box; }
-        .progress-bar { width: 100%; height: 6px; background: #111; border-radius: 3px; margin: 20px 0; overflow: hidden; }
+        #immersive-train { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; padding: 40px 25px; box-sizing: border-box; }
+        .progress-line { width: 100%; height: 4px; background: #111; border-radius: 2px; margin-top: 20px; overflow: hidden; }
         #progress-fill { height: 100%; width: 0%; background: var(--neon); transition: width 1s linear; }
 
         /* NAVBAR */
@@ -65,9 +82,9 @@
 
     <div id="home" class="view active">
         <div class="content-scroll">
-            <div class="logo-wrap"><div class="court-logo"></div><div style="font-weight:900; font-style:italic; font-size:20px;">COURT<span style="color:var(--neon)">READY</span></div></div>
-            <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%);"><small style="color:#555; font-weight:800;">CONDITIONING SCORE</small><div style="font-size:60px; font-weight:900; margin:5px 0;" id="main-score">--</div></div>
-            <div style="padding: 0 20px;"><div id="quick-history"></div></div>
+            <div class="logo-wrap"><div class="court-logo"></div><div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div></div>
+            <div class="card" style="background: linear-gradient(160deg, #1a1a1a 0%, #000 100%);"><small style="color:#555; font-weight: 800;">CONDITIONING SCORE</small><div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">--</div></div>
+            <div id="quick-history" style="padding: 0 20px;"></div>
         </div>
     </div>
 
@@ -75,63 +92,75 @@
         <div class="content-scroll">
             <div style="padding: 50px 25px 10px;"><h2 style="font-size: 32px; margin: 0; font-weight: 900;">Match Lab</h2></div>
             <div class="card">
+                <label style="font-weight: 900; font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD</label>
                 <div class="set-container">
-                    <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split"><div class="score-box"><input type="number" id="s1i" value="0"></div><div class="score-box"><input type="number" id="s1a" value="0"></div></div></div>
-                    <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><input type="number" id="s2i" value="0"></div><div class="score-box"><input type="number" id="s2a" value="0"></div></div></div>
-                    <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split"><div class="score-box"><input type="number" id="s3i" value="0"></div><div class="score-box"><input type="number" id="s3a" value="0"></div></div></div>
+                    <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split">
+                        <div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div>
+                        <div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div>
+                    </div></div>
+                    <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split">
+                        <div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div>
+                        <div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div>
+                    </div></div>
+                    <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split">
+                        <div class="score-box"><label>IO</label><input type="number" id="s3i" value="0"></div>
+                        <div class="score-box"><label>AVV</label><input type="number" id="s3a" value="0"></div>
+                    </div></div>
                 </div>
-                <input type="range" id="mf" min="0" max="100" value="50"><input type="range" id="mp" min="0" max="100" value="50">
-                <button class="btn-neon" style="margin-top:25px;" onclick="saveMatch()">SALVA REPORT</button>
+                <div class="range-label"><span>Concentrazione</span><span id="fv">50%</span></div>
+                <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
+                <div class="range-label"><span>Stanchezza</span><span id="pv">50%</span></div>
+                <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
+                <textarea id="m-notes" rows="3" placeholder="Com'è andato il match?"></textarea>
+                <button class="btn-neon" style="margin-top: 25px;" onclick="saveMatch()">SALVA REPORT</button>
             </div>
             <div id="full-history" style="padding: 0 20px;"></div>
         </div>
     </div>
 
     <div id="train" class="view">
-        <div class="content-scroll" id="setup-screen">
+        <div class="content-scroll" id="train-setup">
             <div style="padding: 50px 25px 10px;"><h2 style="font-size: 32px; font-weight: 900;">Train Lab</h2></div>
             <div class="card">
-                <label style="font-weight:900; font-size:11px; color:#555;">MODALITÀ</label>
+                <label style="font-size:10px; font-weight:900; color:#555;">EQUIPAGGIAMENTO</label>
                 <div class="option-grid">
-                    <div class="opt-btn active" onclick="setO(this)">CORPO LIBERO</div>
-                    <div class="opt-btn" onclick="setO(this)">ATTREZZI</div>
-                    <div class="opt-btn" onclick="setO(this)">MISTO</div>
+                    <div class="opt-btn active" onclick="setOpt(this)">CORPO LIBERO</div>
+                    <div class="opt-btn" onclick="setOpt(this)">ATTREZZI</div>
+                    <div class="opt-btn" onclick="setOpt(this)">MISTO</div>
                 </div>
-                <label style="font-weight:900; font-size:11px; color:#555;">DURATA</label>
+                <label style="font-size:10px; font-weight:900; color:#555;">DURATA (MINUTI)</label>
                 <div class="option-grid">
-                    <div class="opt-btn active" data-m="10" onclick="setO(this)">10 MIN</div>
-                    <div class="opt-btn" data-m="20" onclick="setO(this)">20 MIN</div>
-                    <div class="opt-btn" data-m="30" onclick="setO(this)">30 MIN</div>
+                    <div class="opt-btn active" data-m="10" onclick="setOpt(this)">10</div>
+                    <div class="opt-btn" data-m="20" onclick="setOpt(this)">20</div>
+                    <div class="opt-btn" data-m="30" onclick="setOpt(this)">30</div>
                 </div>
-                <button class="btn-neon" onclick="genPlan()">GENERA CON AI</button>
+                <button class="btn-neon" onclick="generatePlan()">GENERA SESSIONE AI</button>
             </div>
         </div>
-
-        <div class="content-scroll" id="list-screen" style="display:none;">
-            <div style="padding: 50px 25px 10px;"><h2 id="total-time-display" style="font-size: 28px; font-weight: 900;">Piano</h2></div>
-            <div id="exercises-list" style="padding: 0 20px;"></div>
-            <div style="padding: 20px;"><button class="btn-neon" onclick="startI()">COMINCIA</button></div>
+        <div class="content-scroll" id="train-list" style="display:none; padding:0 20px;">
+            <h2 id="plan-info" style="font-size:24px; font-weight:900; margin-top:40px;">Il tuo Piano</h2>
+            <div id="list-container"></div>
+            <button class="btn-neon" style="margin-top:20px;" onclick="startSession()">AVVIA ALLENAMENTO</button>
         </div>
     </div>
 
     <div id="immersive-train">
-        <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
-            <span id="ex-count" style="font-weight:900; color:var(--neon);">1 / 10</span>
-            <div onclick="stopI()"><i data-lucide="x"></i></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="imm-step" style="font-weight:900; color:var(--neon); font-size:12px;">1 / 10</span>
+            <div onclick="stopSession()"><i data-lucide="x"></i></div>
         </div>
         
-        <div class="avatar-box anim-squat" id="av-container" style="margin-top:40px;">
-            <div class="av-head"></div><div class="av-torso"></div>
-            <div class="av-arm-l"></div><div class="av-arm-r"></div>
-            <div class="av-leg-l"></div><div class="av-leg-r"></div>
+        <div class="real-avatar-stage">
+            <img id="trainer-video-placeholder" class="trainer-visual" src="" alt="Trainer">
+             <div style="position: absolute; bottom: 10px; right: 15px; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 10px; font-size: 10px; font-weight: 900; color: var(--neon); border: 1px solid var(--neon);">REAL TRAINER VIEW</div>
         </div>
 
-        <div style="text-align:center; margin-top:20px;">
-            <h2 id="ex-name" style="font-size:32px; font-weight:900; margin:0;">SQUAT</h2>
-            <p id="ex-desc" style="color:#555;">Descrizione...</p>
-            <div id="ex-timer" style="font-size:90px; font-weight:900;">30</div>
+        <div style="text-align:center;">
+            <h2 id="imm-name" style="font-size:32px; font-weight:900; margin:0;">NOME</h2>
+            <p id="imm-desc" style="color:#555; margin:10px 0;">Descrizione esercizio</p>
+            <div id="imm-timer" style="font-size:90px; font-weight:900; color:white;">30</div>
         </div>
-        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <div class="progress-line"><div id="progress-fill"></div></div>
     </div>
 
     <nav class="nav-bar">
@@ -143,14 +172,15 @@
     <script>
         lucide.createIcons();
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-        let plan = []; let idx = 0; let timer;
+        let currentPlan = []; let curIdx = 0; let mainTimer;
 
+        // DATABASE AGGIORNATO CON LINK AI VIDEO/IMMAGINI
+        // NOTA: Uso immagini placeholder professionali. Sostituisci 'img' con i tuoi file video reali.
         const db = [
-            { n: "Squat Jump", d: "Esplosività", t: 30 },
-            { n: "Side Shuffle", d: "Agilità", t: 30 },
-            { n: "Plank", d: "Core", t: 30 },
-            { n: "Burpees", d: "Cardio", t: 30 },
-            { n: "Affondi", d: "Forza", t: 30 }
+            { n: "Squat Jump", d: "Potenza esplosiva gambe", t: 40, img: "https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+            { n: "Side Shuffle", d: "Agilità laterale rapida", t: 30, img: "https://images.unsplash.com/photo-1518619746989-a2528f865564?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+            { n: "Plank Statico", d: "Stabilità core e addome", t: 50, img: "https://images.unsplash.com/photo-1562771242-a02d9090c90c?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+            { n: "Affondi Alternati", d: "Forza e equilibrio", t: 40, img: "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }
         ];
 
         function showView(id, el) {
@@ -160,65 +190,67 @@
             if(el) el.classList.add('active');
         }
 
-        function setO(el) {
+        function setOpt(el) {
             el.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
         }
 
-        function genPlan() {
+        function generatePlan() {
             const mins = parseInt(document.querySelector('[data-m].active').dataset.m);
-            const targetSecs = mins * 60;
-            let currentSecs = 0; plan = [];
-            
-            // Cicla finché non riempiamo i minuti
-            while(currentSecs < targetSecs) {
-                let randomEx = db[Math.floor(Math.random() * db.length)];
-                plan.push({...randomEx});
-                currentSecs += randomEx.t + 10; // Esercizio + 10s recupero
+            const target = mins * 60; let cur = 0; currentPlan = [];
+            while(cur < target) {
+                let ex = db[Math.floor(Math.random() * db.length)];
+                currentPlan.push({...ex});
+                cur += ex.t + 15; // 15s recupero
             }
-
-            document.getElementById('total-time-display').innerText = mins + " MINUTI";
-            document.getElementById('exercises-list').innerHTML = plan.map(ex => `
+            document.getElementById('plan-info').innerText = mins + " MINUTI DI LAVORO";
+            document.getElementById('list-container').innerHTML = currentPlan.map(ex => `
                 <div style="background:#0c0c0c; padding:15px; border-radius:15px; border:1px solid #222; margin-bottom:8px; display:flex; justify-content:space-between;">
-                    <b>${ex.n}</b><span>${ex.t}s</span>
-                </div>
-            `).join('');
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('list-screen').style.display = 'block';
+                    <b>${ex.n}</b><span style="color:var(--neon)">${ex.t}s</span>
+                </div>`).join('');
+            document.getElementById('train-setup').style.display = 'none';
+            document.getElementById('train-list').style.display = 'block';
         }
 
-        function startI() {
-            idx = 0; document.getElementById('immersive-train').style.display = 'flex';
-            run();
+        function startSession() {
+            curIdx = 0; document.getElementById('immersive-train').style.display = 'flex';
+            runStep();
         }
 
-        function run() {
-            if(idx >= plan.length) { stopI(); return; }
-            const ex = plan[idx];
-            document.getElementById('ex-name').innerText = ex.n;
-            document.getElementById('ex-desc').innerText = ex.d;
-            document.getElementById('ex-count').innerText = (idx+1) + " / " + plan.length;
+        function runStep() {
+            if(curIdx >= currentPlan.length) { stopSession(); return; }
+            const ex = currentPlan[curIdx];
+            document.getElementById('imm-name').innerText = ex.n;
+            document.getElementById('imm-desc').innerText = ex.d;
+            document.getElementById('imm-step').innerText = (curIdx+1) + " / " + currentPlan.length;
             
+            // CARICA L'IMMAGINE/VIDEO DEL TRAINER REALE
+            const visual = document.getElementById('trainer-video-placeholder');
+            visual.src = ex.img;
+            visual.classList.add('active-pulse'); // Attiva l'animazione "respiro"
+
             let s = ex.t;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(ex.n));
-            
-            timer = setInterval(() => {
-                s--;
-                document.getElementById('ex-timer').innerText = s;
+            mainTimer = setInterval(() => {
+                s--; document.getElementById('imm-timer').innerText = s;
                 document.getElementById('progress-fill').style.width = ((ex.t - s) / ex.t * 100) + "%";
-                if(s <= 0) { clearInterval(timer); idx++; run(); }
+                if(s <= 0) { 
+                    clearInterval(mainTimer); 
+                    visual.classList.remove('active-pulse'); // Ferma animazione
+                    curIdx++; runStep(); 
+                }
             }, 1000);
         }
 
-        function stopI() {
-            clearInterval(timer); document.getElementById('immersive-train').style.display = 'none';
-            window.speechSynthesis.cancel();
+        function stopSession() {
+            clearInterval(mainTimer); window.speechSynthesis.cancel();
+            document.getElementById('trainer-video-placeholder').classList.remove('active-pulse');
+            document.getElementById('immersive-train').style.display = 'none';
         }
 
         function saveMatch() {
-            const m = { s1i: +document.getElementById('s1i').value, phys: +document.getElementById('mp').value, result: 'VIT', date: 'Oggi' };
-            matches.unshift(m);
-            localStorage.setItem('cr_matches', JSON.stringify(matches));
+            const m = { s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value, phys: +document.getElementById('mp').value, result: 'VIT', date: 'Oggi' };
+            matches.unshift(m); localStorage.setItem('cr_matches', JSON.stringify(matches));
             showView('home');
         }
     </script>
