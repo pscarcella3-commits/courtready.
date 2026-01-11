@@ -13,63 +13,49 @@
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 180px; }
 
-        /* LOGO & TITLES */
-        .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
-        .court-logo { width: 35px; height: 35px; border: 2.5px solid var(--neon); border-radius: 4px; position: relative; }
-        .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
-
-        /* CARDS */
+        /* DESIGN ELEMENTS */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; position: relative; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; font-size: 14px; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
         
-        /* MATCH LAB (BLINDATO) */
-        .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
-        .set-macro { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
-        .score-box { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 5px; }
-        .score-box input { width: 32px; height: 35px; background: #1a1a1a; border: 1px solid #333; color: var(--neon); text-align: center; font-weight: 900; border-radius: 8px; font-size: 16px; }
-        
-        /* ANALYTICS */
-        .stat-badge { background: #0c0c0c; padding: 10px 15px; border-radius: 12px; border: 1px solid #222; display: flex; align-items: center; gap: 10px; }
-        .res-tag { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-        .win-tag { background: var(--win); color: #000; }
-        .loss-tag { background: var(--loss); color: #fff; }
+        /* MATCH LAB BLINDATO */
+        .set-row { display: flex; gap: 8px; margin-bottom: 20px; }
+        .set-item { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
+        .score-inputs { display: flex; justify-content: center; gap: 5px; margin-top: 5px; }
+        .score-inputs input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; color: var(--neon); text-align: center; font-weight: 900; border-radius: 8px; }
 
-        /* TRAINING IMMERSIVE + AVATAR */
+        /* IMMERSIVE TRAINING + AVATAR */
         #timer-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .avatar-area { width: 100%; height: 280px; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); border-radius: 30px; border: 1px solid #222; display: flex; align-items: center; justify-content: center; margin: 20px 0; }
-        .digital-human { width: 80px; height: 160px; border: 3px solid var(--neon); border-radius: 40px; animation: trainer-jump 0.8s infinite alternate ease-in-out; }
-        @keyframes trainer-jump { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+        .avatar-box { width: 100%; height: 280px; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); border-radius: 30px; border: 1px solid #222; display: flex; align-items: center; justify-content: center; margin: 20px 0; }
+        .digital-trainer { width: 70px; height: 140px; border: 3px solid var(--neon); border-radius: 35px; animation: jump 0.8s infinite alternate ease-in-out; }
+        @keyframes jump { from { transform: translateY(0); } to { transform: translateY(-25px); } }
 
-        /* NAV */
+        /* NAVIGATION */
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
-        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; }
+        .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
 
-        .modal-full { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 3000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 4000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        .res-badge { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; text-transform: uppercase; }
+        .win { background: var(--win); color: #000; }
+        .loss { background: var(--loss); color: #fff; }
     </style>
 </head>
 <body>
 
     <div id="home" class="view active">
         <div class="content-scroll">
-            <div class="logo-wrap"><div class="court-logo"></div><div style="font-weight:900; font-size:22px;">COURT<span style="color:var(--neon)">READY</span></div></div>
-            
-            <div class="card" style="border: 1px solid var(--neon); background: linear-gradient(145deg, #151515, #0a0a0a);">
+            <div style="padding: 40px 25px 10px;"><h2 style="font-weight:900; font-size:24px; margin:0;">COURTREADY</h2></div>
+            <div class="card" style="border: 1px solid var(--neon);">
                 <small style="color:#555; font-weight:800;">CONDITIONING SCORE</small>
-                <div style="font-size: 65px; font-weight: 900; color: #fff;" id="home-score">--</div>
+                <div style="font-size: 60px; font-weight: 900;" id="h-score">--</div>
             </div>
-
             <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">ULTIMO MATCH</small></div>
-            <div id="home-last-match"></div>
-
-            <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">IL TUO PROGRAMMA DI OGGI</small></div>
-            <div class="card" onclick="showV('train')" style="border-left: 4px solid var(--neon); cursor: pointer;">
+            <div id="h-last-match"></div>
+            <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">PROGRAMMA DI OGGI</small></div>
+            <div class="card" onclick="showV('train')" style="border-left:5px solid var(--neon); cursor:pointer;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <b style="color:var(--neon); font-size:16px;">SPEED & REACTION</b><br>
-                        <small style="color:#555;">20 min • Corpo Libero</small>
-                    </div>
-                    <i data-lucide="chevron-right" style="color:#222"></i>
+                    <div><b>SPEED SESSION</b><br><small style="color:#555;">Basato sui tuoi dati</small></div>
+                    <i data-lucide="zap" style="color:var(--neon)"></i>
                 </div>
             </div>
         </div>
@@ -77,60 +63,44 @@
 
     <div id="match" class="view">
         <div class="content-scroll">
-            <div style="padding: 40px 25px 10px;"><h2 style="font-weight: 900; font-size: 32px; margin:0;">Match Lab</h2></div>
-            
-            <div class="card" id="stats-summary">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size: 40px; font-weight: 900; color: var(--neon);" id="stat-win-pct">0%</div>
-                    <div style="text-align:right;">
-                        <div style="font-size:11px; color:#555; font-weight:800;">GAMES VINTI / PERSI</div>
-                        <div style="font-weight:900; font-size:18px;" id="stat-games">0 / 0</div>
-                    </div>
-                </div>
-            </div>
-
+            <div style="padding: 40px 25px 10px;"><h2 style="font-weight:900; font-size:32px; margin:0;">Match Lab</h2></div>
             <div class="card">
-                <div class="set-container">
-                    <div class="set-macro"><small>SET 1</small><div class="score-box"><input type="number" id="s1i">:<input type="number" id="s1a"></div></div>
-                    <div class="set-macro"><small>SET 2</small><div class="score-box"><input type="number" id="s2i">:<input type="number" id="s2a"></div></div>
-                    <div class="set-macro"><small>SET 3</small><div class="score-box"><input type="number" id="s3i">:<input type="number" id="s3a"></div></div>
+                <div class="set-row">
+                    <div class="set-item"><small>SET 1</small><div class="score-inputs"><input type="number" id="s1i">:<input type="number" id="s1a"></div></div>
+                    <div class="set-item"><small>SET 2</small><div class="score-inputs"><input type="number" id="s2i">:<input type="number" id="s2a"></div></div>
+                    <div class="set-item"><small>SET 3</small><div class="score-inputs"><input type="number" id="s3i">:<input type="number" id="s3a"></div></div>
                 </div>
-                <textarea id="m-notes" rows="3" placeholder="Note sul match..." style="width:100%; background:#0c0c0c; border:1px solid #222; color:#fff; padding:15px; border-radius:15px; box-sizing:border-box; margin-bottom:15px;"></textarea>
-                <button class="btn-neon" onclick="saveMatch()">Salva Risultato</button>
+                <textarea id="m-notes" placeholder="Note sul match..." style="width:100%; background:#0c0c0c; border:1px solid #222; color:white; padding:15px; border-radius:15px; box-sizing:border-box; margin-bottom:15px;"></textarea>
+                <button class="btn-neon" onclick="saveMatch()">SALVA MATCH</button>
             </div>
-
-            <div id="full-history-list"></div>
+            <div id="history-container"></div>
         </div>
     </div>
 
     <div id="train" class="view">
         <div class="content-scroll">
-            <div style="padding: 40px 25px 10px;"><h2 style="font-weight: 900; font-size: 32px; margin:0;">Train Lab</h2></div>
-            <div id="train-setup">
-                <div class="card">
-                    <button class="btn-neon" onclick="generateWorkout()">Genera Allenamento IA</button>
-                    <p style="text-align:center; color:#444; font-size:11px; margin-top:15px; font-weight:700;">Analisi match in corso...</p>
-                </div>
+            <div style="padding: 40px 25px 10px;"><h2 style="font-weight:900; font-size:32px; margin:0;">Train Lab</h2></div>
+            <div id="train-init" class="card">
+                <button class="btn-neon" onclick="genTrain()">GENERA ALLENAMENTO</button>
             </div>
-            <div id="workout-ready" style="display:none; padding: 0 20px;">
-                <button onclick="resetTrain()" style="color:#555; background:none; border:none; padding:15px 0; font-weight:800;">← TORNA INDIETRO</button>
+            <div id="train-ready" style="display:none; padding: 0 20px;">
                 <div id="ex-list"></div>
-                <button class="btn-neon" onclick="startImmersive()" style="height:80px; margin-top:20px;">INIZIA SESSIONE</button>
+                <button class="btn-neon" onclick="startImm()" style="height:80px; margin-top:20px;">INIZIA ORA</button>
             </div>
         </div>
     </div>
 
     <div id="timer-screen">
-        <div style="width:100%; display:flex; justify-content:flex-end;"><button onclick="stopImmersive()" style="background:#222; color:white; border:none; border-radius:50%; width:45px; height:45px; font-weight:900;">X</button></div>
-        <div style="color:var(--neon); font-weight:800; letter-spacing:4px; margin-top:20px;" id="t-status">LAVORO</div>
-        <div style="font-size:100px; font-weight:900;" id="t-clock">30</div>
-        <div class="avatar-area"><div class="digital-human"></div></div>
-        <h2 id="t-name" style="margin:0; text-transform:uppercase; font-size:28px;">ESERCIZIO</h2>
+        <div style="width:100%; display:flex; justify-content:flex-end;"><button onclick="stopImm()" style="background:#222; border:none; color:white; border-radius:50%; width:45px; height:45px;">X</button></div>
+        <div style="color:var(--neon); font-weight:800; letter-spacing:4px; margin-top:20px;">LAVORO</div>
+        <div style="font-size:100px; font-weight:900;" id="imm-clock">30</div>
+        <div class="avatar-box"><div class="digital-trainer"></div></div>
+        <h2 id="imm-name" style="margin:0;">SQUAT JUMP</h2>
     </div>
 
-    <div id="detail-modal" class="modal-full">
+    <div id="detail-modal" class="modal">
         <button onclick="closeDetail()" style="background:#222; color:white; border:none; border-radius:50%; width:45px; height:45px; margin-bottom:20px;"><i data-lucide="arrow-left"></i></button>
-        <div id="detail-body"></div>
+        <div id="detail-content"></div>
     </div>
 
     <nav class="nav-bar">
@@ -141,93 +111,65 @@
 
     <script>
         lucide.createIcons();
-        let matches = JSON.parse(localStorage.getItem('cr_pro_v1')) || [];
-        let timer;
+        let matches = JSON.parse(localStorage.getItem('cr_final_v3')) || [];
+        let clock;
 
         function showV(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-            refresh();
+            render();
         }
 
         function saveMatch() {
             const m = {
                 id: Date.now(),
-                s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
-                s2i: +document.getElementById('s2i').value, s2a: +document.getElementById('s2a').value,
-                s3i: +document.getElementById('s3i').value, s3a: +document.getElementById('s3a').value,
+                s1: [+document.getElementById('s1i').value, +document.getElementById('s1a').value],
+                s2: [+document.getElementById('s2i').value, +document.getElementById('s2a').value],
+                s3: [+document.getElementById('s3i').value, +document.getElementById('s3a').value],
                 notes: document.getElementById('m-notes').value, date: new Date().toLocaleDateString('it-IT')
             };
-            const setsW = (m.s1i > m.s1a ? 1:0) + (m.s2i > m.s2a ? 1:0) + (m.s3i > m.s3a ? 1:0);
-            m.res = setsW >= 2 ? 'VIT' : 'SCO';
-            m.gW = m.s1i + m.s2i + m.s3i;
-            m.gL = m.s1a + m.s2a + m.s3a;
+            const wins = (m.s1[0]>m.s1[1]?1:0) + (m.s2[0]>m.s2[1]?1:0) + (m.s3[0]>m.s3[1]?1:0);
+            m.res = wins >= 2 ? 'VIT' : 'SCO';
             matches.unshift(m);
-            localStorage.setItem('cr_pro_v1', JSON.stringify(matches));
+            localStorage.setItem('cr_final_v3', JSON.stringify(matches));
             showV('home');
         }
 
-        function refresh() {
-            const last = matches[0];
-            const homeBox = document.getElementById('home-last-match');
-            if(last) {
-                homeBox.innerHTML = `<div class="card" onclick="openDetail(${last.id})">
-                    <span class="res-tag ${last.res === 'VIT' ? 'win-tag' : 'loss-tag'}">${last.res}</span>
-                    <div style="font-weight:900; font-size:20px; margin-top:10px;">${last.s1i}-${last.s1a} / ${last.s2i}-${last.s2a}</div>
-                </div>`;
-                document.getElementById('home-score').innerText = last.res === 'VIT' ? "88.5" : "72.0";
-                
-                // Stats Match Lab
-                const wins = matches.filter(x => x.res === 'VIT').length;
-                document.getElementById('stat-win-pct').innerText = Math.round((wins/matches.length)*100) + "%";
-                document.getElementById('stat-games').innerText = matches.reduce((a,b)=>a+b.gW,0) + " / " + matches.reduce((a,b)=>a+b.gL,0);
+        function render() {
+            const hLast = document.getElementById('h-last-match');
+            if(matches.length > 0) {
+                const l = matches[0];
+                hLast.innerHTML = `<div class="card" onclick="openDetail(${l.id})"><span class="res-badge ${l.res==='VIT'?'win':'loss'}">${l.res}</span><br><b>${l.s1[0]}-${l.s1[1]} / ${l.s2[0]}-${l.s2[1]}</b></div>`;
+                document.getElementById('h-score').innerText = l.res==='VIT'?'86':'74';
             }
-
-            document.getElementById('full-history-list').innerHTML = matches.map(m => `
-                <div class="card" onclick="openDetail(${m.id})" style="padding:15px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div><small style="color:#555">${m.date}</small><br><b>${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a}</b></div>
-                        <span class="res-tag ${m.res === 'VIT' ? 'win-tag' : 'loss-tag'}">${m.res}</span>
-                    </div>
-                </div>`).join('');
+            document.getElementById('history-container').innerHTML = matches.map(m => `<div class="card" onclick="openDetail(${m.id})"><b>${m.date}</b>: ${m.res} (${m.s1[0]}-${m.s1[1]})</div>`).join('');
         }
 
         function openDetail(id) {
             const m = matches.find(x => x.id === id);
-            document.getElementById('detail-body').innerHTML = `
-                <div class="card" style="border-color:var(--neon)">
-                    <h2 style="margin:0">${m.date}</h2>
-                    <p style="color:var(--neon); font-weight:900; font-size:24px;">${m.res === 'VIT' ? 'VITTORIA' : 'SCONFITTA'}</p>
-                    <div style="font-size:20px; font-weight:900;">${m.s1i}-${m.s1a} | ${m.s2i}-${m.s2a} | ${m.s3i}-${m.s3a}</div>
-                    <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-                    <p style="color:#888; font-style:italic;">"${m.notes || 'Nessuna nota aggiunta'}"</p>
-                </div>`;
+            document.getElementById('detail-content').innerHTML = `<div class="card"><h2>${m.date}</h2><p>${m.res}</p><p>${m.s1[0]}-${m.s1[1]} | ${m.s2[0]}-${m.s2[1]} | ${m.s3[0]}-${m.s3[1]}</p><p>Note: ${m.notes}</p></div>`;
             document.getElementById('detail-modal').style.display = 'flex';
         }
         function closeDetail() { document.getElementById('detail-modal').style.display = 'none'; }
 
-        function generateWorkout() {
-            document.getElementById('ex-list').innerHTML = `
-                <div class="card"><b>SQUAT JUMP</b><br><small style="color:#555">Esplosività</small></div>
-                <div class="card"><b>SIDE SHUFFLE</b><br><small style="color:#555">Agilità laterale</small></div>`;
-            document.getElementById('train-setup').style.display = 'none';
-            document.getElementById('workout-ready').style.display = 'block';
+        function genTrain() {
+            document.getElementById('ex-list').innerHTML = `<div class="card">SQUAT JUMP</div><div class="card">PLANK</div>`;
+            document.getElementById('train-init').style.display = 'none';
+            document.getElementById('train-ready').style.display = 'block';
         }
-        function resetTrain() { document.getElementById('train-setup').style.display = 'block'; document.getElementById('workout-ready').style.display = 'none'; }
 
-        function startImmersive() {
+        function startImm() {
             document.getElementById('timer-screen').style.display = 'flex';
-            let sec = 30;
-            timer = setInterval(() => {
-                sec--;
-                document.getElementById('t-clock').innerText = sec < 10 ? "0"+sec : sec;
-                if(sec <= 0) stopImmersive();
+            let s = 30;
+            clock = setInterval(() => {
+                s--; document.getElementById('imm-clock').innerText = s;
+                if(s<=0) stopImm();
             }, 1000);
         }
-        function stopImmersive() { clearInterval(timer); document.getElementById('timer-screen').style.display = 'none'; }
+        function stopImm() { clearInterval(clock); document.getElementById('timer-screen').style.display = 'none'; }
 
-        window.onload = refresh;
+        window.onload = render;
     </script>
 </body>
 </html>
