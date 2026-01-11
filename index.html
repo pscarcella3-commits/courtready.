@@ -13,7 +13,7 @@
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 180px; }
 
-        /* LOGO & CARDS (NON TOCCARE - BLINDATI) */
+        /* CARDS & LOGO (BLINDATI) */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
         .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
         .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
@@ -21,37 +21,39 @@
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
 
-        /* MATCH LAB (NON TOCCARE - BLINDATO) */
+        /* MATCH LAB (BLINDATO) */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
-        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; }
+        .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; outline: none; }
         input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 25px; }
+        .history-item { border-left: 4px solid #333; background: #0c0c0c; padding: 18px; border-radius: 0 15px 15px 0; margin-bottom: 12px; }
+        .history-item.win { border-color: var(--win); }
+        .history-item.loss { border-color: var(--loss); }
 
         /* TRAIN LAB SETUP */
         .option-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 15px 0 25px; }
         .opt-btn { background: #0c0c0c; border: 1px solid #222; padding: 12px; border-radius: 15px; color: #555; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; }
         .opt-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
 
-        /* AVATAR ANIMATO (SISTEMA ARTICOLATO) */
-        .avatar-stage { height: 200px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .body-part { position: absolute; background: var(--neon); border-radius: 10px; }
-        .head { width: 20px; height: 20px; border-radius: 50%; top: 40px; }
-        .torso { width: 30px; height: 50px; top: 65px; }
-        .leg-l, .leg-r { width: 8px; height: 40px; top: 115px; }
-        .leg-l { left: calc(50% - 12px); } .leg-r { left: calc(50% + 4px); }
+        /* AVATAR EVOLUTO (PEZZI SEPARATI) */
+        .avatar-box { width: 150px; height: 220px; position: relative; }
+        .av-head { width: 30px; height: 30px; background: var(--neon); border-radius: 50%; position: absolute; left: 60px; top: 10px; }
+        .av-torso { width: 40px; height: 70px; background: var(--neon); border-radius: 10px; position: absolute; left: 55px; top: 45px; }
+        .av-arm-l, .av-arm-r { width: 12px; height: 60px; background: var(--neon); border-radius: 6px; position: absolute; top: 45px; }
+        .av-arm-l { left: 38px; } .av-arm-r { left: 100px; }
+        .av-leg-l, .av-leg-r { width: 14px; height: 70px; background: var(--neon); border-radius: 6px; position: absolute; top: 110px; }
+        .av-leg-l { left: 55px; } .av-leg-r { left: 81px; }
 
-        /* ANIMAZIONI AVATAR */
-        .anim-squat .torso { animation: squat-torso 1.5s infinite; }
-        .anim-squat .leg-l, .anim-squat .leg-r { animation: squat-legs 1.5s infinite; }
-        @keyframes squat-torso { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(30px); } }
-        @keyframes squat-legs { 0%, 100% { height: 40px; } 50% { height: 15px; } }
-
-        .anim-plank .avatar-stage { transform: rotate(-90deg) translateY(50px); }
+        /* ANIMAZIONE SQUAT */
+        .anim-squat .av-torso, .anim-squat .av-head, .anim-squat .av-arm-l, .anim-squat .av-arm-r { animation: squat-move 1.2s infinite ease-in-out; }
+        .anim-squat .av-leg-l, .anim-squat .av-leg-r { animation: leg-bend 1.2s infinite ease-in-out; }
+        @keyframes squat-move { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(50px); } }
+        @keyframes leg-bend { 0%, 100% { height: 70px; } 50% { height: 30px; transform: translateY(10px); } }
 
         /* IMMERSIVE UI */
-        #immersive-session { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; padding: 40px 25px; box-sizing: border-box; }
-        .progress-container { width: 100%; height: 6px; background: #111; border-radius: 3px; margin: 20px 0; overflow: hidden; }
-        #progress-bar { height: 100%; width: 0%; background: var(--neon); transition: width 1s linear; }
+        #immersive-train { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; align-items: center; padding: 40px 25px; box-sizing: border-box; }
+        .progress-bar { width: 100%; height: 6px; background: #111; border-radius: 3px; margin: 20px 0; overflow: hidden; }
+        #progress-fill { height: 100%; width: 0%; background: var(--neon); transition: width 1s linear; }
 
         /* NAVBAR */
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
@@ -78,58 +80,58 @@
                     <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><input type="number" id="s2i" value="0"></div><div class="score-box"><input type="number" id="s2a" value="0"></div></div></div>
                     <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split"><div class="score-box"><input type="number" id="s3i" value="0"></div><div class="score-box"><input type="number" id="s3a" value="0"></div></div></div>
                 </div>
-                <input type="range" id="mf" min="0" max="100" value="50">
-                <input type="range" id="mp" min="0" max="100" value="50">
-                <textarea id="m-notes" rows="3" placeholder="Note match..."></textarea>
+                <input type="range" id="mf" min="0" max="100" value="50"><input type="range" id="mp" min="0" max="100" value="50">
                 <button class="btn-neon" style="margin-top:25px;" onclick="saveMatch()">SALVA REPORT</button>
             </div>
-            <div id="full-history"></div>
+            <div id="full-history" style="padding: 0 20px;"></div>
         </div>
     </div>
 
     <div id="train" class="view">
-        <div class="content-scroll" id="train-setup">
+        <div class="content-scroll" id="setup-screen">
             <div style="padding: 50px 25px 10px;"><h2 style="font-size: 32px; font-weight: 900;">Train Lab</h2></div>
             <div class="card">
                 <label style="font-weight:900; font-size:11px; color:#555;">MODALITÀ</label>
                 <div class="option-grid">
-                    <div class="opt-btn active" onclick="setOpt(this, 'mode')">CORPO LIBERO</div>
-                    <div class="opt-btn" onclick="setOpt(this, 'mode')">ATTREZZI</div>
-                    <div class="opt-btn" onclick="setOpt(this, 'mode')">MISTO</div>
+                    <div class="opt-btn active" onclick="setO(this)">CORPO LIBERO</div>
+                    <div class="opt-btn" onclick="setO(this)">ATTREZZI</div>
+                    <div class="opt-btn" onclick="setO(this)">MISTO</div>
                 </div>
-                <label style="font-weight:900; font-size:11px; color:#555;">DURATA SESSIONE</label>
+                <label style="font-weight:900; font-size:11px; color:#555;">DURATA</label>
                 <div class="option-grid">
-                    <div class="opt-btn active" data-min="10" onclick="setOpt(this, 'time')">10 MIN</div>
-                    <div class="opt-btn" data-min="20" onclick="setOpt(this, 'time')">20 MIN</div>
-                    <div class="opt-btn" data-min="30" onclick="setOpt(this, 'time')">30 MIN</div>
+                    <div class="opt-btn active" data-m="10" onclick="setO(this)">10 MIN</div>
+                    <div class="opt-btn" data-m="20" onclick="setO(this)">20 MIN</div>
+                    <div class="opt-btn" data-m="30" onclick="setO(this)">30 MIN</div>
                 </div>
-                <button class="btn-neon" onclick="generateTraining()">GENERA CON AI</button>
+                <button class="btn-neon" onclick="genPlan()">GENERA CON AI</button>
             </div>
         </div>
 
-        <div class="content-scroll" id="train-list" style="display:none;">
-            <div style="padding: 50px 25px 10px;"><h2 id="plan-title" style="font-size: 28px; font-weight: 900;">Il tuo piano</h2></div>
-            <div id="exercises-container" style="padding: 0 20px;"></div>
-            <div style="padding: 20px;"><button class="btn-neon" onclick="startImmersive()">START SESSION</button></div>
+        <div class="content-scroll" id="list-screen" style="display:none;">
+            <div style="padding: 50px 25px 10px;"><h2 id="total-time-display" style="font-size: 28px; font-weight: 900;">Piano</h2></div>
+            <div id="exercises-list" style="padding: 0 20px;"></div>
+            <div style="padding: 20px;"><button class="btn-neon" onclick="startI()">COMINCIA</button></div>
         </div>
     </div>
 
-    <div id="immersive-session">
-        <div style="display:flex; justify-content:space-between;"><span id="imm-ex-count" style="font-weight:900; color:var(--neon);">1 / 4</span><div onclick="stopImmersive()"><i data-lucide="x"></i></div></div>
+    <div id="immersive-train">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+            <span id="ex-count" style="font-weight:900; color:var(--neon);">1 / 10</span>
+            <div onclick="stopI()"><i data-lucide="x"></i></div>
+        </div>
         
-        <div class="avatar-stage" id="avatar-container">
-            <div class="body-part head" style="left: calc(50% - 10px);"></div>
-            <div class="body-part torso" style="left: calc(50% - 15px);"></div>
-            <div class="body-part leg-l"></div>
-            <div class="body-part leg-r"></div>
+        <div class="avatar-box anim-squat" id="av-container" style="margin-top:40px;">
+            <div class="av-head"></div><div class="av-torso"></div>
+            <div class="av-arm-l"></div><div class="av-arm-r"></div>
+            <div class="av-leg-l"></div><div class="av-leg-r"></div>
         </div>
 
-        <div style="text-align:center;">
-            <h2 id="imm-name" style="font-size:32px; font-weight:900; margin:0;">NOME</h2>
-            <p id="imm-desc" style="color:#555; margin:10px 0;">Descrizione esercizio</p>
-            <div id="imm-timer" style="font-size:80px; font-weight:900; margin:10px 0;">30</div>
+        <div style="text-align:center; margin-top:20px;">
+            <h2 id="ex-name" style="font-size:32px; font-weight:900; margin:0;">SQUAT</h2>
+            <p id="ex-desc" style="color:#555;">Descrizione...</p>
+            <div id="ex-timer" style="font-size:90px; font-weight:900;">30</div>
         </div>
-        <div class="progress-container"><div id="progress-bar"></div></div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
     </div>
 
     <nav class="nav-bar">
@@ -141,16 +143,14 @@
     <script>
         lucide.createIcons();
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-        let currentExercises = [];
-        let currentExIndex = 0;
-        let timerInterval;
+        let plan = []; let idx = 0; let timer;
 
         const db = [
-            { name: "Squat Jump", desc: "Esplosività gambe", time: 40, type: "corpo libero", anim: "anim-squat" },
-            { name: "Plank", desc: "Resistenza core", time: 60, type: "corpo libero", anim: "anim-plank" },
-            { name: "Bicep Curls", desc: "Forza braccia", time: 45, type: "attrezzi", anim: "anim-squat" },
-            { name: "Side Shuffle", desc: "Agilità laterale", time: 30, type: "corpo libero", anim: "anim-squat" },
-            { name: "Mountain Climber", desc: "Cardio intenso", time: 45, type: "corpo libero", anim: "anim-plank" }
+            { n: "Squat Jump", d: "Esplosività", t: 30 },
+            { n: "Side Shuffle", d: "Agilità", t: 30 },
+            { n: "Plank", d: "Core", t: 30 },
+            { n: "Burpees", d: "Cardio", t: 30 },
+            { n: "Affondi", d: "Forza", t: 30 }
         ];
 
         function showView(id, el) {
@@ -160,84 +160,63 @@
             if(el) el.classList.add('active');
         }
 
-        function setOpt(el, type) {
+        function setO(el) {
             el.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
         }
 
-        function generateTraining() {
-            const minSelected = parseInt(document.querySelector('[data-min].active').dataset.min);
-            const modeSelected = document.querySelector('.opt-btn.active').innerText.toLowerCase();
-            const lastMatch = matches[0] || { mp: 50 }; // stanchezza ultimo match
-
-            let pool = db.filter(ex => modeSelected === 'misto' || ex.type === modeSelected);
-            let targetSeconds = minSelected * 60;
-            let currentTotal = 0;
-            currentExercises = [];
-
-            // Algoritmo di riempimento tempo
-            while(currentTotal < targetSeconds && currentExercises.length < 15) {
-                let randomEx = pool[Math.floor(Math.random() * pool.length)];
-                currentExercises.push({...randomEx});
-                currentTotal += randomEx.time + 15; // 15s di recupero tra esercizi
+        function genPlan() {
+            const mins = parseInt(document.querySelector('[data-m].active').dataset.m);
+            const targetSecs = mins * 60;
+            let currentSecs = 0; plan = [];
+            
+            // Cicla finché non riempiamo i minuti
+            while(currentSecs < targetSecs) {
+                let randomEx = db[Math.floor(Math.random() * db.length)];
+                plan.push({...randomEx});
+                currentSecs += randomEx.t + 10; // Esercizio + 10s recupero
             }
 
-            document.getElementById('plan-title').innerText = `${minSelected} MIN SESSION`;
-            document.getElementById('exercises-container').innerHTML = currentExercises.map(ex => `
-                <div style="background:#0c0c0c; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #222; display:flex; justify-content:space-between;">
-                    <div><b>${ex.name}</b><br><small style="color:#555">${ex.desc}</small></div>
-                    <span style="color:var(--neon); font-weight:900">${ex.time}s</span>
+            document.getElementById('total-time-display').innerText = mins + " MINUTI";
+            document.getElementById('exercises-list').innerHTML = plan.map(ex => `
+                <div style="background:#0c0c0c; padding:15px; border-radius:15px; border:1px solid #222; margin-bottom:8px; display:flex; justify-content:space-between;">
+                    <b>${ex.n}</b><span>${ex.t}s</span>
                 </div>
             `).join('');
-
-            document.getElementById('train-setup').style.display = 'none';
-            document.getElementById('train-list').style.display = 'block';
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('list-screen').style.display = 'block';
         }
 
-        function startImmersive() {
-            currentExIndex = 0;
-            document.getElementById('immersive-session').style.display = 'flex';
-            runExercise();
+        function startI() {
+            idx = 0; document.getElementById('immersive-train').style.display = 'flex';
+            run();
         }
 
-        function runExercise() {
-            if(currentExIndex >= currentExercises.length) { stopImmersive(); return; }
+        function run() {
+            if(idx >= plan.length) { stopI(); return; }
+            const ex = plan[idx];
+            document.getElementById('ex-name').innerText = ex.n;
+            document.getElementById('ex-desc').innerText = ex.d;
+            document.getElementById('ex-count').innerText = (idx+1) + " / " + plan.length;
             
-            const ex = currentExercises[currentExIndex];
-            const container = document.getElementById('avatar-container');
-            container.className = 'avatar-stage ' + ex.anim;
-            document.getElementById('imm-name').innerText = ex.name;
-            document.getElementById('imm-desc').innerText = ex.desc;
-            document.getElementById('imm-ex-count').innerText = `${currentExIndex + 1} / ${currentExercises.length}`;
+            let s = ex.t;
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(ex.n));
             
-            let s = ex.time;
-            const speech = new SpeechSynthesisUtterance(ex.name);
-            window.speechSynthesis.speak(speech);
-
-            timerInterval = setInterval(() => {
+            timer = setInterval(() => {
                 s--;
-                document.getElementById('imm-timer').innerText = s;
-                document.getElementById('progress-bar').style.width = ((ex.time - s) / ex.time * 100) + "%";
-                if(s <= 0) {
-                    clearInterval(timerInterval);
-                    currentExIndex++;
-                    runExercise();
-                }
+                document.getElementById('ex-timer').innerText = s;
+                document.getElementById('progress-fill').style.width = ((ex.t - s) / ex.t * 100) + "%";
+                if(s <= 0) { clearInterval(timer); idx++; run(); }
             }, 1000);
         }
 
-        function stopImmersive() {
-            clearInterval(timerInterval);
-            document.getElementById('immersive-session').style.display = 'none';
+        function stopI() {
+            clearInterval(timer); document.getElementById('immersive-train').style.display = 'none';
             window.speechSynthesis.cancel();
         }
 
         function saveMatch() {
-            // Logica salvataggio identica alla tua...
-            const m = {
-                s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
-                mp: +document.getElementById('mp').value, date: new Date().toLocaleDateString('it-IT')
-            };
+            const m = { s1i: +document.getElementById('s1i').value, phys: +document.getElementById('mp').value, result: 'VIT', date: 'Oggi' };
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
             showView('home');
