@@ -11,30 +11,26 @@
         
         .view { display: none; height: 100vh; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         .view.active { display: flex; }
-        .content-scroll { padding-bottom: 120px; }
+        .content-scroll { padding-bottom: 150px; }
 
-        /* CARDS & UI */
+        /* CARDS & BUTTONS */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
         
-        /* MATCH LAB (BLINDATA) */
-        .set-row { display: flex; gap: 8px; margin-bottom: 15px; }
-        .set-box { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 12px; padding: 10px; text-align: center; }
-        .score-input { width: 30px; background: #1a1a1a; border: 1px solid #333; color: var(--neon); text-align: center; font-weight: 900; border-radius: 5px; }
+        /* TIMER OVERLAY */
+        #timer-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .timer-circle { width: 250px; height: 250px; border: 8px solid #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 40px; }
+        .timer-value { font-size: 80px; font-weight: 900; color: var(--neon); }
+        .timer-label { font-size: 14px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* TRAIN IMMERSIVE (AVATAR AREA) */
-        #immersive-train { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .avatar-viewport { width: 100%; height: 300px; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); border-radius: 30px; margin: 20px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #222; position: relative; }
+        /* UI ELEMENTS */
+        .history-item { border-left: 4px solid #333; background: #0c0c0c; padding: 15px; border-radius: 0 12px 12px 0; margin: 0 20px 10px; }
+        .history-item.win { border-color: var(--win); }
+        .choice-btn { background: #0c0c0c; border: 1px solid #222; padding: 12px; border-radius: 12px; color: white; font-weight: 800; width: 100%; margin-bottom: 8px; text-align: center; }
+        .choice-btn.selected { border-color: var(--neon); color: var(--neon); }
+        .ex-card { background: #0f0f0f; border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 10px; }
         
-        /* Placeholder Animazione Avatar */
-        .digital-human { width: 80px; height: 160px; border: 3px solid var(--neon); border-radius: 40px; position: relative; animation: trainer-jump 0.8s infinite alternate ease-in-out; }
-        @keyframes trainer-jump { from { transform: translateY(0); } to { transform: translateY(-20px); } }
-
-        .timer-display { font-size: 90px; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--neon); margin: 0; }
-        .progress-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-
-        /* NAV */
-        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.9); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; }
+        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.9); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 1000; }
         .nav-item { color: #444; }
         .nav-item.active { color: var(--neon); }
     </style>
@@ -43,13 +39,23 @@
 
     <div id="home" class="view active">
         <div class="content-scroll" style="padding-top:40px;">
-            <div style="padding: 0 25px;"><h2 style="font-weight:900;">Home</h2></div>
-            <div class="card" style="border:1px solid var(--neon);">
-                <small style="color:#555;">CONDITIONING SCORE</small>
-                <div style="font-size: 50px; font-weight: 900;" id="score-val">--</div>
+            <div style="padding: 0 25px;"><h2 style="font-weight:900;">Dashboard</h2></div>
+            <div class="card" style="background: linear-gradient(135deg, #151515, #000); border: 1px solid var(--neon);">
+                <small style="color:#555; font-weight:800;">CONDITIONING SCORE</small>
+                <div style="font-size: 60px; font-weight: 900;" id="main-score">--</div>
             </div>
+            
             <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">ULTIMO MATCH</small></div>
-            <div id="home-match-slot"></div>
+            <div id="home-last-match"></div>
+
+            <div style="padding: 10px 25px;"><small style="font-weight:900; color:#444;">PROGRAMMA DI OGGI</small></div>
+            <div class="card" onclick="showV('train')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-weight:900; color:var(--neon);">TRAINING: SPEED</div>
+                    <small style="color:#555;">20 minuti • Corpo Libero</small>
+                </div>
+                <i data-lucide="chevron-right" style="color:#333;"></i>
+            </div>
         </div>
     </div>
 
@@ -57,50 +63,44 @@
         <div class="content-scroll" style="padding-top:40px;">
             <div style="padding: 0 25px;"><h2 style="font-weight:900;">Match Lab</h2></div>
             <div class="card">
-                <div class="set-row">
-                    <div class="set-box">S1<br><input class="score-input" id="s1i">:<input class="score-input" id="s1a"></div>
-                    <div class="set-box">S2<br><input class="score-input" id="s2i">:<input class="score-input" id="s2a"></div>
-                    <div class="set-box">S3<br><input class="score-input" id="s3i">:<input class="score-input" id="s3a"></div>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="number" id="s1i" placeholder="Io" style="flex:1; background:#000; border:1px solid #333; color:var(--neon); padding:10px; text-align:center;">
+                    <input type="number" id="s1a" placeholder="Avv" style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:10px; text-align:center;">
                 </div>
-                <textarea id="m-notes" placeholder="Note tecniche..." style="width:100%; background:#000; color:white; border:1px solid #333; padding:10px; border-radius:10px;"></textarea>
-                <button class="btn-neon" onclick="saveMatch()" style="margin-top:15px;">SALVA</button>
+                <textarea id="m-notes" placeholder="Note match..." style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:10px; border-radius:10px; box-sizing:border-box;"></textarea>
+                <button class="btn-neon" onclick="saveMatch()" style="margin-top:15px;">Salva Match</button>
             </div>
-            <div id="history-list"></div>
+            <div id="full-history-list"></div>
         </div>
     </div>
 
     <div id="train" class="view">
         <div class="content-scroll" style="padding-top:40px;">
             <div style="padding: 0 25px;"><h2 style="font-weight:900;">Train Lab</h2></div>
-            <div id="setup-train" class="card">
-                <button class="btn-neon" onclick="generateWorkout()">GENERA ALLENAMENTO</button>
+            <div id="train-setup">
+                <div class="card">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button class="choice-btn selected" id="t-body" onclick="setMode('body')" style="flex:1;">BODY</button>
+                        <button class="choice-btn" id="t-tools" onclick="setMode('tools')" style="flex:1;">TOOLS</button>
+                    </div>
+                    <button class="btn-neon" onclick="generateWorkout()">Genera Allenamento</button>
+                </div>
             </div>
-            <div id="ready-train" style="display:none; padding:20px;">
-                <div id="list-ex"></div>
-                <button class="btn-neon" onclick="openImmersive()" style="height:80px; margin-top:20px;">START IMMERSIVE</button>
+            <div id="workout-ready" style="display:none; padding: 0 20px;">
+                <div id="ex-list"></div>
+                <button class="btn-neon" onclick="startTimer()" style="height:80px; margin-top:20px;">START SESSIONE</button>
             </div>
         </div>
     </div>
 
-    <div id="immersive-train">
-        <div style="width:100%; display:flex; justify-content:flex-end;">
-            <button onclick="closeImmersive()" style="background:#222; border:none; color:white; border-radius:50%; width:40px; height:40px;">X</button>
+    <div id="timer-screen">
+        <div class="timer-label" id="timer-status">Lavoro</div>
+        <div class="timer-circle">
+            <div class="timer-value" id="timer-clock">30</div>
         </div>
-        
-        <div class="avatar-viewport">
-            <div class="digital-human"></div>
-            <div style="position:absolute; bottom:15px; color:var(--neon); font-size:10px; font-weight:800; letter-spacing:2px;">ESECUZIONE CORRETTA</div>
-        </div>
-
-        <div style="text-align:center;">
-            <p id="imm-status" style="color:var(--neon); font-weight:800; letter-spacing:3px; margin:0;">LAVORO</p>
-            <h1 class="timer-display" id="imm-clock">30</h1>
-            <h2 id="imm-name" style="margin:0; text-transform:uppercase;">SQUAT JUMP</h2>
-        </div>
-
-        <div style="margin-top:auto; width:100%; text-align:center;">
-            <p id="imm-next" style="color:#444; font-weight:800;">PROSSIMO: --</p>
-        </div>
+        <div id="timer-ex-name" style="font-size: 24px; font-weight: 900; margin-bottom: 10px;">ESERCIZIO</div>
+        <div id="timer-next" style="color: #555; font-weight: 800; font-size: 12px;">PROSSIMO: --</div>
+        <button onclick="stopTimer()" style="margin-top: 50px; background: none; border: 1px solid #333; color: #555; padding: 10px 30px; border-radius: 20px; font-weight: 900;">STOP</button>
     </div>
 
     <nav class="nav-bar">
@@ -111,64 +111,110 @@
 
     <script>
         lucide.createIcons();
-        let matches = JSON.parse(localStorage.getItem('cr_final')) || [];
-        let timer;
+        let matches = JSON.parse(localStorage.getItem('cr_v1')) || [];
+        let tMode = 'body', workout = [], currentEx = 0, timerInterval;
+
+        const db = {
+            body: [{n:"Squat Jumps", d:"Esplosività"}, {n:"Plank", d:"Core"}, {n:"Burpees", d:"Cardio"}],
+            tools: [{n:"Corda", d:"Ritmo"}, {n:"MedBall", d:"Potenza"}]
+        };
 
         function showV(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-            refresh();
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+            refreshUI();
         }
 
-        // MATCH LAB (FUNZIONI BLINDATE)
         function saveMatch() {
             const m = {
                 id: Date.now(),
-                s1: [document.getElementById('s1i').value, document.getElementById('s1a').value],
-                s2: [document.getElementById('s2i').value, document.getElementById('s2a').value],
-                s3: [document.getElementById('s3i').value, document.getElementById('s3a').value],
-                notes: document.getElementById('m-notes').value,
-                date: new Date().toLocaleDateString('it-IT')
+                s1i: document.getElementById('s1i').value, s1a: document.getElementById('s1a').value,
+                notes: document.getElementById('m-notes').value, date: new Date().toLocaleDateString('it-IT')
             };
             matches.unshift(m);
-            localStorage.setItem('cr_final', JSON.stringify(matches));
+            localStorage.setItem('cr_v1', JSON.stringify(matches));
             showV('home');
         }
 
-        function refresh() {
-            const homeSlot = document.getElementById('home-match-slot');
+        function refreshUI() {
+            const homeBox = document.getElementById('home-last-match');
             if(matches.length > 0) {
-                const l = matches[0];
-                homeSlot.innerHTML = `<div class="card"><b>ULTIMO MATCH</b><br>${l.s1[0]}-${l.s1[1]} / ${l.s2[0]}-${l.s2[1]}</div>`;
-                document.getElementById('score-val').innerText = "81.0";
+                const last = matches[0];
+                homeBox.innerHTML = `<div class="history-item win">
+                    <div style="font-weight:900; font-size:18px;">${last.s1i} - ${last.s1a}</div>
+                    <small style="color:#555;">${last.date}</small>
+                </div>`;
+                document.getElementById('main-score').innerText = "84.2";
             }
-            document.getElementById('history-list').innerHTML = matches.map(m => `<div class="card">${m.date}: ${m.s1[0]}-${m.s1[1]}</div>`).join('');
+            const list = document.getElementById('full-history-list');
+            list.innerHTML = matches.map(m => `<div class="history-item"><b>${m.s1i}-${m.s1a}</b> <small>${m.date}</small></div>`).join('');
         }
 
-        // TRAIN LAB (NUOVA SEZIONE IMMERSIVA)
+        function setMode(m) { 
+            tMode = m; 
+            document.querySelectorAll('#train .choice-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('t-'+m).classList.add('selected');
+        }
+
         function generateWorkout() {
-            document.getElementById('list-ex').innerHTML = `<div class="card">SQUAT JUMPS</div><div class="card">PLANK</div>`;
-            document.getElementById('setup-train').style.display = 'none';
-            document.getElementById('ready-train').style.display = 'block';
+            const pool = tMode === 'body' ? db.body : [...db.body, ...db.tools];
+            workout = [...pool].sort(() => 0.5 - Math.random());
+            const exList = document.getElementById('ex-list');
+            exList.innerHTML = workout.map(ex => `<div class="ex-card"><b>${ex.n}</b><br><small>${ex.d}</small></div>`).join('');
+            document.getElementById('train-setup').style.display = 'none';
+            document.getElementById('workout-ready').style.display = 'block';
         }
 
-        function openImmersive() {
-            document.getElementById('immersive-train').style.display = 'flex';
-            let c = 30;
-            timer = setInterval(() => {
-                c--;
-                document.getElementById('imm-clock').innerText = c;
-                if(c<=0) closeImmersive();
+        function startTimer() {
+            document.getElementById('timer-screen').style.display = 'flex';
+            currentEx = 0;
+            runExercise();
+        }
+
+        function runExercise() {
+            if(currentEx >= workout.length) { stopTimer(); return; }
+            let time = 30;
+            document.getElementById('timer-status').innerText = "Lavoro";
+            document.getElementById('timer-status').style.color = "var(--neon)";
+            document.getElementById('timer-ex-name').innerText = workout[currentEx].n;
+            document.getElementById('timer-next').innerText = workout[currentEx+1] ? "PROSSIMO: " + workout[currentEx+1].n : "ULTIMO!";
+            
+            timerInterval = setInterval(() => {
+                time--;
+                document.getElementById('timer-clock').innerText = time;
+                if(time <= 0) {
+                    clearInterval(timerInterval);
+                    runRest();
+                }
             }, 1000);
         }
 
-        function closeImmersive() {
-            clearInterval(timer);
-            document.getElementById('immersive-train').style.display = 'none';
+        function runRest() {
+            let time = 15;
+            document.getElementById('timer-status').innerText = "Riposo";
+            document.getElementById('timer-status').style.color = "#ff3333";
+            timerInterval = setInterval(() => {
+                time--;
+                document.getElementById('timer-clock').innerText = time;
+                if(time <= 0) {
+                    clearInterval(timerInterval);
+                    currentEx++;
+                    runExercise();
+                }
+            }, 1000);
         }
 
-        window.onload = refresh;
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-screen').style.display = 'none';
+            alert("Allenamento completato!");
+        }
+
+        window.onload = refreshUI;
     </script>
 </body>
 </html>
