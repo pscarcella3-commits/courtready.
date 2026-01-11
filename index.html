@@ -13,22 +13,20 @@
         .view.active { display: flex; }
         .content-scroll { padding-bottom: 180px; }
 
-        /* LOGO TENNIS GEOMETRIC ORIGINALE */
+        /* LOGO TENNIS GEOMETRIC (BLINDATO) */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
         .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
         .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
         .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); }
 
-        /* CARDS */
+        /* CARDS & BUTTONS */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 20px; margin: 10px 20px; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
         
-        /* ANALYTICS CARD */
+        /* MATCH LAB SPECIFIC (BLINDATO) */
         .analytics-card { background: linear-gradient(145deg, #1a1a1a, #0a0a0a); border: 1px solid var(--neon); }
         .stat-main { display: flex; align-items: center; gap: 20px; margin-top: 15px; }
         .stat-circle { width: 65px; height: 65px; border: 4px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: var(--neon); }
-
-        /* BOX PUNTEGGIO ORIGINALI */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 10px; text-align: center; }
         .set-title { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
@@ -36,43 +34,29 @@
         .score-box { display: flex; flex-direction: column; align-items: center; }
         .score-box label { font-size: 9px; color: #444; margin-bottom: 4px; font-weight: 900; }
         .score-box input { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: var(--neon); text-align: center; font-weight: 900; font-size: 16px; outline: none; }
-
-        /* SLIDERS E FORM */
-        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #666; font-weight: 800; margin-bottom: 12px; }
-        input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 25px; }
-        textarea { width: 100%; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; margin-top: 10px; resize: none; }
-
-        /* STORICO */
         .history-item { border-left: 4px solid #333; background: #0c0c0c; padding: 18px; border-radius: 0 15px 15px 0; margin-bottom: 12px; }
         .history-item.win { border-color: var(--win); }
         .history-item.loss { border-color: var(--loss); }
         .res-tag { font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
-        .win .res-tag { background: var(--win); color: black; }
-        .loss .res-tag { background: var(--loss); color: white; }
 
-        /* ONBOARDING & TRAIN SPECIFICS */
-        .choice-btn { background: #0c0c0c; border: 1px solid #222; padding: 18px; border-radius: 15px; margin-bottom: 10px; color: white; cursor: pointer; font-weight: 800; width: 100%; text-align: left; }
+        /* TRAIN LAB SPECIFIC */
+        .choice-btn { background: #0c0c0c; border: 1px solid #222; padding: 15px; border-radius: 15px; margin-bottom: 10px; color: white; cursor: pointer; font-weight: 800; width: 100%; text-align: left; }
         .choice-btn.selected { border-color: var(--neon); color: var(--neon); }
-        .ex-card { background: #111; border: 1px solid #222; border-radius: 20px; padding: 15px; margin-bottom: 15px; }
-        .video-placeholder { width: 100%; height: 160px; background: #000; border-radius: 15px; border: 1px solid #333; margin-top: 10px; }
+        .ex-card { background: #0f0f0f; border: 1px solid #222; border-radius: 20px; padding: 18px; margin-bottom: 12px; }
+        .ex-card h3 { color: var(--neon); margin: 0 0 5px 0; font-size: 18px; font-weight: 900; }
+        .ex-card p { color: #777; font-size: 12px; margin: 0; line-height: 1.4; }
+        .ex-meta { display: flex; gap: 15px; margin-top: 12px; font-size: 10px; font-weight: 900; color: #555; text-transform: uppercase; }
 
-        /* NAVBAR */
+        /* COMMON ELEMENTS */
+        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #666; font-weight: 800; margin-bottom: 12px; }
+        input[type=range] { width: 100%; accent-color: var(--neon); margin-bottom: 25px; }
+        textarea { width: 100%; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; color: white; padding: 15px; box-sizing: border-box; font-family: inherit; margin-top: 10px; resize: none; }
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
         .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
-
-        #onboarding { position: fixed; inset: 0; background: #000; z-index: 2000; padding: 40px 25px; display: none; overflow-y: auto; }
     </style>
 </head>
 <body>
-
-    <div id="onboarding">
-        <div class="logo-wrap" style="padding:0; margin-bottom:40px;"><div class="court-logo"></div><h1 style="font-weight:900;">COURTREADY</h1></div>
-        <p style="font-size:11px; font-weight:900; color:var(--neon); text-transform:uppercase;">Livello</p>
-        <div class="choice-btn" onclick="setQ('lv','Pro',this)">Agonista</div>
-        <div class="choice-btn" onclick="setQ('lv','Club',this)">Amatoriale</div>
-        <button class="btn-neon" style="margin-top:40px;" onclick="saveOnboarding()">COMINCIA</button>
-    </div>
 
     <div id="home" class="view active">
         <div class="content-scroll">
@@ -92,7 +76,6 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 50px 25px 10px;"><h2 style="font-size: 32px; margin: 0; font-weight: 900;">Match Lab</h2></div>
-
             <div class="card analytics-card" id="analytics-section" style="display:none;">
                 <small style="font-size: 10px; font-weight: 900; color: #888; letter-spacing: 1px;">SEASON STATS</small>
                 <div class="stat-main">
@@ -105,7 +88,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="card">
                 <label style="font-weight: 900; font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD</label>
                 <div class="set-container">
@@ -120,7 +102,6 @@
                 <textarea id="m-notes" rows="3" placeholder="Com'è andata il match?"></textarea>
                 <button class="btn-neon" style="margin-top: 25px;" onclick="saveMatch()">SALVA REPORT</button>
             </div>
-
             <div style="padding: 0 20px; margin-top: 20px;"><p style="font-size: 11px; color: #444; font-weight: 900; text-transform: uppercase;">Storico</p><div id="full-history"></div></div>
         </div>
     </div>
@@ -128,101 +109,14 @@
     <div id="train" class="view">
         <div class="content-scroll">
             <div style="padding: 50px 25px 10px;"><h2 style="font-size: 32px; font-weight: 900;">Train Lab</h2></div>
-            <div class="card">
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="choice-btn" style="text-align:center;" onclick="alert('Sezione Train in arrivo!')">STANDARD</button>
-                    <button class="choice-btn" style="text-align:center; border-color:var(--neon);" onclick="alert('Sfida attivata!')">🔥 SFIDA</button>
-                </div>
-                <button class="btn-neon">GENERA ALLENAMENTO</button>
-            </div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" id="nav-home" onclick="showView('home', this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
-        <div class="nav-item" id="nav-match" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
-        <div class="nav-item" id="nav-train" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
-    </nav>
-
-    <script>
-        lucide.createIcons();
-        let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-        let profile = JSON.parse(localStorage.getItem('cr_profile'));
-
-        function setQ(k, v, el) {
-            profile = profile || {}; profile[k] = v;
-            el.parentNode.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        function saveOnboarding() {
-            localStorage.setItem('cr_profile', JSON.stringify(profile));
-            document.getElementById('onboarding').style.display = 'none';
-        }
-
-        function showView(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            if(el) el.classList.add('active');
-            renderHistory();
-            updateAnalytics();
-        }
-
-        function saveMatch() {
-            const m = {
-                s1i: parseInt(document.getElementById('s1i').value), s1a: parseInt(document.getElementById('s1a').value),
-                s2i: parseInt(document.getElementById('s2i').value), s2a: parseInt(document.getElementById('s2a').value),
-                s3i: parseInt(document.getElementById('s3i').value), s3a: parseInt(document.getElementById('s3a').value),
-                phys: document.getElementById('mp').value,
-                focus: document.getElementById('mf').value,
-                notes: document.getElementById('m-notes').value,
-                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'})
-            };
-            let sW = 0, sL = 0;
-            if(m.s1i > m.s1a) sW++; else if(m.s1a > m.s1i) sL++;
-            if(m.s2i > m.s2a) sW++; else if(m.s2a > m.s2i) sL++;
-            if(m.s3i > m.s3a) sW++; else if(m.s3a > m.s3i) sL++;
-            m.result = sW > sL ? 'VIT' : 'SCO';
-            m.gW = (m.s1i||0) + (m.s2i||0) + (m.s3i||0);
-            m.gL = (m.s1a||0) + (m.s2a||0) + (m.s3a||0);
-            matches.unshift(m);
-            localStorage.setItem('cr_matches', JSON.stringify(matches));
-            showView('home'); 
-        }
-
-        function updateAnalytics() {
-            const section = document.getElementById('analytics-section');
-            if(!section) return;
-            if(matches.length === 0) { section.style.display = 'none'; return; }
-            section.style.display = 'block';
-            const wins = matches.filter(m => m.result === 'VIT').length;
-            const winPct = Math.round((wins / matches.length) * 100);
-            document.getElementById('win-count').innerText = wins + " / " + matches.length;
-            document.getElementById('win-pct-circle').innerText = winPct + "%";
-            document.getElementById('win-bar').style.width = winPct + "%";
-        }
-
-        function renderHistory() {
-            const html = matches.map(m => `
-                <div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}">
-                    <span class="res-tag">${m.result}</span>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-weight:900; font-size:18px;">${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}</span>
-                        <span style="font-size:10px; color:#555">${m.date}</span>
+            <div id="train-setup">
+                <div class="card">
+                    <label class="range-label">ATTREZZATURA</label>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <button class="choice-btn selected" id="t-body" onclick="setMode('body')">BODY</button>
+                        <button class="choice-btn" id="t-tools" onclick="setMode('tools')">TOOLS</button>
                     </div>
-                </div>
-            `).join('');
-            if(document.getElementById('full-history')) document.getElementById('full-history').innerHTML = html;
-            if(document.getElementById('quick-history')) document.getElementById('quick-history').innerHTML = html.slice(0, 1);
-            if(matches.length > 0) document.getElementById('main-score').innerText = (100 - (matches[0].phys/2)).toFixed(1);
-        }
-
-        window.onload = () => {
-            if(!profile) document.getElementById('onboarding').style.display = 'block';
-            renderHistory();
-            updateAnalytics();
-        };
-    </script>
-</body>
-</html>
+                    <button class="choice-btn" id="t-mix" style="text-align:center;" onclick="setMode('mix')">MIX (BODY + TOOLS)</button>
+                    
+                    <label class="range-label" style="margin-top:20px;">DURATA SESSIONE</label>
+                    <div style="display:grid; grid-template-columns:
