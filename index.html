@@ -50,23 +50,15 @@
         .win .res-tag { background: var(--win); color: black; }
         .loss .res-tag { background: var(--loss); color: white; }
 
-        /* --- NUOVI STILI TRAIN & IMMERSIVO --- */
-        #immersive-train { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; box-sizing: border-box; }
-        .avatar-container { width: 100%; height: 280px; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); border-radius: 30px; border: 1px solid #222; display: flex; align-items: center; justify-content: center; margin: 20px 0; overflow: hidden; position: relative; }
-        
-        /* Animazione Digital Trainer */
-        .digital-trainer { width: 60px; height: 120px; border: 3px solid var(--neon); border-radius: 30px; position: relative; animation: trainer-loop 0.8s infinite alternate ease-in-out; }
-        @keyframes trainer-loop { from { transform: translateY(0) scaleY(1); } to { transform: translateY(-30px) scaleY(0.9); } }
-        
-        .timer-big { font-size: 100px; font-weight: 900; color: white; line-height: 1; margin: 10px 0; }
-        .progress-bar-wrap { width: 100%; height: 6px; background: #111; border-radius: 3px; margin: 20px 0; overflow: hidden; }
-        #progress-fill { width: 0%; height: 100%; background: var(--neon); transition: width 1s linear; }
-        .exit-x { position: absolute; top: 40px; right: 25px; width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #555; }
-
         /* NAVBAR */
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.08); z-index: 1000; }
         .nav-item { color: #333; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
+
+        /* --- UNICA AGGIUNTA: SEZIONE AVATAR --- */
+        #avatar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .avatar-box { width: 200px; height: 300px; border: 4px solid var(--neon); border-radius: 50px; margin-bottom: 30px; animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
     </style>
 </head>
 <body>
@@ -81,10 +73,7 @@
                 <small style="color:#555; font-weight: 800;">CONDITIONING SCORE</small>
                 <div style="font-size: 60px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
             </div>
-            <div style="padding: 0 20px;">
-                <p style="font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase; margin-bottom: 10px;">Ultimo Match</p>
-                <div id="quick-history"></div>
-            </div>
+            <div style="padding: 0 20px;"><div id="quick-history"></div></div>
         </div>
     </div>
 
@@ -151,55 +140,55 @@
         </div>
     </div>
 
-    <div id="train" class="view">
+    <div id="train-view" class="view">
         <div class="content-scroll">
             <div style="padding: 50px 25px 10px;"><h2 style="font-size: 32px; margin: 0; font-weight: 900;">Train Lab</h2></div>
             <div class="card">
-                <p style="font-size: 14px; color: #888;">Preparati per la tua sessione personalizzata.</p>
-                <button class="btn-neon" style="margin-top: 20px;" onclick="startTrainingMode()">AVVIA ALLENAMENTO</button>
+                <button class="btn-neon" onclick="startAvatar()">START TRAINING</button>
             </div>
         </div>
     </div>
 
-    <div id="immersive-train">
-        <div class="exit-x" onclick="stopTrainingMode()"><i data-lucide="x"></i></div>
-        
-        <div id="imm-status" style="color: var(--neon); font-weight: 800; letter-spacing: 4px; margin-top: 40px;">LAVORO</div>
-        <div class="timer-big" id="imm-clock">30</div>
-
-        <div class="avatar-container">
-            <div class="digital-trainer"></div>
-            <div style="position: absolute; bottom: 15px; font-size: 9px; font-weight: 900; color: var(--neon); letter-spacing: 1px;">DIGITAL TRAINER</div>
-        </div>
-
-        <div style="text-align: center;">
-            <h2 id="imm-ex-name" style="font-size: 28px; font-weight: 900; margin: 0;">SQUAT JUMP</h2>
-            <p style="color: #555; font-size: 14px; margin-top: 5px;">Mantieni il ritmo costante</p>
-        </div>
-
-        <div class="progress-bar-wrap"><div id="progress-fill"></div></div>
+    <div id="avatar-overlay">
+        <div class="avatar-box"></div>
+        <h1 style="font-size: 40px; font-weight: 900;" id="timer">30</h1>
+        <button onclick="stopAvatar()" style="margin-top: 20px; color: white; background: #333; border: none; padding: 15px 30px; border-radius: 10px;">ESCI</button>
     </div>
 
     <nav class="nav-bar">
         <div class="nav-item active" id="nav-home" onclick="showView('home', this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
         <div class="nav-item" id="nav-match" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
-        <div class="nav-item" id="nav-train" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+        <div class="nav-item" id="nav-train" onclick="showView('train-view', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
         <div class="nav-item" id="nav-profile"><i data-lucide="user"></i><span>PROFILE</span></div>
     </nav>
 
     <script>
         lucide.createIcons();
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-        let trainInterval;
+        let t;
 
         function showView(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             if(el) el.classList.add('active');
-            else document.getElementById('nav-' + id).classList.add('active');
             renderHistory();
             updateAnalytics();
+        }
+
+        function startAvatar() {
+            document.getElementById('avatar-overlay').style.display = 'flex';
+            let s = 30;
+            t = setInterval(() => {
+                s--;
+                document.getElementById('timer').innerText = s;
+                if(s <= 0) stopAvatar();
+            }, 1000);
+        }
+
+        function stopAvatar() {
+            clearInterval(t);
+            document.getElementById('avatar-overlay').style.display = 'none';
         }
 
         function saveMatch() {
@@ -226,7 +215,8 @@
 
         function updateAnalytics() {
             if(matches.length === 0) return;
-            document.getElementById('analytics-section').style.display = 'block';
+            const target = document.getElementById('analytics-section');
+            if(target) target.style.display = 'block';
             const wins = matches.filter(m => m.result === 'VIT').length;
             const gW = matches.reduce((acc, m) => acc + m.gW, 0);
             const gL = matches.reduce((acc, m) => acc + m.gL, 0);
@@ -252,25 +242,6 @@
             document.getElementById('full-history').innerHTML = html;
             if(document.getElementById('quick-history')) document.getElementById('quick-history').innerHTML = html.slice(0, 1);
             if(matches.length > 0) document.getElementById('main-score').innerText = (100 - (matches[0].phys/2)).toFixed(1);
-        }
-
-        // FUNZIONI TRAINING
-        function startTrainingMode() {
-            document.getElementById('immersive-train').style.display = 'flex';
-            let timeLeft = 30;
-            trainInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('imm-clock').innerText = timeLeft;
-                document.getElementById('progress-fill').style.width = ((30 - timeLeft) / 30 * 100) + "%";
-                if(timeLeft <= 0) stopTrainingMode();
-            }, 1000);
-        }
-
-        function stopTrainingMode() {
-            clearInterval(trainInterval);
-            document.getElementById('immersive-train').style.display = 'none';
-            document.getElementById('progress-fill').style.width = "0%";
-            document.getElementById('imm-clock').innerText = "30";
         }
 
         if(matches.length > 0) renderHistory();
