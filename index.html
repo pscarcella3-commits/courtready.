@@ -14,7 +14,7 @@
             --border: #222222; 
             --win: #d4ff00; 
             --loss: #ff3333; 
-            --future: #333333;
+            --future: #333333; /* Per giorni programmati */
         }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
         * { box-sizing: border-box; outline: none; }
@@ -24,20 +24,18 @@
         .view.active { display: flex; z-index: 2; }
         .content-scroll { padding-bottom: 180px; width: 100%; }
 
-        /* --- CALENDARIO MENSILE (NUOVO) --- */
+        /* --- NUOVO: SETUP & CALENDARIO --- */
+        #setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: none; flex-direction: column; padding: 40px 25px; }
+        .day-check { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #222; cursor: pointer; }
+        .day-check.active { border-color: var(--neon); color: var(--neon); }
+        
         .calendar-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
         .cal-day-header { font-size: 9px; color: #555; text-align: center; font-weight: 900; text-transform: uppercase; }
-        .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; cursor: pointer; }
-        .cal-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
-        .cal-cell.missed { background: rgba(255, 51, 51, 0.1); border-color: var(--loss); color: var(--loss); }
+        .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; }
         .cal-cell.planned { border-color: var(--future); color: #666; }
+        .cal-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
         .cal-cell.today { background: white; color: black; }
-
-        /* --- SETUP OVERLAY (NUOVO) --- */
-        #setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: none; flex-direction: column; padding: 40px 25px; }
-        .day-check { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #222; }
-        .day-check.active { border-color: var(--neon); color: var(--neon); }
 
         /* --- COMPONENTI ORIGINALI --- */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
@@ -47,26 +45,34 @@
 
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
         button, .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; cursor: pointer; margin-top: 15px; display: block; position: relative; z-index: 10; }
-        
-        /* MATCH LAB SPECIFICS */
+
+        /* MATCH LAB */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
         .set-title { font-size: 9px; font-weight: 800; color: #555; display: block; margin-bottom: 5px; }
         .score-split { display: flex; justify-content: center; gap: 5px; }
         .score-box label { font-size: 8px; color: #444; display: block; font-weight: 900; }
         .score-box input { width: 32px; height: 32px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; font-size: 14px; padding: 0; margin-top: 2px; }
-
         .history-item { border-left: 3px solid #333; background: #0c0c0c; padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 10px; cursor: pointer; position: relative; z-index: 5; }
         .history-item.win { border-color: var(--win); }
         .history-item.loss { border-color: var(--loss); }
         .stat-circle { width: 60px; height: 60px; border: 3px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--neon); }
 
+        /* TRAIN LAB */
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 0 20px; }
+        .opt-btn { background: #080808; border: 1px solid #222; padding: 12px 5px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; position: relative; z-index: 5; }
+        .opt-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
+
+        /* OVERLAYS */
+        #match-detail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        #immersive-session { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 9000; display: none; flex-direction: column; }
+        .video-player-ui { height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); overflow: hidden; }
+
         /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 4000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 4000; }
         .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 10px; }
         .nav-item.active { color: var(--neon); }
 
-        #match-detail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
         textarea { width: 100%; background: #080808; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; margin-top: 15px; resize: none; font-family: inherit; }
         input[type=range] { width: 100%; accent-color: var(--neon); margin: 10px 0; height: 4px; background: #333; }
         .ai-box { background: rgba(212, 255, 0, 0.05); border-left: 3px solid var(--neon); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 20px; font-size: 11px; color: #ddd; line-height: 1.4; }
@@ -76,9 +82,8 @@
 <body>
 
     <div id="setup-overlay">
-        <h2 style="font-size: 28px; font-weight: 900; margin-bottom: 10px;">Benvenuto su <span style="color:var(--neon)">CourtReady</span></h2>
-        <p style="color:#666; font-size:14px; margin-bottom:30px;">In quali giorni della settimana hai intenzione di allenarti? Pianificheremo il tuo calendario.</p>
-        
+        <h2 style="font-size: 28px; font-weight: 900; margin-bottom: 10px;">COURT<span style="color:var(--neon)">READY</span></h2>
+        <p style="color:#666; font-size:14px; margin-bottom:30px;">Pianifica la tua settimana di allenamento:</p>
         <div id="setup-days">
             <div class="day-check" onclick="toggleSetupDay(1)"><span>Lunedì</span><i data-lucide="circle"></i></div>
             <div class="day-check" onclick="toggleSetupDay(2)"><span>Martedì</span><i data-lucide="circle"></i></div>
@@ -88,8 +93,7 @@
             <div class="day-check" onclick="toggleSetupDay(6)"><span>Sabato</span><i data-lucide="circle"></i></div>
             <div class="day-check" onclick="toggleSetupDay(0)"><span>Domenica</span><i data-lucide="circle"></i></div>
         </div>
-
-        <button class="btn-neon" onclick="finishSetup()" style="margin-top:auto;">SALVA PIANO</button>
+        <button class="btn-neon" onclick="finishSetup()" style="margin-top:auto;">SALVA PROGRAMMA</button>
     </div>
 
     <div id="match-detail">
@@ -115,11 +119,7 @@
 
             <div class="calendar-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="font-size:14px; text-transform:uppercase;" id="month-label">GENNAIO 2026</b>
-                    <div style="display:flex; gap:8px;">
-                        <div style="width:8px; height:8px; background:var(--win); border-radius:50%;"></div>
-                        <div style="width:8px; height:8px; background:var(--future); border-radius:50%;"></div>
-                    </div>
+                    <b style="font-size:14px; text-transform:uppercase;" id="month-label">---</b>
                 </div>
                 <div class="cal-grid" id="main-calendar"></div>
             </div>
@@ -134,7 +134,6 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Match Lab</h2></div>
-
             <div class="card" id="analytics-section" style="display:none; background: linear-gradient(145deg, #151515, #0a0a0a);">
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <small style="font-size: 10px; font-weight: 900; color: #888;">SEASON STATS</small>
@@ -166,188 +165,4 @@
                 <div class="set-container">
                     <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div></div></div>
                     <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div></div></div>
-                    <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s3i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s3a" value="0"></div></div></div>
-                </div>
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <div style="flex:1">
-                        <label style="font-size:9px; color:#555; font-weight:800;">BPM MEDIO</label>
-                        <input type="number" id="m-bpm" placeholder="140" style="width:100%; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px; margin-top:5px;">
-                    </div>
-                    <div style="flex:1">
-                        <label style="font-size:9px; color:#555; font-weight:800;">FOTO</label>
-                        <input type="file" id="m-img" accept="image/*" style="font-size:9px; margin-top:5px;">
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; font-weight:700; margin-top:10px;"><span>Focus Mentale</span><span id="fv" style="color:white">50%</span></div>
-                <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
-                <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; font-weight:700; margin-top:10px;"><span>Fatica Fisica</span><span id="pv" style="color:white">50%</span></div>
-                <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
-                <textarea id="m-notes" rows="3" placeholder="Note tattiche..."></textarea>
-                <button class="btn-neon" onclick="saveMatch()">SALVA REPORT</button>
-            </div>
-            <div style="padding: 0 20px; margin-top: 20px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444;">STORICO PARTITE</label>
-                <div id="full-history" style="margin-top: 10px;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="train" class="view">
-        <div class="content-scroll">
-            <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Train Lab</h2></div>
-            <div class="ai-box"><div id="pre-train-feedback">Analisi dati...</div></div>
-            <div class="card"><button class="btn-neon" onclick="generateTraining()">GENERA SESSIONE</button></div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="showView('home', this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
-        <div class="nav-item" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
-        <div class="nav-item" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
-    </nav>
-
-    <script>
-        let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-        let scheduledDays = JSON.parse(localStorage.getItem('cr_days')) || [];
-
-        function initIcons() { if(window.lucide) window.lucide.createIcons(); }
-
-        // --- SETUP LOGIC ---
-        function toggleSetupDay(day) {
-            const idx = scheduledDays.indexOf(day);
-            if(idx > -1) scheduledDays.splice(idx, 1);
-            else scheduledDays.push(day);
-            renderSetupUI();
-        }
-
-        function renderSetupUI() {
-            document.querySelectorAll('.day-check').forEach((el, i) => {
-                const dayMap = [0, 1, 2, 3, 4, 5, 6]; // Corrisponde all'ordine visualizzato
-                const dayId = [1, 2, 3, 4, 5, 6, 0][i]; // Mappa i click ai giorni JS (0=Dom)
-                if(scheduledDays.includes(dayId)) {
-                    el.classList.add('active');
-                    el.querySelector('i').setAttribute('data-lucide', 'check-circle');
-                } else {
-                    el.classList.remove('active');
-                    el.querySelector('i').setAttribute('data-lucide', 'circle');
-                }
-            });
-            initIcons();
-        }
-
-        function finishSetup() {
-            if(scheduledDays.length === 0) { alert("Seleziona almeno un giorno!"); return; }
-            localStorage.setItem('cr_days', JSON.stringify(scheduledDays));
-            document.getElementById('setup-overlay').style.display = 'none';
-            renderCalendar();
-        }
-
-        // --- CALENDAR LOGIC ---
-        function renderCalendar() {
-            const grid = document.getElementById('main-calendar');
-            const now = new Date();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-            const offset = firstDay === 0 ? 6 : firstDay - 1;
-
-            let html = '';
-            ['L','M','M','G','V','S','D'].forEach(h => html += `<div class="cal-day-header">${h}</div>`);
-            
-            for(let i=0; i<offset; i++) html += '<div></div>';
-            
-            for(let d=1; d<=daysInMonth; d++) {
-                const date = new Date(now.getFullYear(), now.getMonth(), d);
-                const dayOfWeek = date.getDay();
-                let status = '';
-
-                // Verifica se è un giorno pianificato dall'utente
-                if(scheduledDays.includes(dayOfWeek)) status = 'planned';
-                
-                // Verifica se è oggi o passato (simulazione dati fatti)
-                if(d < now.getDate() && status === 'planned') status = Math.random() > 0.3 ? 'done' : 'missed';
-                if(d === now.getDate()) status = 'today';
-
-                html += `<div class="cal-cell ${status}">${d}</div>`;
-            }
-            grid.innerHTML = html;
-            document.getElementById('month-label').innerText = now.toLocaleString('it-IT', { month: 'long', year: 'numeric' });
-        }
-
-        // --- MATCH LOGIC (ORIGINALE PRESERVATA) ---
-        function saveMatch() {
-            const m = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
-                s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
-                s2i: +document.getElementById('s2i').value, s2a: +document.getElementById('s2a').value,
-                s3i: +document.getElementById('s3i').value, s3a: +document.getElementById('s3a').value,
-                phys: +document.getElementById('mp').value,
-                focus: +document.getElementById('mf').value,
-                notes: document.getElementById('m-notes').value
-            };
-            let w = 0, l = 0;
-            if(m.s1i > m.s1a) w++; else if(m.s1a > m.s1i) l++;
-            if(m.s2i > m.s2a) w++; else if(m.s2a > m.s2i) l++;
-            if(m.s3i > m.s3a) w++; else if(m.s3a > m.s3i) l++;
-            m.result = w > l ? 'VIT' : 'SCO';
-            m.gW = (m.s1i||0) + (m.s2i||0) + (m.s3i||0);
-            m.gL = (m.s1a||0) + (m.s2a||0) + (m.s3a||0);
-
-            matches.unshift(m);
-            localStorage.setItem('cr_matches', JSON.stringify(matches));
-            showView('home');
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('full-history');
-            const quick = document.getElementById('quick-history');
-            if(!matches.length) return;
-
-            const html = matches.map(m => `
-                <div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}" onclick="openMatchDetail(${m.id})">
-                    <span style="font-size:9px; font-weight:900; background:${m.result==='VIT'?'var(--win)':'var(--loss)'}; color:black; padding:2px 6px; border-radius:4px;">${m.result}</span>
-                    <div style="display:flex; justify-content:space-between; margin-top:5px;">
-                        <span style="font-weight:900;">${m.s1i}-${m.s1a} ${m.s2i?'/ '+m.s2i+'-'+m.s2a:''}</span>
-                        <span style="font-size:10px; color:#666;">${m.date}</span>
-                    </div>
-                </div>
-            `).join('');
-
-            if(list) list.innerHTML = html;
-            if(quick) quick.innerHTML = html.split('</div>')[0] + '</div>';
-
-            const last = matches[0];
-            const cond = Math.max(0, 100 - (last.phys * 0.5)).toFixed(0);
-            document.getElementById('main-score').innerText = cond;
-            document.getElementById('score-bar').style.width = cond + "%";
-            document.getElementById('home-status').innerHTML = last.result + " (" + last.s1i + "-" + last.s1a + ")";
-            
-            // Stats
-            const wins = matches.filter(m => m.result === 'VIT').length;
-            document.getElementById('analytics-section').style.display = 'block';
-            document.getElementById('win-pct-circle').innerText = Math.round((wins/matches.length)*100) + "%";
-            initIcons();
-        }
-
-        function showView(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            if(el) el.classList.add('active');
-            if(id === 'home') { renderCalendar(); renderHistory(); }
-            initIcons();
-        }
-
-        window.onload = function() {
-            if(scheduledDays.length === 0) {
-                document.getElementById('setup-overlay').style.display = 'flex';
-                renderSetupUI();
-            } else {
-                renderCalendar();
-                renderHistory();
-            }
-            initIcons();
-        };
-    </script>
-</body>
-</html>
+                    <div class="set-macro"><span class="set-title">SET 3</span><div class="
