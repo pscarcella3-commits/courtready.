@@ -8,105 +8,86 @@
     <style>
         :root { 
             --neon: #d4ff00; --bg: #000000; --card: #111111; --border: #222222; 
-            --win: #d4ff00; --loss: #ff3333; --xp: #00e5ff; 
+            --win: #d4ff00; --loss: #ff3333; --xp: #00e5ff; --future: #333333;
         }
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-        * { box-sizing: border-box; outline: none; }
+        * { box-sizing: border-box; }
 
-        /* VISTE E SCROLL */
+        /* STRUTTURA BLINDATA */
         .view { display: none; height: 100%; width: 100%; flex-direction: column; overflow-y: auto; position: absolute; top: 0; left: 0; z-index: 1; }
         .view.active { display: flex; z-index: 2; }
-        .content-scroll { padding-bottom: 180px; width: 100%; } /* Fix Barra Menù */
+        .content-scroll { padding-bottom: 180px; width: 100%; }
 
-        /* COMPONENTI CALENDARIO */
-        .cal-wrapper { display: flex; overflow-x: auto; gap: 12px; padding: 10px 20px 20px; scrollbar-width: none; }
-        .cal-wrapper::-webkit-scrollbar { display: none; }
-        .cal-day { 
-            min-width: 55px; height: 75px; background: #0c0c0c; border: 1px solid #222; 
-            border-radius: 15px; display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; cursor: pointer; transition: 0.3s;
+        /* CALENDARIO MENSILE GRID */
+        .calendar-month { background: var(--card); border-radius: 20px; padding: 15px; margin: 10px 20px; border: 1px solid var(--border); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
+        .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 9px; font-weight: 900; color: #444; margin-bottom: 5px; }
+        .cal-day-cell { 
+            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; 
+            font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; cursor: pointer;
         }
-        .cal-day.done { border-color: var(--win); background: rgba(212, 255, 0, 0.05); }
-        .cal-day.missed { border-color: var(--loss); background: rgba(255, 51, 51, 0.05); }
-        .cal-day.future { border-color: #333; opacity: 0.6; }
-        .cal-day b { font-size: 16px; margin-top: 4px; }
-        .cal-day span { font-size: 9px; text-transform: uppercase; color: #666; font-weight: 800; }
+        .cal-day-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
+        .cal-day-cell.missed { background: rgba(255, 51, 51, 0.1); border-color: var(--loss); color: var(--loss); }
+        .cal-day-cell.planned { background: transparent; border-color: var(--future); color: #666; }
+        .cal-day-cell.today { border-color: white; color: white; }
 
-        /* XP BAR */
-        .xp-container { padding: 0 25px; margin-top: 5px; }
-        .xp-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
-        .xp-bar-fill { height: 100%; background: var(--xp); width: 65%; border-radius: 3px; box-shadow: 0 0 10px var(--xp); }
+        /* RADAR CHART & XP (SPOSTATI IN PROFILO) */
+        .radar-box { width: 150px; height: 150px; margin: 20px auto; position: relative; display: flex; align-items: center; justify-content: center; }
+        .radar-svg { transform: rotate(-18deg); width: 120px; height: 120px; fill: rgba(0, 229, 255, 0.1); stroke: var(--xp); stroke-width: 2; }
+        .xp-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .xp-bar-fill { height: 100%; background: var(--xp); width: 65%; box-shadow: 0 0 10px var(--xp); }
 
-        /* RADAR CHART SIMULATO */
-        .radar-box { width: 100px; height: 100px; position: relative; display: flex; align-items: center; justify-content: center; }
-        .radar-svg { transform: rotate(-18deg); width: 80px; height: 80px; fill: rgba(212, 255, 0, 0.2); stroke: var(--neon); stroke-width: 2; }
-
-        /* CARDS E BOTTONI */
+        /* UI ELEMENTS BLINDATI */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 15px; z-index: 10; position: relative; }
-        .btn-neon:active { transform: scale(0.98); }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 4000; }
+        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .nav-item.active { color: var(--neon); }
 
-        /* INPUT MATCH */
+        /* INPUT MATCH BLINDATI */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
         .score-box input { width: 30px; height: 30px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; }
 
-        /* TAGS PER COLPO DEBOLE */
-        .tag-select { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { padding: 8px 12px; background: #080808; border: 1px solid #333; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .tag.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.1); }
-
-        /* OVERLAYS */
-        #match-detail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
-        .match-img-preview { width: 100%; height: 180px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; display: none; }
-
-        /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 4000; }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
-        .nav-item.active { color: var(--neon); }
+        #detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <div id="match-detail">
-        <div onclick="closeMatchDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer;">
-            <i data-lucide="chevron-left"></i> CHIUDI DETTAGLIO
+    <div id="detail-overlay">
+        <div onclick="closeDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer;">
+            <i data-lucide="chevron-left"></i> TORNA INDIETRO
         </div>
-        <div id="detail-content"></div>
+        <div id="overlay-content"></div>
     </div>
 
     <div id="home" class="view active">
         <div class="content-scroll">
-            <div style="padding: 40px 25px 10px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
-                <div style="text-align:right;">
-                    <small style="color:var(--xp); font-weight:900; font-size:10px;">PRO LEVEL 12</small><br>
-                    <small style="color:#666; font-size:8px; font-weight:800;">4500 XP</small>
-                </div>
-            </div>
+            <div style="padding: 40px 25px 10px;"><div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div></div>
             
-            <div class="xp-container">
-                <div class="xp-bar-bg"><div class="xp-bar-fill"></div></div>
-            </div>
-
-            <div class="cal-wrapper" id="home-calendar"></div>
-
             <div class="card" style="display:flex; align-items:center; gap:15px; background: linear-gradient(170deg, #1a1a1a 0%, #000 100%);">
                 <div style="flex:1;">
                     <small style="color:#666; font-weight: 800; font-size: 9px;">CONDITIONING SCORE</small>
-                    <div style="font-size: 48px; font-weight: 900; margin: 5px 0;" id="main-score">--</div>
-                    <div id="home-status" style="font-size:10px; font-weight:700; color:white;"></div>
+                    <div style="font-size: 48px; font-weight: 900;" id="main-score">--</div>
+                    <div id="home-status" style="font-size:10px; font-weight:700; color:white;">Benvenuto Atleta</div>
                 </div>
-                <div class="radar-box">
-                    <svg viewBox="0 0 100 100" class="radar-svg">
-                        <polygon points="50,10 90,40 75,90 25,90 10,40" />
-                    </svg>
-                    <div style="position:absolute; font-size:7px; font-weight:900; color:var(--neon); top:5px;">POWER</div>
+                <i data-lucide="activity" style="color:var(--neon); width:40px; height:40px;"></i>
+            </div>
+
+            <div class="calendar-month">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b style="font-size:14px; text-transform:uppercase;" id="cal-month-name">Gennaio 2026</b>
+                    <div style="display:flex; gap:10px; font-size:8px; font-weight:900;">
+                        <span style="color:var(--win)">● FATTO</span>
+                        <span style="color:var(--loss)">● SALTATO</span>
+                    </div>
                 </div>
+                <div class="cal-header"><div>L</div><div>M</div><div>M</div><div>G</div><div>V</div><div>S</div><div>D</div></div>
+                <div class="calendar-grid" id="main-calendar"></div>
             </div>
 
             <div style="padding: 0 20px; margin-top: 10px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444;">ATTIVITÀ RECENTE</label>
+                <label style="font-size: 10px; font-weight: 900; color: #444;">ULTIMI MATCH</label>
                 <div id="quick-history" style="margin-top: 10px;"></div>
             </div>
         </div>
@@ -115,19 +96,6 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Match Lab</h2></div>
-
-            <div class="card" id="analytics-section" style="display:none; background:#151515;">
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <div style="width:50px; height:50px; border:2px solid var(--neon); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:var(--neon);" id="win-pct">0%</div>
-                    <div style="flex:1">
-                        <small style="font-size:9px; font-weight:800; color:#666;">GAMES ANALYSIS</small>
-                        <div style="display:flex; justify-content:space-between; margin-top:5px;">
-                            <div style="text-align:center;"><div id="total-gw" style="color:var(--win); font-weight:900; font-size:16px;">0</div><small style="font-size:7px; color:#555">VINTI</small></div>
-                            <div style="text-align:center;"><div id="total-gl" style="color:var(--loss); font-weight:900; font-size:16px;">0</div><small style="font-size:7px; color:#555">PERSI</small></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="card">
                 <label style="font-weight: 900; font-size: 10px; color: #555; margin-bottom: 10px; display: block;">SCOREBOARD (3 SET)</label>
@@ -138,210 +106,50 @@
                 </div>
 
                 <label style="font-weight: 900; font-size: 10px; color: #555;">COLPO CRITICO (AI TARGET)</label>
-                <div class="tag-select" id="weak-shot">
-                    <div class="tag active" onclick="selectTag(this)">SERVIZIO</div>
-                    <div class="tag" onclick="selectTag(this)">ROVESCIO</div>
-                    <div class="tag" onclick="selectTag(this)">DIRITTO</div>
-                    <div class="tag" onclick="selectTag(this)">VOLLEY</div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 10px 0;">
+                    <div class="tag" onclick="selectTag(this)" style="padding:8px 12px; background:#080808; border:1px solid #333; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">SERVIZIO</div>
+                    <div class="tag" onclick="selectTag(this)" style="padding:8px 12px; background:#080808; border:1px solid #333; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">ROVESCIO</div>
+                    <div class="tag" onclick="selectTag(this)" style="padding:8px 12px; background:#080808; border:1px solid #333; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">DIRITTO</div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-top:15px;">
-                    <div style="flex:1"><label style="font-size:9px;color:#555">FATICA</label><input type="range" id="mp" min="0" max="100" value="50" style="width:100%"></div>
-                    <div style="flex:1"><label style="font-size:9px;color:#555">FOTO</label><input type="file" id="m-img" accept="image/*" style="font-size:9px;"></div>
+                <div style="margin-top:15px;">
+                    <label style="font-size:9px;color:#555">FOTO MATCH</label><br>
+                    <input type="file" id="m-img" accept="image/*" style="font-size:10px; margin-top:5px;">
                 </div>
 
-                <textarea id="m-notes" rows="2" placeholder="Note sul match..."></textarea>
-                <button class="btn-neon" onclick="saveMatch()">SALVA E GUADAGNA XP</button>
+                <textarea id="m-notes" rows="2" placeholder="Note sul match..." style="width:100%; background:#080808; border:1px solid #222; border-radius:12px; color:white; padding:12px; margin-top:15px; font-family:inherit;"></textarea>
+                <button class="btn-neon" onclick="saveMatch()">SALVA PARTITA</button>
             </div>
-
-            <div id="full-history" style="padding: 0 20px;"></div>
+            
+            <div id="full-history" style="padding:0 20px;"></div>
         </div>
     </div>
 
     <div id="train" class="view">
-        <div class="content-scroll" id="train-setup">
+        <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Train Lab</h2></div>
-            
-            <div class="card" style="border-left: 3px solid var(--neon); background: rgba(212, 255, 0, 0.05);">
+            <div class="card" style="border-left: 3px solid var(--neon);">
                 <div style="font-weight:900; font-size:10px; color:var(--neon);">AI PRE-ANALYSIS</div>
-                <div id="ai-context" style="font-size:12px; margin-top:5px; color:#ccc; line-height:1.4;">Caricamento dati atleta...</div>
+                <div id="ai-context" style="font-size:12px; margin-top:5px; color:#ccc;">Analizzando i tuoi ultimi dati...</div>
             </div>
-
             <div class="card">
-                <label style="font-weight: 900; font-size: 10px; color: #555;">DURATA</label>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-top:10px;">
-                    <button style="background:#080808; border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:10px; font-weight:800;">15 MIN</button>
-                    <button style="background:#080808; border:2px solid var(--neon); color:var(--neon); padding:10px; border-radius:10px; font-size:10px; font-weight:800;">30 MIN</button>
-                    <button style="background:#080808; border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:10px; font-weight:800;">45 MIN</button>
-                </div>
-                <button class="btn-neon" onclick="generateTraining()">GENERA WORKOUT PERSONALIZZATO</button>
+                <button class="btn-neon" onclick="generateTraining()">GENERA WORKOUT AI</button>
             </div>
-        </div>
-
-        <div class="content-scroll" id="train-list" style="display:none;">
-            <div id="exercises-container" style="padding: 20px;"></div>
-            <div style="padding: 0 20px;">
-                <button class="btn-neon">AVVIA SESSIONE</button>
-                <div onclick="location.reload()" style="text-align:center; color:#555; font-size:10px; margin-top:20px; font-weight:900;">ANNULLA</div>
-            </div>
+            <div id="train-list" style="padding:0 20px;"></div>
         </div>
     </div>
 
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="showView('home', this)"><i data-lucide="layout-grid"></i><span>HOME</span></div>
-        <div class="nav-item" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
-        <div class="nav-item" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
-    </nav>
-
-    <script>
-        let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-
-        function showView(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(el) el.classList.add('active');
+    <div id="profile" class="view">
+        <div class="content-scroll">
+            <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Atleta</h2></div>
             
-            if(id === 'home') { renderCalendar(); renderHistory(); }
-            if(id === 'match') renderHistory();
-            if(id === 'train') updateTrainAI();
-            lucide.createIcons();
-        }
+            <div class="card" style="text-align:center;">
+                <div style="font-size:12px; font-weight:900; color:var(--xp);">LIVELLO 12</div>
+                <div class="xp-bar-bg"><div class="xp-bar-fill"></div></div>
+                <small style="color:#666; font-size:10px; font-weight:800;">4500 / 5000 XP PER IL LIVELLO SUCCESSIVO</small>
+            </div>
 
-        function selectTag(el) {
-            el.parentElement.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        // --- CALENDARIO (SMART) ---
-        function renderCalendar() {
-            const cal = document.getElementById('home-calendar');
-            const days = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
-            const today = new Date();
-            let html = '';
-
-            for(let i = -3; i < 4; i++) {
-                const d = new Date();
-                d.setDate(today.getDate() + i);
-                let status = i < 0 ? (Math.random() > 0.3 ? 'done' : 'missed') : (i === 0 ? 'done' : 'future');
-                html += `<div class="cal-day ${status}"><span>${days[d.getDay()]}</span><b>${d.getDate()}</b></div>`;
-            }
-            cal.innerHTML = html;
-        }
-
-        // --- LOGICA MATCH (BLINDATA) ---
-        function saveMatch() {
-            const m = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
-                s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
-                s2i: +document.getElementById('s2i').value, s2a: +document.getElementById('s2a').value,
-                s3i: +document.getElementById('s3i').value, s3a: +document.getElementById('s3a').value,
-                phys: +document.getElementById('mp').value,
-                weak: document.querySelector('.tag.active').innerText,
-                notes: document.getElementById('m-notes').value
-            };
-
-            // Calcolo Risultato e Games (Richiesta specifica utente)
-            let wSets = 0, lSets = 0;
-            if(m.s1i > m.s1a) wSets++; else if(m.s1a > m.s1i) lSets++;
-            if(m.s2i > m.s2a) wSets++; else if(m.s2a > m.s2i) lSets++;
-            if(m.s3i > m.s3a) wSets++; else if(m.s3a > m.s3i) lSets++;
-            
-            m.result = wSets > lSets ? 'VIT' : 'SCO';
-            m.gW = m.s1i + m.s2i + m.s3i;
-            m.gL = m.s1a + m.s2a + m.s3a;
-
-            const file = document.getElementById('m-img').files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => { m.img = e.target.result; finishSave(m); };
-                reader.readAsDataURL(file);
-            } else { finishSave(m); }
-        }
-
-        function finishSave(m) {
-            matches.unshift(m);
-            localStorage.setItem('cr_matches', JSON.stringify(matches));
-            showView('home');
-        }
-
-        function renderHistory() {
-            const quick = document.getElementById('quick-history');
-            const full = document.getElementById('full-history');
-            if(!matches.length) return;
-
-            const last = matches[0];
-            const html = matches.map(m => `
-                <div class="card" style="margin:10px 0; border-left:4px solid ${m.result==='VIT'?'var(--win)':'var(--loss)'}" onclick="openMatchDetail(${m.id})">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="font-size:14px;">${m.result} (${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a})</b>
-                        <small style="color:#666">${m.date}</small>
-                    </div>
-                </div>
-            `).join('');
-
-            if(quick) quick.innerHTML = html.slice(0, 500); // Solo i primi
-            if(full) full.innerHTML = html;
-
-            // Update Stats
-            document.getElementById('main-score').innerText = 100 - last.phys;
-            document.getElementById('home-status').innerHTML = `<span style="color:${last.result==='VIT'?'var(--win)':'var(--loss)'}">${last.result==='VIT'?'VITTORIA':'SCONFITTA'}</span> <span style="color:#666">(${last.s1i}-${last.s1a} / ${last.s2i}-${last.s2a})</span>`;
-            
-            // Analytics Games Counter (VERDE/ROSSO)
-            document.getElementById('analytics-section').style.display = 'block';
-            let totW = 0, totL = 0;
-            matches.forEach(x => { totW += x.gW; totL += x.gL; });
-            document.getElementById('total-gw').innerText = totW;
-            document.getElementById('total-gl').innerText = totL;
-            document.getElementById('win-pct').innerText = Math.round((matches.filter(x=>x.result==='VIT').length / matches.length)*100) + "%";
-        }
-
-        function openMatchDetail(id) {
-            const m = matches.find(x => x.id === id);
-            document.getElementById('detail-content').innerHTML = `
-                <div class="card">
-                    ${m.img ? `<img src="${m.img}" class="match-img-preview" style="display:block;">` : ''}
-                    <h2 style="margin:0">${m.result === 'VIT' ? 'VITTORIA' : 'SCONFITTA'}</h2>
-                    <p style="color:var(--neon); font-weight:800; font-size:12px;">TARGET AI: ${m.weak}</p>
-                    <div style="background:#000; padding:15px; border-radius:12px; text-align:center; font-size:20px; font-weight:900; margin:15px 0;">
-                        ${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}
-                    </div>
-                    <small style="color:#555">NOTE</small>
-                    <p style="font-size:13px; color:#ccc;">${m.notes || 'Nessuna nota salvata.'}</p>
-                </div>
-            `;
-            document.getElementById('match-detail').style.display = 'flex';
-        }
-
-        function closeMatchDetail() { document.getElementById('match-detail').style.display = 'none'; }
-
-        // --- TRAIN LAB AI ---
-        function updateTrainAI() {
-            const ctx = document.getElementById('ai-context');
-            if(!matches.length) { ctx.innerText = "Nessun dato. Inizia a giocare!"; return; }
-            const last = matches[0];
-            ctx.innerHTML = `L'analisi dell'ultimo match indica fatica al <b>${last.phys}%</b> e criticità nel <b>${last.weak}</b>. Preparo sessione di recupero tecnico.`;
-        }
-
-        function generateTraining() {
-            const last = matches[0] || {weak: 'Generale'};
-            const exs = [
-                {n: "Footwork " + last.weak, d: "Esercizio specifico per la tecnica", t: "45s"},
-                {n: "Core Power", d: "Stabilità addominale", t: "30s"},
-                {n: "Stretching Attivo", d: "Recupero muscolare", t: "60s"}
-            ];
-            document.getElementById('exercises-container').innerHTML = exs.map(e => `
-                <div class="card" style="margin:10px 0; display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>${e.n}</b><br><small style="color:#666">${e.d}</small></div>
-                    <div style="color:var(--neon); font-weight:900;">${e.t}</div>
-                </div>
-            `).join('');
-            document.getElementById('train-setup').style.display = 'none';
-            document.getElementById('train-list').style.display = 'block';
-        }
-
-        window.onload = () => { renderCalendar(); renderHistory(); lucide.createIcons(); };
-    </script>
-</body>
-</html>
+            <div class="card">
+                <div style="text-align:center; font-weight:900; font-size:12px; color:#555;">PERFORMANCE RADAR</div>
+                <div class="radar-box">
+                    <svg
