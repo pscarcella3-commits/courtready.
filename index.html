@@ -6,6 +6,7 @@
     <title>CourtReady Pro</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* COLORI E VARIABILI */
         :root { 
             --neon: #d4ff00; 
             --bg: #000000; 
@@ -15,14 +16,16 @@
             --loss: #ff3333; 
         }
         
+        /* RESET E BASE */
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+        /* GESTIONE VISTE */
         .view { display: none; height: 100%; flex-direction: column; overflow-y: auto; position: relative; }
         .view.active { display: flex; }
-        /* Padding bottom aumentato per non far coprire i contenuti dalla navbar */
         .content-scroll { padding-bottom: 160px; width: 100%; }
 
+        /* ELEMENTI COMUNI */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
         .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
         .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
@@ -31,34 +34,61 @@
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; cursor: pointer; margin-top: 15px; }
 
-        /* --- MATCH LAB MODS --- */
+        /* --- MATCH LAB (STYLES ORIGINALI RIPRISTINATI) --- */
+        .analytics-card { background: linear-gradient(145deg, #151515, #0a0a0a); border: 1px solid #333; }
+        .stat-main { display: flex; align-items: center; gap: 20px; margin-top: 15px; }
+        .stat-circle { width: 60px; height: 60px; border: 3px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--neon); }
+        
+        .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
+        .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
+        .set-title { font-size: 9px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .score-split { display: flex; justify-content: center; gap: 10px; align-items: center; }
+        .score-box { display: flex; flex-direction: column; align-items: center; }
+        .score-box label { font-size: 8px; color: #444; margin-bottom: 4px; font-weight: 900; }
+        .score-box input { width: 30px; height: 30px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; font-size: 14px; outline: none; padding: 0; }
+        
+        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #888; font-weight: 700; margin: 15px 0 8px; }
+        input[type=range] { width: 100%; accent-color: var(--neon); margin: 0; height: 4px; background: #333; border-radius: 2px; appearance: none; }
+        textarea { width: 100%; background: #080808; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; font-family: inherit; margin-top: 15px; resize: none; font-size: 12px; }
+
         .history-item { border-left: 3px solid #333; background: #0c0c0c; padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
         .history-item:active { background: #1a1a1a; }
         .history-item.win { border-color: var(--win); }
         .history-item.loss { border-color: var(--loss); }
-        
-        /* Overlay Dettaglio Match */
+        .res-tag { font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
+        .win .res-tag { background: var(--win); color: black; }
+        .loss .res-tag { background: var(--loss); color: white; }
+
+        /* OVERLAY DETTAGLIO MATCH */
         #match-detail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
 
-        /* --- TRAIN LAB MODS --- */
+        /* --- TRAIN LAB (NEW TECH DESIGN) --- */
         .option-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 0 20px; }
-        .opt-btn { background: #080808; border: 1px solid #222; padding: 12px 5px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; }
+        .opt-btn { background: #080808; border: 1px solid #222; padding: 12px 5px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; transition: 0.2s; }
         .opt-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
 
-        /* PLAYER VIDEO */
+        /* PLAYER VIDEO STILIZZATO */
         #immersive-session { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 9999; display: none; flex-direction: column; }
-        .video-player-ui { width: 100%; height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); }
+        .video-player-ui { width: 100%; height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); overflow: hidden; }
+        .tech-grid { position: absolute; width: 100%; height: 100%; opacity: 0.1; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 20px 20px; }
+        
+        .imm-controls { padding: 30px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .timer-big { font-size: 90px; font-weight: 900; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; letter-spacing: -2px; }
+        .progress-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin-top: auto; }
+        .progress-fill { height: 100%; width: 0%; background: var(--neon); transition: width 1s linear; }
 
         /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 1000; }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
+        .nav-item i { width: 22px; height: 22px; }
+        .nav-item span { font-size: 9px; font-weight: 800; letter-spacing: 0.5px; }
         .nav-item.active { color: var(--neon); }
     </style>
 </head>
 <body>
 
     <div id="match-detail">
-        <div onclick="closeMatchDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px;">
+        <div onclick="closeMatchDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer;">
             <i data-lucide="chevron-left"></i> TORNA ALLO STORICO
         </div>
         <div id="detail-content"></div>
@@ -71,14 +101,15 @@
                 <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
             </div>
             
-            <div class="card" style="background: linear-gradient(170deg, #1a1a1a 0%, #000 100%);">
-                <small style="color:#666; font-weight: 800;">CONDITIONING SCORE</small>
-                <div style="font-size: 56px; font-weight: 900; margin: 10px 0;" id="main-score">--</div>
-                <div id="home-status" style="font-size: 12px; color: var(--neon); font-weight: 700;">Nessun match recente</div>
+            <div class="card" style="background: linear-gradient(170deg, #1a1a1a 0%, #000 100%); border-color: #333;">
+                <small style="color:#666; font-weight: 800; letter-spacing: 1px;">CONDITIONING SCORE</small>
+                <div style="font-size: 56px; font-weight: 900; margin: 10px 0; color: white;" id="main-score">--</div>
+                <div style="height: 4px; background: #222; border-radius: 2px; width: 100%;"><div id="score-bar" style="height: 100%; width: 0%; background: var(--neon); border-radius: 2px;"></div></div>
+                <div id="home-status" style="margin-top:10px; font-size:11px; color:#888; font-weight:700;"></div>
             </div>
 
             <div style="padding: 0 20px; margin-top: 10px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444;">ULTIMO RISULTATO</label>
+                <label style="font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase;">Ultima Attività</label>
                 <div id="quick-history" style="margin-top: 10px;"></div>
             </div>
         </div>
@@ -87,34 +118,54 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Match Lab</h2></div>
+
+            <div class="card analytics-card" id="analytics-section" style="display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <small style="font-size: 10px; font-weight: 900; color: #888;">STATISTICHE STAGIONE</small>
+                    <i data-lucide="bar-chart-2" style="width:14px; color:#555"></i>
+                </div>
+                <div class="stat-main">
+                    <div class="stat-circle" id="win-pct-circle">0%</div>
+                    <div style="flex:1">
+                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; font-weight:800;">
+                            <span>VITTORIE</span><span id="win-count" style="color:white">0/0</span>
+                        </div>
+                        <div style="height:6px; background:#222; border-radius:3px;"><div id="win-bar" style="height:100%; background:var(--neon); width:0%; border-radius:3px;"></div></div>
+                    </div>
+                </div>
+            </div>
             
             <div class="card">
+                <label style="font-weight: 900; font-size: 10px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD</label>
                 <div class="set-container">
                     <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div></div></div>
                     <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div></div></div>
                     <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s3i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s3a" value="0"></div></div></div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <div style="flex:1">
                         <label style="font-size:9px; color:#555; font-weight:800;">BPM MEDIO</label>
-                        <input type="number" id="m-bpm" placeholder="140" style="width:100%; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px;">
+                        <input type="number" id="m-bpm" placeholder="140" style="width:100%; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px; margin-top:5px; outline:none; font-weight:bold;">
                     </div>
                     <div style="flex:1">
-                        <label style="font-size:9px; color:#555; font-weight:800;">FOTO MATCH</label>
-                        <input type="file" id="m-img" style="font-size:8px;">
+                        <label style="font-size:9px; color:#555; font-weight:800;">FOTO</label>
+                        <input type="file" id="m-img" style="font-size:9px; margin-top:5px;">
                     </div>
                 </div>
 
-                <div class="range-label"><span>Fatica Fisica</span><span id="pv" style="color:white">50%</span></div>
+                <div class="range-label"><span>Focus Mentale</span><span id="fv" style="color:white">50%</span></div>
+                <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
+                
+                <div class="range-label"><span>Condizione Fisica</span><span id="pv" style="color:white">50%</span></div>
                 <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
 
-                <textarea id="m-notes" rows="3" placeholder="Note tattiche..."></textarea>
+                <textarea id="m-notes" rows="3" placeholder="Note tattiche sul match..."></textarea>
                 <button class="btn-neon" onclick="saveMatch()">SALVA REPORT</button>
             </div>
 
             <div style="padding: 0 20px; margin-top: 20px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444;">STORICO PARTITE (CLICCA PER DETTAGLI)</label>
+                <label style="font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase;">Storico Partite (Clicca)</label>
                 <div id="full-history" style="margin-top: 10px;"></div>
             </div>
         </div>
@@ -123,19 +174,22 @@
     <div id="train" class="view">
         <div class="content-scroll" id="train-setup">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Train Lab</h2></div>
+            
             <div class="card">
-                <label style="font-weight: 900; font-size: 10px; color: #555;">MODALITÀ</label>
+                <label style="font-weight: 900; font-size: 10px; color: #555; letter-spacing: 1px;">MODALITÀ</label>
                 <div class="option-grid">
                     <div class="opt-btn active" onclick="setOpt(this)">CORPO LIBERO</div>
                     <div class="opt-btn" onclick="setOpt(this)">ATTREZZI</div>
                     <div class="opt-btn" onclick="setOpt(this)">MISTO</div>
                 </div>
-                <label style="font-weight: 900; font-size: 10px; color: #555;">DURATA</label>
+
+                <label style="font-weight: 900; font-size: 10px; color: #555; letter-spacing: 1px;">DURATA SESSIONE</label>
                 <div class="option-grid">
                     <div class="opt-btn active" data-m="10" onclick="setOpt(this)">10 MIN</div>
                     <div class="opt-btn" data-m="20" onclick="setOpt(this)">20 MIN</div>
                     <div class="opt-btn" data-m="30" onclick="setOpt(this)">30 MIN</div>
                 </div>
+
                 <button class="btn-neon" onclick="generateTraining()">GENERA SESSIONE AI</button>
             </div>
         </div>
@@ -143,22 +197,31 @@
         <div class="content-scroll" id="train-list" style="display:none;">
             <div style="padding: 40px 25px 15px; display:flex; justify-content:space-between; align-items:center;">
                 <h2 style="font-size: 24px; margin: 0; font-weight: 900;">Il tuo Piano</h2>
-                <div id="ai-status" style="font-size:9px; color:var(--neon); font-weight:900;">ADATTATO ALL'ULTIMO MATCH</div>
+                <div id="ai-feedback" style="font-size:9px; font-weight:900; color:var(--neon); background:#111; padding:5px 10px; border-radius:8px;"></div>
             </div>
+            
             <div id="exercises-container" style="padding: 0 20px;"></div>
+            
             <div style="padding: 20px;">
                 <button class="btn-neon" onclick="startImmersive()">AVVIA PLAYER</button>
-                <div onclick="backToSetup()" style="text-align:center; font-size:10px; font-weight:900; color:#555; margin-top:20px; cursor:pointer;">TORNA INDIETRO</div>
+                <div onclick="backToSetup()" style="text-align:center; font-size:10px; font-weight:900; color:#555; margin-top:20px; cursor:pointer; padding:10px;">ANNULLA E TORNA INDIETRO</div>
             </div>
         </div>
     </div>
 
     <div id="immersive-session">
-        <div class="video-player-ui"><div style="text-align:center; color:#333;"><i data-lucide="play" size="48"></i></div></div>
-        <div style="padding: 30px; text-align: center;">
-            <h2 id="imm-name" style="font-size: 32px; margin: 0; font-weight: 900;">NOME ESERCIZIO</h2>
-            <div class="timer-big" id="imm-timer" style="font-size: 80px; font-weight: 900;">00</div>
-            <button class="btn-neon" onclick="stopImmersive()">CHIUDI</button>
+        <div class="video-player-ui">
+            <div class="tech-grid"></div>
+            <div class="video-placeholder" id="vid-placeholder">
+                <div style="font-size: 40px; color: #333; margin-bottom: 10px;"><i data-lucide="activity"></i></div>
+                <div style="color: var(--neon); font-family: monospace; font-size: 12px; letter-spacing: 2px;">LIVE FEED</div>
+            </div>
+        </div>
+        <div class="imm-controls">
+            <h2 id="imm-name" style="font-size: 32px; margin: 0; font-weight: 900; text-transform: uppercase;">EXERCISE</h2>
+            <div class="timer-big" id="imm-timer">00</div>
+            <div class="progress-bar-bg"><div id="progress-fill" class="progress-fill"></div></div>
+            <div onclick="stopImmersive()" style="color:var(--loss); font-size:12px; font-weight:900; margin-top:30px; cursor:pointer;">CHIUDI SESSIONE</div>
         </div>
     </div>
 
@@ -170,14 +233,28 @@
 
     <script>
         lucide.createIcons();
+        
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
+        
+        // DATABASE ESERCIZI BASE
+        const db = [
+            { n: "Squat Jump", d: "Esplosività pura dalle gambe", t: 30 },
+            { n: "Plank", d: "Tenuta isometrica addome", t: 45 },
+            { n: "Affondi", d: "Controllo e stabilità unilaterale", t: 40 },
+            { n: "Shadow Swing", d: "Simulazione colpi a vuoto", t: 30 },
+            { n: "Mountain Climber", d: "Cardio ad alta intensità", t: 20 }
+        ];
+
+        let currentPlan = [];
+        let curIdx = 0;
+        let timerInt;
 
         function showView(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             if(el) el.classList.add('active');
-            renderHistory();
+            if(id === 'home' || id === 'match') renderHistory();
         }
 
         function setOpt(el) {
@@ -185,23 +262,28 @@
             el.classList.add('active');
         }
 
+        // --- MATCH LAB LOGIC (RESTORED) ---
         function saveMatch() {
             const m = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
                 s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
                 s2i: +document.getElementById('s2i').value, s2a: +document.getElementById('s2a').value,
                 s3i: +document.getElementById('s3i').value, s3a: +document.getElementById('s3a').value,
                 phys: +document.getElementById('mp').value,
+                focus: +document.getElementById('mf').value,
+                notes: document.getElementById('m-notes').value,
                 bpm: document.getElementById('m-bpm').value,
-                notes: document.getElementById('m-notes').value
+                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
+                id: Date.now()
             };
             
             let w = 0, l = 0;
             if(m.s1i > m.s1a) w++; else if(m.s1a > m.s1i) l++;
             if(m.s2i > m.s2a) w++; else if(m.s2a > m.s2i) l++;
             if(m.s3i > m.s3a) w++; else if(m.s3a > m.s3i) l++;
+            
             m.result = w > l ? 'VIT' : 'SCO';
+            m.gW = (m.s1i||0) + (m.s2i||0) + (m.s3i||0);
+            m.gL = (m.s1a||0) + (m.s2a||0) + (m.s3a||0);
 
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
@@ -211,28 +293,45 @@
         function renderHistory() {
             const list = document.getElementById('full-history');
             const quick = document.getElementById('quick-history');
-            if(!matches.length) return;
+            
+            if(!matches.length) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:#444; font-size:12px;">Nessun match registrato</div>';
+                if(quick) quick.innerHTML = list.innerHTML;
+                document.getElementById('home-status').innerText = "Inizia registrando una partita";
+                return;
+            }
 
             const html = matches.map(m => `
                 <div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}" onclick="openMatchDetail(${m.id})">
+                    <span class="res-tag">${m.result}</span>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span style="font-weight:900; font-size:16px;">${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a}</span>
-                            <div style="font-size:10px; color:#555;">${m.date} - ${m.result === 'VIT' ? 'VITTORIA' : 'SCONFITTA'}</div>
-                        </div>
-                        <i data-lucide="chevron-right" style="color:#333"></i>
+                        <span style="font-weight:900; font-size:16px; color:white;">
+                            ${m.s1i}-${m.s1a} ${m.s2i ? '/ '+m.s2i+'-'+m.s2a : ''}
+                        </span>
+                        <span style="font-size:10px; color:#666">${m.date}</span>
                     </div>
                 </div>
             `).join('');
 
             list.innerHTML = html;
-            quick.innerHTML = html.split('</div>')[0] + '</div>'; // Prende il primo item
+            if(quick) quick.innerHTML = html.slice(0, 300).split('</div>')[0] + '</div>'; // Solo il primo
             
-            // Update Home Score
-            const last = matches[0];
-            document.getElementById('main-score').innerText = (100 - last.phys).toFixed(0);
-            document.getElementById('home-status').innerText = `Ultimo match: ${last.result} (Fatica: ${last.phys}%)`;
-            lucide.createIcons();
+            // Stats & Home logic
+            if(matches.length > 0) {
+                const last = matches[0];
+                const condScore = Math.max(0, 100 - (last.phys * 0.5)).toFixed(0);
+                document.getElementById('main-score').innerText = condScore;
+                document.getElementById('score-bar').style.width = condScore + "%";
+                document.getElementById('home-status').innerText = `Ultimo match: ${last.result} (Fatica: ${last.phys}%)`;
+                
+                // Analytics
+                const wins = matches.filter(x => x.result === 'VIT').length;
+                document.getElementById('analytics-section').style.display = 'block';
+                document.getElementById('win-count').innerText = wins + " / " + matches.length;
+                const pct = Math.round((wins/matches.length)*100);
+                document.getElementById('win-pct-circle').innerText = pct + "%";
+                document.getElementById('win-bar').style.width = pct + "%";
+            }
         }
 
         function openMatchDetail(id) {
@@ -240,45 +339,78 @@
             const content = document.getElementById('detail-content');
             content.innerHTML = `
                 <div class="card" style="margin:0; border-color:var(--neon);">
-                    <h2 style="font-size:40px; margin:0;">${m.result}</h2>
+                    <h2 style="font-size:40px; margin:0; text-transform:uppercase;">${m.result === 'VIT' ? 'VITTORIA' : 'SCONFITTA'}</h2>
                     <p style="color:var(--neon); font-weight:800;">${m.date}</p>
-                    <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div><small style="color:#555;">PUNTEGGIO</small><br><b>${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a}</b></div>
-                        <div><small style="color:#555;">FATICA FISICA</small><br><b>${m.phys}%</b></div>
-                        <div><small style="color:#555;">RITMO CARDIACO</small><br><b>${m.bpm || '--'} BPM</b></div>
+                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+                    
+                    <div style="background:#080808; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;">
+                        <div style="font-size:24px; font-weight:900; letter-spacing:2px;">
+                             ${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}
+                        </div>
                     </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div style="background:#111; padding:10px; border-radius:8px;">
+                            <small style="color:#555; font-size:9px;">FATICA</small><br>
+                            <b style="font-size:16px;">${m.phys}%</b>
+                        </div>
+                        <div style="background:#111; padding:10px; border-radius:8px;">
+                            <small style="color:#555; font-size:9px;">FOCUS</small><br>
+                            <b style="font-size:16px;">${m.focus}%</b>
+                        </div>
+                        <div style="background:#111; padding:10px; border-radius:8px;">
+                            <small style="color:#555; font-size:9px;">BPM AVG</small><br>
+                            <b style="font-size:16px;">${m.bpm || '--'}</b>
+                        </div>
+                    </div>
+                    
                     <div style="margin-top:20px;">
-                        <small style="color:#555;">NOTE POST-MATCH</small>
-                        <p style="font-size:14px; color:#ccc;">${m.notes || 'Nessuna nota inserita'}</p>
+                        <small style="color:#555; font-weight:900;">NOTE COACH</small>
+                        <p style="font-size:13px; color:#ccc; line-height:1.4;">${m.notes || 'Nessuna nota registrata.'}</p>
                     </div>
                 </div>
             `;
             document.getElementById('match-detail').style.display = 'flex';
         }
-
         function closeMatchDetail() { document.getElementById('match-detail').style.display = 'none'; }
 
+        // --- TRAIN LAB LOGIC (UPDATED WITH AI FEEDBACK) ---
         function generateTraining() {
+            const mins = parseInt(document.querySelector('[data-m].active').dataset.m);
+            const targetSec = mins * 60;
+            let currentSec = 0;
+            currentPlan = [];
+            
+            // AI Logic
             const lastPhys = matches.length ? matches[0].phys : 50;
-            const container = document.getElementById('exercises-container');
+            const aiLabel = document.getElementById('ai-feedback');
             
-            // Esempio logica AI basata su fatica
-            let exercises = [
-                {n: "Squat", t: 40}, {n: "Pushups", t: 30}, {n: "Plank", t: 30}
-            ];
-            
-            if(lastPhys > 70) {
-                document.getElementById('ai-status').innerText = "RECUPERO ATTIVO (FATICA ALTA)";
-                exercises = [{n: "Stretching", t: 60}, {n: "Mobilità", t: 60}];
+            let currentPool = [...db];
+            if(lastPhys > 75) {
+                aiLabel.innerText = "COACH: FATICA ALTA -> RECUPERO";
+                // Filtra solo esercizi leggeri (simulazione)
+                currentPool = [
+                   { n: "Stretching Dinamico", d: "Mobilità anca e schiena", t: 60 },
+                   { n: "Respirazione Core", d: "Focus diaframmatico", t: 45 },
+                   { n: "Plank", d: "Tenuta isometrica", t: 30 }
+                ];
             } else {
-                document.getElementById('ai-status').innerText = "POTENZA (PRONTO AL MATCH)";
+                aiLabel.innerText = "COACH: SEI FRESCO -> POTENZA";
             }
 
-            container.innerHTML = exercises.map(ex => `
-                <div class="card" style="margin:5px 0; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <span><b>${ex.n}</b></span>
-                    <span style="color:var(--neon)">${ex.t}s</span>
+            while(currentSec < targetSec) {
+                const ex = currentPool[Math.floor(Math.random() * currentPool.length)];
+                currentPlan.push({...ex});
+                currentSec += ex.t + 10; 
+            }
+
+            document.getElementById('exercises-container').innerHTML = currentPlan.map((e,i) => `
+                <div style="background:#111; padding:15px; border-radius:12px; margin-bottom:8px; border:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:900; font-size:13px; color:white;">${e.n}</div>
+                        <div style="font-size:10px; color:#666;">${e.d}</div>
+                    </div>
+                    <div style="font-weight:900; color:var(--neon); font-size:14px;">${e.t}s</div>
                 </div>
             `).join('');
 
@@ -291,10 +423,48 @@
             document.getElementById('train-setup').style.display = 'block';
         }
 
-        function startImmersive() { document.getElementById('immersive-session').style.display = 'flex'; }
-        function stopImmersive() { document.getElementById('immersive-session').style.display = 'none'; }
+        function startImmersive() {
+            curIdx = 0;
+            document.getElementById('immersive-session').style.display = 'flex';
+            runStep();
+        }
+
+        function runStep() {
+            if(curIdx >= currentPlan.length) {
+                stopImmersive();
+                return;
+            }
+            const ex = currentPlan[curIdx];
+            document.getElementById('imm-name').innerText = ex.n;
+            
+            let t = ex.t;
+            document.getElementById('imm-timer').innerText = t;
+            
+            const u = new SpeechSynthesisUtterance(ex.n);
+            u.lang = 'it-IT';
+            window.speechSynthesis.speak(u);
+
+            timerInt = setInterval(() => {
+                t--;
+                document.getElementById('imm-timer').innerText = t < 10 ? "0"+t : t;
+                const pct = ((ex.t - t) / ex.t) * 100;
+                document.getElementById('progress-fill').style.width = pct + "%";
+                if(t <= 0) {
+                    clearInterval(timerInt);
+                    curIdx++;
+                    runStep();
+                }
+            }, 1000);
+        }
+
+        function stopImmersive() {
+            clearInterval(timerInt);
+            window.speechSynthesis.cancel();
+            document.getElementById('immersive-session').style.display = 'none';
+        }
 
         window.onload = renderHistory;
+
     </script>
 </body>
 </html>
