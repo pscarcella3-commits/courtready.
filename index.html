@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CourtReady Pro</title>
-    <script src="https://unpkg.com/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { 
             --neon: #d4ff00; --bg: #000000; --card: #111111; --border: #222222; 
@@ -13,59 +13,52 @@
         body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: -apple-system, system-ui, sans-serif; height: 100%; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* VISTE */
         .view { display: none; height: 100%; width: 100%; flex-direction: column; overflow-y: auto; position: absolute; top: 0; left: 0; }
-        .view.active { display: flex; z-index: 2; }
+        .view.active { display: flex; z-index: 10; }
         .content-scroll { padding-bottom: 120px; width: 100%; }
 
-        /* OVERLAYS (Z-INDEX ALTO) */
+        /* OVERLAYS */
         #setup-overlay, #match-detail, #immersive-session { 
-            position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; 
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; padding: 40px 20px;
         }
 
-        /* COMPONENTI GRAFICI */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+        /* UI ELEMENTS */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
         
         /* CALENDARIO */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
         .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; }
         .cal-cell.planned { border-color: var(--future); color: #666; }
-        .cal-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
         .cal-cell.today { background: white; color: black; }
+        .cal-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
 
         /* NAVBAR */
         .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 5000; }
         .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 10px; font-weight: 800; }
         .nav-item.active { color: var(--neon); }
 
-        /* MATCH SPECIFICS */
+        /* MATCH & TRAIN SPECIFICS */
         .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
-        .score-box input { width: 32px; height: 32px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; }
-        
-        /* TRAIN SPECIFICS */
+        .score-box input { width: 30px; background: #1a1a1a; border: 1px solid #333; color: var(--neon); text-align: center; font-weight: 900; }
         .opt-btn { background: #080808; border: 1px solid #222; padding: 12px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; }
         .opt-btn.active { border-color: var(--neon); color: var(--neon); }
-        #imm-timer { font-size: 90px; font-weight: 900; margin: 20px 0; font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
 
     <div id="setup-overlay">
-        <div style="padding: 40px 25px;">
-            <h2 style="font-size: 28px; font-weight: 900;">PIANIFICA</h2>
-            <p style="color:#666; margin-bottom:30px;">In quali giorni ti alleni?</p>
-            <div id="setup-days">
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(1, this)">Lunedì</button>
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(2, this)">Martedì</button>
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(3, this)">Mercoledì</button>
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(4, this)">Giovedì</button>
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(5, this)">Venerdì</button>
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(6, this)">Sabato</button>
-                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(0, this)">Domenica</button>
-            </div>
-            <button class="btn-neon" onclick="finishSetup()">CONFERMA</button>
+        <h2 style="font-weight: 900;">PIANIFICA I TUOI GIORNI</h2>
+        <div id="day-selector" style="margin: 20px 0;">
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(1, this)">Lunedì</div>
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(2, this)">Martedì</div>
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(3, this)">Mercoledì</div>
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(4, this)">Giovedì</div>
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(5, this)">Venerdì</div>
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(6, this)">Sabato</div>
+            <div class="opt-btn" style="margin-bottom:8px" onclick="selDay(0, this)">Domenica</div>
         </div>
+        <button class="btn-neon" onclick="saveSetup()">COMINCIA</button>
     </div>
 
     <div id="home" class="view active">
@@ -73,11 +66,11 @@
             <div style="padding: 40px 25px 10px; font-weight: 900; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
             <div class="card">
                 <small style="color:#666; font-weight: 800;">CONDITIONING SCORE</small>
-                <div style="font-size: 56px; font-weight: 900;" id="main-score">--</div>
+                <div style="font-size: 56px; font-weight: 900;" id="home-score">--</div>
             </div>
             <div class="card">
-                <b id="month-label">---</b>
-                <div class="cal-grid" id="main-calendar"></div>
+                <b id="month-label">Mese Corrente</b>
+                <div class="cal-grid" id="calendar-grid"></div>
             </div>
         </div>
     </div>
@@ -87,176 +80,164 @@
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; font-weight: 900;">Match Lab</h2></div>
             <div class="card">
                 <div style="display:flex; gap:8px; margin-bottom:20px;">
-                    <div class="set-macro"><span>SET 1</span><br><input type="number" id="s1i" value="0"> - <input type="number" id="s1a" value="0"></div>
-                    <div class="set-macro"><span>SET 2</span><br><input type="number" id="s2i" value="0"> - <input type="number" id="s2a" value="0"></div>
-                    <div class="set-macro"><span>SET 3</span><br><input type="number" id="s3i" value="0"> - <input type="number" id="s3a" value="0"></div>
+                    <div class="set-macro">SET 1<br><div class="score-box"><input type="number" id="s1i" value="0">-<input type="number" id="s1a" value="0"></div></div>
+                    <div class="set-macro">SET 2<br><div class="score-box"><input type="number" id="s2i" value="0">-<input type="number" id="s2a" value="0"></div></div>
+                    <div class="set-macro">SET 3<br><div class="score-box"><input type="number" id="s3i" value="0">-<input type="number" id="s3a" value="0"></div></div>
                 </div>
-                <textarea id="m-notes" placeholder="Note tattiche..." style="width:100%; background:#080808; border:1px solid #222; color:white; padding:10px; border-radius:12px;"></textarea>
-                <button class="btn-neon" onclick="saveMatch()">SALVA MATCH</button>
+                <textarea id="m-notes" placeholder="Note match..." style="width:100%; background:#080808; border:1px solid #222; color:white; border-radius:12px; padding:10px;"></textarea>
+                <button class="btn-neon" onclick="saveMatchData()">SALVA MATCH</button>
             </div>
-            <div id="full-history" style="padding: 0 20px;"></div>
+            <div id="history-list" style="padding: 0 20px;"></div>
         </div>
     </div>
 
     <div id="train" class="view">
-        <div class="content-scroll" id="train-setup">
+        <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; font-weight: 900;">Train Lab</h2></div>
             <div class="card">
-                <label style="font-size:10px; font-weight:900;">DURATA</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:10px 0;">
-                    <div class="opt-btn active" data-m="10" onclick="selectDur(this)">10M</div>
-                    <div class="opt-btn" data-m="20" onclick="selectDur(this)">20M</div>
-                    <div class="opt-btn" data-m="30" onclick="selectDur(this)">30M</div>
+                <label style="font-size:10px; font-weight:900; color:#555;">DURATA</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+                    <div class="opt-btn active" data-m="10" onclick="setDur(10, this)">10M</div>
+                    <div class="opt-btn" data-m="20" onclick="setDur(20, this)">20M</div>
+                    <div class="opt-btn" data-m="30" onclick="setDur(30, this)">30M</div>
                 </div>
-                <button class="btn-neon" onclick="generateTraining()">GENERA</button>
+                <button class="btn-neon" onclick="genTrain()">GENERA PIANO</button>
             </div>
-            <div id="exercises-container" style="padding:0 20px;"></div>
-            <button id="start-btn" class="btn-neon" style="display:none; margin: 20px;" onclick="startPlayer()">AVVIA SESSIONE</button>
+            <div id="train-list-container" style="padding: 0 20px;"></div>
+            <button id="start-train-btn" class="btn-neon" style="display:none; margin: 20px;" onclick="startPlayer()">AVVIA PLAYER</button>
         </div>
     </div>
 
     <div id="immersive-session">
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center;">
-            <h2 id="imm-name" style="text-transform:uppercase;">EXERCISE</h2>
-            <div id="imm-timer">00</div>
-            <button class="btn-neon" style="background:#ff3333; color:white;" onclick="stopPlayer()">STOP</button>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <h2 id="p-name" style="text-transform:uppercase; letter-spacing:2px;">ESERCIZIO</h2>
+            <div id="p-timer" style="font-size:100px; font-weight:900; color:var(--neon); margin:20px 0;">00</div>
+            <button class="btn-neon" style="background:#ff3333; color:white;" onclick="stopPlayer()">ESCI</button>
         </div>
     </div>
 
     <nav class="nav-bar">
-        <div class="nav-item active" onclick="showV('home', this)"><i data-lucide="home"></i><span>HOME</span></div>
-        <div class="nav-item" onclick="showV('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
-        <div class="nav-item" onclick="showV('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+        <div class="nav-item active" onclick="nav('home', this)"><i data-lucide="home"></i><span>HOME</span></div>
+        <div class="nav-item" onclick="nav('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
+        <div class="nav-item" onclick="nav('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
     </nav>
 
     <script>
+        // --- DATA & STATE ---
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
         let scheduledDays = JSON.parse(localStorage.getItem('cr_days')) || [];
-        let selectedDuration = 10;
-        let trainingPlan = [];
-        let curEx = 0;
-        let timer;
+        let trainDur = 10;
+        let currentPlan = [];
+        let planIdx = 0;
+        let timerClock;
 
-        // Inizializzazione icone
-        function refreshIcons() { if(window.lucide) lucide.createIcons(); }
-
-        // Gestione Viste
-        function showV(id, el) {
+        // --- CORE FUNCTIONS ---
+        function nav(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
             if(el) el.classList.add('active');
             if(id === 'home') renderHome();
-            refreshIcons();
+            if(window.lucide) lucide.createIcons();
         }
 
-        // Setup Giorni
-        function toggleDay(d, btn) {
+        // SETUP
+        function selDay(d, el) {
             const i = scheduledDays.indexOf(d);
-            if(i > -1) { scheduledDays.splice(i,1); btn.style.borderColor = 'transparent'; }
-            else { scheduledDays.push(d); btn.style.borderColor = 'var(--neon)'; }
+            if(i > -1) { scheduledDays.splice(i, 1); el.classList.remove('active'); }
+            else { scheduledDays.push(d); el.classList.add('active'); }
         }
-        function finishSetup() {
+        function saveSetup() {
             localStorage.setItem('cr_days', JSON.stringify(scheduledDays));
             document.getElementById('setup-overlay').style.display = 'none';
             renderHome();
         }
 
-        // Home & Calendario
+        // HOME
         function renderHome() {
             const now = new Date();
-            const grid = document.getElementById('main-calendar');
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            document.getElementById('month-label').innerText = now.toLocaleString('it-IT', {month:'long', year:'numeric'});
             
+            const grid = document.getElementById('calendar-grid');
+            const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
             let html = '';
-            for(let d=1; d<=daysInMonth; d++) {
-                const date = new Date(now.getFullYear(), now.getMonth(), d);
-                let status = scheduledDays.includes(date.getDay()) ? 'planned' : '';
-                if(d === now.getDate()) status = 'today';
-                html += `<div class="cal-cell ${status}">${d}</div>`;
+            for(let d=1; d<=totalDays; d++) {
+                const dayDate = new Date(now.getFullYear(), now.getMonth(), d);
+                let cls = scheduledDays.includes(dayDate.getDay()) ? 'planned' : '';
+                if(d === now.getDate()) cls = 'today';
+                html += `<div class="cal-cell ${cls}">${d}</div>`;
             }
             grid.innerHTML = html;
-            document.getElementById('month-label').innerText = now.toLocaleString('it-IT', {month:'long'});
-            
-            // Fix del crash: controllo se ci sono match
-            if(matches.length > 0) {
-                document.getElementById('main-score').innerText = "85";
-            } else {
-                document.getElementById('main-score').innerText = "--";
-            }
+            document.getElementById('home-score').innerText = matches.length > 0 ? "88" : "--";
         }
 
-        // Match Lab
-        function saveMatch() {
+        // MATCH
+        function saveMatchData() {
             const m = {
                 id: Date.now(),
-                s1i: document.getElementById('s1i').value,
-                s1a: document.getElementById('s1a').value,
+                s1: document.getElementById('s1i').value + "-" + document.getElementById('s1a').value,
                 notes: document.getElementById('m-notes').value,
                 date: new Date().toLocaleDateString()
             };
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
-            alert("Match salvato!");
-            showV('home');
+            alert("Match Salvato!");
+            nav('home');
         }
 
-        // Train Lab
-        function selectDur(el) {
-            document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+        // TRAIN
+        function setDur(m, el) {
+            trainDur = m;
+            document.querySelectorAll('#train .opt-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            selectedDuration = parseInt(el.dataset.m);
         }
-
-        function generateTraining() {
-            trainingPlan = [
-                {n: "Riscaldamento", t: 30},
+        function genTrain() {
+            currentPlan = [
+                {n: "Mobilità Caviglie", t: 30},
                 {n: "Shadow Swing", t: 45},
-                {n: "Squat Jump", t: 30}
+                {n: "Squat Esplosivi", t: 30}
             ];
-            const container = document.getElementById('exercises-container');
-            container.innerHTML = trainingPlan.map(ex => `
-                <div class="card" style="margin:5px 0; padding:10px;">
-                    <b>${ex.n}</b> - ${ex.t}s
-                </div>
-            `).join('');
-            document.getElementById('start-btn').style.display = 'block';
+            const cont = document.getElementById('train-list-container');
+            cont.innerHTML = currentPlan.map(ex => `<div class="card" style="margin:5px 0"><b>${ex.n}</b> - ${ex.t}s</div>`).join('');
+            document.getElementById('start-train-btn').style.display = 'block';
         }
 
+        // PLAYER
         function startPlayer() {
-            curEx = 0;
+            planIdx = 0;
             document.getElementById('immersive-session').style.display = 'flex';
-            playEx();
+            runEx();
         }
-
-        function playEx() {
-            if(curEx >= trainingPlan.length) return stopPlayer();
-            const ex = trainingPlan[curEx];
-            document.getElementById('imm-name').innerText = ex.n;
+        function runEx() {
+            if(planIdx >= currentPlan.length) return stopPlayer();
+            const ex = currentPlan[planIdx];
+            document.getElementById('p-name').innerText = ex.n;
             let time = ex.t;
-            document.getElementById('imm-timer').innerText = time;
+            document.getElementById('p-timer').innerText = time;
             
-            timer = setInterval(() => {
+            timerClock = setInterval(() => {
                 time--;
-                document.getElementById('imm-timer').innerText = time;
+                document.getElementById('p-timer').innerText = time;
                 if(time <= 0) {
-                    clearInterval(timer);
-                    curEx++;
-                    playEx();
+                    clearInterval(timerClock);
+                    planIdx++;
+                    runEx();
                 }
             }, 1000);
         }
-
         function stopPlayer() {
-            clearInterval(timer);
+            clearInterval(timerClock);
             document.getElementById('immersive-session').style.display = 'none';
         }
 
+        // ON LOAD
         window.onload = () => {
-            if(scheduledDays.length === 0) document.getElementById('setup-overlay').style.display = 'flex';
+            if(scheduledDays.length === 0) {
+                document.getElementById('setup-overlay').style.display = 'flex';
+            }
             renderHome();
-            refreshIcons();
-        };
+            if(window.lucide) lucide.createIcons();
+        }
     </script>
 </body>
 </html>
