@@ -4,91 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CourtReady Pro Elite</title>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { 
-            --neon: #d4ff00; --bg: #000000; --card: #111111; --border: #222222; 
-            --win: #d4ff00; --loss: #ff3333; --xp: #00e5ff; --future: #333333;
+            --neon: #d4ff00; --bg: #000000; --card: #111111; --border: #222; 
+            --win: #d4ff00; --loss: #ff3333; --xp: #00e5ff; --future: #333;
         }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-        * { box-sizing: border-box; }
-
-        /* STRUTTURA BLINDATA */
-        .view { display: none; height: 100%; width: 100%; flex-direction: column; overflow-y: auto; position: absolute; top: 0; left: 0; z-index: 1; }
-        .view.active { display: flex; z-index: 2; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100%; overflow: hidden; }
+        
+        /* CONTENITORI VISTE */
+        .view { display: none; height: 100vh; width: 100vw; flex-direction: column; overflow-y: auto; position: fixed; top: 0; left: 0; }
+        .view.active { display: flex; }
         .content-scroll { padding-bottom: 180px; width: 100%; }
 
-        /* CALENDARIO MENSILE GRID */
-        .calendar-month { background: var(--card); border-radius: 20px; padding: 15px; margin: 10px 20px; border: 1px solid var(--border); }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
-        .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 9px; font-weight: 900; color: #444; margin-bottom: 5px; }
-        .cal-day-cell { 
-            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; 
-            font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; cursor: pointer;
-        }
-        .cal-day-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
-        .cal-day-cell.missed { background: rgba(255, 51, 51, 0.1); border-color: var(--loss); color: var(--loss); }
-        .cal-day-cell.planned { background: transparent; border-color: var(--future); color: #666; }
-        .cal-day-cell.today { border-color: white; color: white; }
+        /* CALENDARIO MENSILE (HOME) */
+        .calendar-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
+        .cal-day-header { font-size: 9px; color: #555; text-align: center; font-weight: 900; }
+        .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; cursor: pointer; }
+        .cal-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
+        .cal-cell.missed { background: rgba(255, 51, 51, 0.1); border-color: var(--loss); color: var(--loss); }
+        .cal-cell.planned { border-color: #333; color: #666; }
+        .cal-cell.today { background: white; color: black; }
 
-        /* RADAR CHART & XP (SPOSTATI IN PROFILO) */
-        .radar-box { width: 150px; height: 150px; margin: 20px auto; position: relative; display: flex; align-items: center; justify-content: center; }
-        .radar-svg { transform: rotate(-18deg); width: 120px; height: 120px; fill: rgba(0, 229, 255, 0.1); stroke: var(--xp); stroke-width: 2; }
-        .xp-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 10px 0; }
-        .xp-bar-fill { height: 100%; background: var(--xp); width: 65%; box-shadow: 0 0 10px var(--xp); }
+        /* SCOREBOARD (MATCH LAB - BLINDATO) */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
+        .set-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .set-box { flex: 1; background: #080808; border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #222; }
+        .set-box input { width: 30px; background: transparent; border: none; color: var(--neon); font-size: 18px; font-weight: 900; text-align: center; outline: none; }
+        .set-box input.rival { color: white; }
 
-        /* UI ELEMENTS BLINDATI */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 4000; }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        /* TAGS */
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag { padding: 8px 14px; background: #080808; border: 1px solid #333; border-radius: 10px; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .tag.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
+
+        /* NAV BAR */
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(15,15,15,0.9); backdrop-filter: blur(15px); border-radius: 25px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 9999; }
+        .nav-item { color: #555; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 9px; font-weight: 800; }
         .nav-item.active { color: var(--neon); }
 
-        /* INPUT MATCH BLINDATI */
-        .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
-        .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
-        .score-box input { width: 30px; height: 30px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; }
+        /* OVERLAYS */
+        #global-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
 
-        #detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        /* XP & RADAR (PROFILO) */
+        .xp-bar { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .xp-fill { height: 100%; background: var(--xp); width: 65%; box-shadow: 0 0 10px var(--xp); transition: 1s; }
+        .radar-svg { width: 150px; height: 150px; stroke: var(--xp); fill: rgba(0, 229, 255, 0.1); stroke-width: 2; display: block; margin: 0 auto; }
+
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="detail-overlay">
-        <div onclick="closeDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer;">
-            <i data-lucide="chevron-left"></i> TORNA INDIETRO
+    <div id="global-overlay">
+        <div onclick="closeOverlay()" style="color:var(--neon); font-weight:900; margin-bottom:20px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <i data-lucide="arrow-left"></i> CHIUDI
         </div>
         <div id="overlay-content"></div>
     </div>
 
     <div id="home" class="view active">
         <div class="content-scroll">
-            <div style="padding: 40px 25px 10px;"><div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div></div>
-            
-            <div class="card" style="display:flex; align-items:center; gap:15px; background: linear-gradient(170deg, #1a1a1a 0%, #000 100%);">
-                <div style="flex:1;">
-                    <small style="color:#666; font-weight: 800; font-size: 9px;">CONDITIONING SCORE</small>
-                    <div style="font-size: 48px; font-weight: 900;" id="main-score">--</div>
-                    <div id="home-status" style="font-size:10px; font-weight:700; color:white;">Benvenuto Atleta</div>
-                </div>
-                <i data-lucide="activity" style="color:var(--neon); width:40px; height:40px;"></i>
+            <div style="padding: 40px 25px 10px; font-weight: 900; font-size: 22px; font-style: italic;">
+                COURT<span style="color:var(--neon)">READY</span>
             </div>
 
-            <div class="calendar-month">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="font-size:14px; text-transform:uppercase;" id="cal-month-name">Gennaio 2026</b>
-                    <div style="display:flex; gap:10px; font-size:8px; font-weight:900;">
-                        <span style="color:var(--win)">● FATTO</span>
-                        <span style="color:var(--loss)">● SALTATO</span>
+            <div class="card" style="background: linear-gradient(135deg, #111 0%, #000 100%);">
+                <small style="color:#555; font-weight: 800;">CONDITIONING SCORE</small>
+                <div style="font-size: 50px; font-weight: 900; color:white;" id="home-score">--</div>
+                <div id="home-status" style="font-size: 11px; color: #888; font-weight: 700;">Pronto per l'allenamento</div>
+            </div>
+
+            <div class="calendar-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <b style="font-size:14px;">GENNAIO 2026</b>
+                    <div style="display:flex; gap:8px;">
+                        <div style="width:8px; height:8px; background:var(--win); border-radius:50%;"></div>
+                        <div style="width:8px; height:8px; background:var(--loss); border-radius:50%;"></div>
                     </div>
                 </div>
-                <div class="cal-header"><div>L</div><div>M</div><div>M</div><div>G</div><div>V</div><div>S</div><div>D</div></div>
-                <div class="calendar-grid" id="main-calendar"></div>
+                <div class="cal-grid" id="calendar-grid">
+                    </div>
             </div>
 
-            <div style="padding: 0 20px; margin-top: 10px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444;">ULTIMI MATCH</label>
-                <div id="quick-history" style="margin-top: 10px;"></div>
+            <div style="padding: 0 20px;">
+                <label style="font-size: 9px; font-weight: 900; color: #444;">ATTIVITÀ RECENTE</label>
+                <div id="home-history" style="margin-top:10px;"></div>
             </div>
         </div>
     </div>
@@ -96,46 +98,47 @@
     <div id="match" class="view">
         <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Match Lab</h2></div>
-
+            
             <div class="card">
-                <label style="font-weight: 900; font-size: 10px; color: #555; margin-bottom: 10px; display: block;">SCOREBOARD (3 SET)</label>
-                <div class="set-container">
-                    <div class="set-macro"><small style="font-size:8px;color:#444">SET 1</small><div style="display:flex;justify-content:center;gap:4px;"><div class="score-box"><input type="number" id="s1i" value="0"></div><div class="score-box"><input type="number" id="s1a" value="0"></div></div></div>
-                    <div class="set-macro"><small style="font-size:8px;color:#444">SET 2</small><div style="display:flex;justify-content:center;gap:4px;"><div class="score-box"><input type="number" id="s2i" value="0"></div><div class="score-box"><input type="number" id="s2a" value="0"></div></div></div>
-                    <div class="set-macro"><small style="font-size:8px;color:#444">SET 3</small><div style="display:flex;justify-content:center;gap:4px;"><div class="score-box"><input type="number" id="s3i" value="0"></div><div class="score-box"><input type="number" id="s3a" value="0"></div></div></div>
+                <label style="font-weight: 900; font-size: 10px; color: #555; margin-bottom: 12px; display: block;">SCOREBOARD (SET)</label>
+                <div class="set-row">
+                    <div class="set-box"><div>S1</div><input type="number" id="s1i" value="0">:<input type="number" id="s1a" value="0" class="rival"></div>
+                    <div class="set-box"><div>S2</div><input type="number" id="s2i" value="0">:<input type="number" id="s2a" value="0" class="rival"></div>
+                    <div class="set-box"><div>S3</div><input type="number" id="s3i" value="0">:<input type="number" id="s3a" value="0" class="rival"></div>
                 </div>
 
-                <label style="font-weight: 900; font-size: 10px; color: #555;">COLPO CRITICO (AI TARGET)</label>
-                <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 10px 0;">
-                    <div class="tag" onclick="selectTag(this)" style="padding:8px 12px; background:#080808; border:1px solid #333; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">SERVIZIO</div>
-                    <div class="tag" onclick="selectTag(this)" style="padding:8px 12px; background:#080808; border:1px solid #333; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">ROVESCIO</div>
-                    <div class="tag" onclick="selectTag(this)" style="padding:8px 12px; background:#080808; border:1px solid #333; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">DIRITTO</div>
+                <label style="font-weight: 900; font-size: 10px; color: #555;">FOCUS TECNICO</label>
+                <div class="tag-cloud" id="match-tags">
+                    <div class="tag active" onclick="setTag(this)">SERVIZIO</div>
+                    <div class="tag" onclick="setTag(this)">ROVESCIO</div>
+                    <div class="tag" onclick="setTag(this)">DIRITTO</div>
+                    <div class="tag" onclick="setTag(this)">RETE</div>
                 </div>
 
-                <div style="margin-top:15px;">
-                    <label style="font-size:9px;color:#555">FOTO MATCH</label><br>
-                    <input type="file" id="m-img" accept="image/*" style="font-size:10px; margin-top:5px;">
+                <div style="margin:20px 0;">
+                    <label style="font-size: 9px; font-weight: 900; color: #555;">FOTO E NOTE</label>
+                    <input type="file" id="m-file" style="display:block; font-size:10px; margin:10px 0;">
+                    <textarea id="m-notes" placeholder="Com'è andata?" style="width:100%; background:#080808; border:1px solid #222; border-radius:12px; color:white; padding:12px; font-family:inherit;"></textarea>
                 </div>
 
-                <textarea id="m-notes" rows="2" placeholder="Note sul match..." style="width:100%; background:#080808; border:1px solid #222; border-radius:12px; color:white; padding:12px; margin-top:15px; font-family:inherit;"></textarea>
-                <button class="btn-neon" onclick="saveMatch()">SALVA PARTITA</button>
+                <button class="btn-neon" onclick="saveMatch()">SALVA E GUADAGNA XP</button>
             </div>
             
-            <div id="full-history" style="padding:0 20px;"></div>
+            <div id="match-history" style="padding: 0 20px;"></div>
         </div>
     </div>
 
     <div id="train" class="view">
         <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Train Lab</h2></div>
-            <div class="card" style="border-left: 3px solid var(--neon);">
-                <div style="font-weight:900; font-size:10px; color:var(--neon);">AI PRE-ANALYSIS</div>
-                <div id="ai-context" style="font-size:12px; margin-top:5px; color:#ccc;">Analizzando i tuoi ultimi dati...</div>
+            <div class="card" style="border-left: 4px solid var(--neon);">
+                <div style="font-weight:900; font-size:10px; color:var(--neon);">AI ASSISTANT</div>
+                <div id="ai-text" style="font-size:13px; margin-top:10px; line-height:1.4;">Caricamento suggerimenti basati sui tuoi match...</div>
             </div>
             <div class="card">
-                <button class="btn-neon" onclick="generateTraining()">GENERA WORKOUT AI</button>
+                <button class="btn-neon" onclick="generateWorkout()">GENERA PIANO DI OGGI</button>
             </div>
-            <div id="train-list" style="padding:0 20px;"></div>
+            <div id="workout-list" style="padding: 0 20px;"></div>
         </div>
     </div>
 
@@ -144,12 +147,174 @@
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Atleta</h2></div>
             
             <div class="card" style="text-align:center;">
-                <div style="font-size:12px; font-weight:900; color:var(--xp);">LIVELLO 12</div>
-                <div class="xp-bar-bg"><div class="xp-bar-fill"></div></div>
-                <small style="color:#666; font-size:10px; font-weight:800;">4500 / 5000 XP PER IL LIVELLO SUCCESSIVO</small>
+                <div style="color:var(--xp); font-weight:900; font-size:12px;">LIVELLO 12</div>
+                <div class="xp-bar"><div class="xp-fill"></div></div>
+                <small style="color:#666; font-weight:800;">4500 / 5000 XP</small>
             </div>
 
-            <div class="card">
-                <div style="text-align:center; font-weight:900; font-size:12px; color:#555;">PERFORMANCE RADAR</div>
-                <div class="radar-box">
-                    <svg
+            <div class="card" style="text-align:center;">
+                <label style="font-weight:900; font-size:10px; color:#444; margin-bottom:20px; display:block;">PERFORMANCE RADAR</label>
+                <svg viewBox="0 0 100 100" class="radar-svg">
+                    <polygon points="50,10 90,40 75,90 25,90 10,40" />
+                </svg>
+                <div style="display:flex; justify-content:space-around; margin-top:20px; font-size:10px; font-weight:900; color:var(--xp);">
+                    <span>POWER</span><span>TECH</span><span>MENTAL</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('home', this)"><i data-lucide="calendar"></i><span>HOME</span></div>
+        <div class="nav-item" onclick="switchTab('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
+        <div class="nav-item" onclick="switchTab('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+        <div class="nav-item" onclick="switchTab('profile', this)"><i data-lucide="user"></i><span>PROFILO</span></div>
+    </nav>
+
+    <script>
+        let matches = JSON.parse(localStorage.getItem('cr_pro_matches')) || [];
+
+        // Cambia Tab
+        function switchTab(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            
+            if(id === 'home') renderCalendar();
+            if(id === 'train') updateAI();
+            lucide.createIcons();
+        }
+
+        // Gestione Tag
+        function setTag(el) {
+            el.parentElement.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Calendario Mensile
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+            const offset = firstDay === 0 ? 6 : firstDay - 1;
+
+            let html = '';
+            const headers = ['L','M','M','G','V','S','D'];
+            headers.forEach(h => html += `<div class="cal-day-header">${h}</div>`);
+            
+            for(let i=0; i<offset; i++) html += '<div></div>';
+            
+            for(let d=1; d<=daysInMonth; d++) {
+                let status = 'planned';
+                if(d < now.getDate()) status = Math.random() > 0.4 ? 'done' : 'missed';
+                if(d === now.getDate()) status = 'today';
+                html += `<div class="cal-cell ${status}" onclick="openDay(${d})">${d}</div>`;
+            }
+            grid.innerHTML = html;
+        }
+
+        function openDay(d) {
+            const overlay = document.getElementById('global-overlay');
+            document.getElementById('overlay-content').innerHTML = `
+                <div class="card">
+                    <h2 style="margin:0">Giorno ${d}</h2>
+                    <p style="color:#666">Attività programmata</p>
+                    <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i data-lucide="check-circle" style="color:var(--win)"></i>
+                        <b>Allenamento: Potenza Servizio</b>
+                    </div>
+                </div>
+            `;
+            overlay.style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // Logica Match (Blindata)
+        function saveMatch() {
+            const m = {
+                id: Date.now(),
+                s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
+                s2i: +document.getElementById('s2i').value, s2a: +document.getElementById('s2a').value,
+                s3i: +document.getElementById('s3i').value, s3a: +document.getElementById('s3a').value,
+                tag: document.querySelector('.tag.active').innerText,
+                notes: document.getElementById('m-notes').value,
+                date: new Date().toLocaleDateString('it-IT')
+            };
+            
+            m.win = (m.s1i + m.s2i + m.s3i) > (m.s1a + m.s2a + m.s3a);
+            
+            const file = document.getElementById('m-file').files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { m.img = e.target.result; finishSave(m); };
+                reader.readAsDataURL(file);
+            } else { finishSave(m); }
+        }
+
+        function finishSave(m) {
+            matches.unshift(m);
+            localStorage.setItem('cr_pro_matches', JSON.stringify(matches));
+            renderHistory();
+            switchTab('home', document.querySelector('.nav-item'));
+        }
+
+        function renderHistory() {
+            const html = matches.map(m => `
+                <div class="card" style="border-left:4px solid ${m.win?'var(--win)':'var(--loss)'}" onclick="viewMatch(${m.id})">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b>${m.win?'VITTORIA':'SCONFITTA'}</b>
+                        <small style="color:#555">${m.date}</small>
+                    </div>
+                    <div style="font-size:11px; color:var(--neon); margin-top:5px;">Focus: ${m.tag}</div>
+                </div>
+            `).join('');
+            document.getElementById('match-history').innerHTML = html;
+            document.getElementById('home-history').innerHTML = html;
+            if(matches.length > 0) document.getElementById('home-score').innerText = "88";
+        }
+
+        function viewMatch(id) {
+            const m = matches.find(x => x.id === id);
+            document.getElementById('overlay-content').innerHTML = `
+                <div class="card">
+                    ${m.img ? `<img src="${m.img}" style="width:100%; border-radius:15px; margin-bottom:15px;">` : ''}
+                    <h2>${m.win?'VITTORIA':'SCONFITTA'}</h2>
+                    <div style="background:#000; padding:15px; border-radius:10px; text-align:center; font-size:20px; font-weight:900; margin:10px 0;">
+                        ${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}
+                    </div>
+                    <p style="color:var(--neon); font-weight:800;">Target AI: ${m.tag}</p>
+                    <p style="font-size:13px; color:#888;">${m.notes}</p>
+                </div>
+            `;
+            document.getElementById('global-overlay').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function closeOverlay() { document.getElementById('global-overlay').style.display = 'none'; }
+
+        function updateAI() {
+            if(!matches.length) return;
+            const last = matches[0];
+            document.getElementById('ai-text').innerHTML = `Ho analizzato il tuo match. Il punto critico è il <b>${last.tag}</b>. Ho preparato 3 esercizi per rinforzarlo oggi.`;
+        }
+
+        function generateWorkout() {
+            const last = matches[0] || {tag: 'Generale'};
+            document.getElementById('workout-list').innerHTML = `
+                <div class="card"><b>Drill: ${last.tag} Power</b><br><small>3 serie da 12</small></div>
+                <div class="card"><b>Reattività laterale</b><br><small>10 minuti</small></div>
+            `;
+        }
+
+        // Avvio
+        window.onload = () => {
+            renderCalendar();
+            renderHistory();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
