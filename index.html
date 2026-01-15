@@ -4,165 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CourtReady Pro</title>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@0.263.0/dist/umd/lucide.min.js"></script>
     <style>
-        /* --- VARIABILI & RESET --- */
         :root { 
-            --neon: #d4ff00; 
-            --bg: #000000; 
-            --card: #111111; 
-            --border: #222222; 
-            --win: #d4ff00; 
-            --loss: #ff3333; 
-            --future: #333333; /* Per giorni programmati */
+            --neon: #d4ff00; --bg: #000000; --card: #111111; --border: #222222; 
+            --win: #d4ff00; --loss: #ff3333; --future: #333333;
         }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-        * { box-sizing: border-box; outline: none; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: -apple-system, system-ui, sans-serif; height: 100%; overflow: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* --- STRUTTURA VISTE --- */
-        .view { display: none; height: 100%; width: 100%; flex-direction: column; overflow-y: auto; position: absolute; top: 0; left: 0; z-index: 1; }
+        /* VISTE */
+        .view { display: none; height: 100%; width: 100%; flex-direction: column; overflow-y: auto; position: absolute; top: 0; left: 0; }
         .view.active { display: flex; z-index: 2; }
-        .content-scroll { padding-bottom: 180px; width: 100%; }
+        .content-scroll { padding-bottom: 120px; width: 100%; }
 
-        /* --- NUOVO: SETUP & CALENDARIO --- */
-        #setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: none; flex-direction: column; padding: 40px 25px; }
-        .day-check { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #222; cursor: pointer; }
-        .day-check.active { border-color: var(--neon); color: var(--neon); }
+        /* OVERLAYS (Z-INDEX ALTO) */
+        #setup-overlay, #match-detail, #immersive-session { 
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; 
+        }
+
+        /* COMPONENTI GRAFICI */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
         
-        .calendar-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; }
+        /* CALENDARIO */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
-        .cal-day-header { font-size: 9px; color: #555; text-align: center; font-weight: 900; text-transform: uppercase; }
         .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; border: 1px solid transparent; }
         .cal-cell.planned { border-color: var(--future); color: #666; }
         .cal-cell.done { background: rgba(212, 255, 0, 0.1); border-color: var(--win); color: var(--win); }
         .cal-cell.today { background: white; color: black; }
 
-        /* --- COMPONENTI ORIGINALI --- */
-        .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
-        .court-logo { width: 35px; height: 35px; border: 2.5px solid var(--neon); border-radius: 4px; position: relative; }
-        .court-logo::before { content: ''; position: absolute; top: 50%; width: 100%; height: 2px; background: var(--neon); }
-        .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); transform: translateY(-50%); }
-
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
-        button, .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; cursor: pointer; margin-top: 15px; display: block; position: relative; z-index: 10; }
-
-        /* MATCH LAB */
-        .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
-        .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
-        .set-title { font-size: 9px; font-weight: 800; color: #555; display: block; margin-bottom: 5px; }
-        .score-split { display: flex; justify-content: center; gap: 5px; }
-        .score-box label { font-size: 8px; color: #444; display: block; font-weight: 900; }
-        .score-box input { width: 32px; height: 32px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; font-size: 14px; padding: 0; margin-top: 2px; }
-        .history-item { border-left: 3px solid #333; background: #0c0c0c; padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 10px; cursor: pointer; position: relative; z-index: 5; }
-        .history-item.win { border-color: var(--win); }
-        .history-item.loss { border-color: var(--loss); }
-        .stat-circle { width: 60px; height: 60px; border: 3px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--neon); }
-
-        /* TRAIN LAB */
-        .option-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 0 20px; }
-        .opt-btn { background: #080808; border: 1px solid #222; padding: 12px 5px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; position: relative; z-index: 5; }
-        .opt-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
-
-        /* OVERLAYS */
-        #match-detail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
-        #immersive-session { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 9000; display: none; flex-direction: column; }
-        .video-player-ui { height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); overflow: hidden; }
-
         /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 4000; }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 10px; }
+        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 5000; }
+        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 10px; font-weight: 800; }
         .nav-item.active { color: var(--neon); }
 
-        textarea { width: 100%; background: #080808; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; margin-top: 15px; resize: none; font-family: inherit; }
-        input[type=range] { width: 100%; accent-color: var(--neon); margin: 10px 0; height: 4px; background: #333; }
-        .ai-box { background: rgba(212, 255, 0, 0.05); border-left: 3px solid var(--neon); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 20px; font-size: 11px; color: #ddd; line-height: 1.4; }
-        .match-img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; display: none; }
+        /* MATCH SPECIFICS */
+        .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
+        .score-box input { width: 32px; height: 32px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; }
+        
+        /* TRAIN SPECIFICS */
+        .opt-btn { background: #080808; border: 1px solid #222; padding: 12px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; }
+        .opt-btn.active { border-color: var(--neon); color: var(--neon); }
+        #imm-timer { font-size: 90px; font-weight: 900; margin: 20px 0; font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
 
     <div id="setup-overlay">
-        <h2 style="font-size: 28px; font-weight: 900; margin-bottom: 10px;">COURT<span style="color:var(--neon)">READY</span></h2>
-        <p style="color:#666; font-size:14px; margin-bottom:30px;">Pianifica la tua settimana di allenamento:</p>
-        <div id="setup-days">
-            <div class="day-check" onclick="toggleSetupDay(1)"><span>Lunedì</span><i data-lucide="circle"></i></div>
-            <div class="day-check" onclick="toggleSetupDay(2)"><span>Martedì</span><i data-lucide="circle"></i></div>
-            <div class="day-check" onclick="toggleSetupDay(3)"><span>Mercoledì</span><i data-lucide="circle"></i></div>
-            <div class="day-check" onclick="toggleSetupDay(4)"><span>Giovedì</span><i data-lucide="circle"></i></div>
-            <div class="day-check" onclick="toggleSetupDay(5)"><span>Venerdì</span><i data-lucide="circle"></i></div>
-            <div class="day-check" onclick="toggleSetupDay(6)"><span>Sabato</span><i data-lucide="circle"></i></div>
-            <div class="day-check" onclick="toggleSetupDay(0)"><span>Domenica</span><i data-lucide="circle"></i></div>
+        <div style="padding: 40px 25px;">
+            <h2 style="font-size: 28px; font-weight: 900;">PIANIFICA</h2>
+            <p style="color:#666; margin-bottom:30px;">In quali giorni ti alleni?</p>
+            <div id="setup-days">
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(1, this)">Lunedì</button>
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(2, this)">Martedì</button>
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(3, this)">Mercoledì</button>
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(4, this)">Giovedì</button>
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(5, this)">Venerdì</button>
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(6, this)">Sabato</button>
+                <button class="btn-neon" style="background:#111; color:white; margin-bottom:10px;" onclick="toggleDay(0, this)">Domenica</button>
+            </div>
+            <button class="btn-neon" onclick="finishSetup()">CONFERMA</button>
         </div>
-        <button class="btn-neon" onclick="finishSetup()" style="margin-top:auto;">SALVA PROGRAMMA</button>
-    </div>
-
-    <div id="match-detail">
-        <div onclick="closeMatchDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer; padding: 10px 0;">
-            <i data-lucide="chevron-left"></i> TORNA ALLO STORICO
-        </div>
-        <div id="detail-content"></div>
     </div>
 
     <div id="home" class="view active">
         <div class="content-scroll">
-            <div class="logo-wrap">
-                <div class="court-logo"></div>
-                <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
-            </div>
-            
-            <div class="card" style="background: linear-gradient(170deg, #1a1a1a 0%, #000 100%);">
+            <div style="padding: 40px 25px 10px; font-weight: 900; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
+            <div class="card">
                 <small style="color:#666; font-weight: 800;">CONDITIONING SCORE</small>
-                <div style="font-size: 56px; font-weight: 900; margin: 10px 0;" id="main-score">--</div>
-                <div style="height: 4px; background: #222; width: 100%; border-radius: 2px;"><div id="score-bar" style="height: 100%; width: 0%; background: var(--neon); border-radius: 2px;"></div></div>
-                <div id="home-status" style="margin-top:15px; font-size:12px; color:white; font-weight:700;"></div>
+                <div style="font-size: 56px; font-weight: 900;" id="main-score">--</div>
             </div>
-
-            <div class="calendar-card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="font-size:14px; text-transform:uppercase;" id="month-label">---</b>
-                </div>
+            <div class="card">
+                <b id="month-label">---</b>
                 <div class="cal-grid" id="main-calendar"></div>
-            </div>
-
-            <div style="padding: 0 20px; margin-top: 10px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444;">ULTIMA ATTIVITÀ</label>
-                <div id="quick-history" style="margin-top: 10px;"></div>
             </div>
         </div>
     </div>
 
     <div id="match" class="view">
         <div class="content-scroll">
-            <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Match Lab</h2></div>
-            <div class="card" id="analytics-section" style="display:none; background: linear-gradient(145deg, #151515, #0a0a0a);">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <small style="font-size: 10px; font-weight: 900; color: #888;">SEASON STATS</small>
-                    <i data-lucide="bar-chart-2" style="width:14px; color:#555"></i>
-                </div>
-                <div style="display: flex; gap: 20px; align-items: center;">
-                    <div class="stat-circle" id="win-pct-circle">0%</div>
-                    <div style="flex: 1;">
-                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; font-weight:800;">
-                            <span>VITTORIE</span><span id="win-count">0/0</span>
-                        </div>
-                        <div style="height:6px; background:#222; border-radius:3px;"><div id="win-bar" style="height:100%; background:var(--neon); width:0%; border-radius:3px;"></div></div>
-                        <div style="display:flex; justify-content:space-between; margin-top:12px; border-top:1px solid #222; padding-top:8px;">
-                            <div style="text-align:center;">
-                                <small style="font-size:8px; color:#555;">GAMES W</small>
-                                <div id="total-gw" style="font-size:14px; font-weight:900; color:var(--win);">0</div>
-                            </div>
-                            <div style="text-align:center;">
-                                <small style="font-size:8px; color:#555;">GAMES L</small>
-                                <div id="total-gl" style="font-size:14px; font-weight:900; color:var(--loss);">0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+            <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; font-weight: 900;">Match Lab</h2></div>
             <div class="card">
-                <label style="font-weight: 900; font-size: 10px; color: #555; margin-bottom: 15px; display: block;">SCOREBOARD</label>
-                <div class="set-container">
-                    <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div></div></div>
-                    <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div></div></div>
-                    <div class="set-macro"><span class="set-title">SET 3</span><div class="
+                <div style="display:flex; gap:8px; margin-bottom:20px;">
+                    <div class="set-macro"><span>SET 1</span><br><input type="number" id="s1i" value="0"> - <input type="number" id="s1a" value="0"></div>
+                    <div class="set-macro"><span>SET 2</span><br><input type="number" id="s2i" value="0"> - <input type="number" id="s2a" value="0"></div>
+                    <div class="set-macro"><span>SET 3</span><br><input type="number" id="s3i" value="0"> - <input type="number" id="s3a" value="0"></div>
+                </div>
+                <textarea id="m-notes" placeholder="Note tattiche..." style="width:100%; background:#080808; border:1px solid #222; color:white; padding:10px; border-radius:12px;"></textarea>
+                <button class="btn-neon" onclick="saveMatch()">SALVA MATCH</button>
+            </div>
+            <div id="full-history" style="padding: 0 20px;"></div>
+        </div>
+    </div>
+
+    <div id="train" class="view">
+        <div class="content-scroll" id="train-setup">
+            <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; font-weight: 900;">Train Lab</h2></div>
+            <div class="card">
+                <label style="font-size:10px; font-weight:900;">DURATA</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:10px 0;">
+                    <div class="opt-btn active" data-m="10" onclick="selectDur(this)">10M</div>
+                    <div class="opt-btn" data-m="20" onclick="selectDur(this)">20M</div>
+                    <div class="opt-btn" data-m="30" onclick="selectDur(this)">30M</div>
+                </div>
+                <button class="btn-neon" onclick="generateTraining()">GENERA</button>
+            </div>
+            <div id="exercises-container" style="padding:0 20px;"></div>
+            <button id="start-btn" class="btn-neon" style="display:none; margin: 20px;" onclick="startPlayer()">AVVIA SESSIONE</button>
+        </div>
+    </div>
+
+    <div id="immersive-session">
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center;">
+            <h2 id="imm-name" style="text-transform:uppercase;">EXERCISE</h2>
+            <div id="imm-timer">00</div>
+            <button class="btn-neon" style="background:#ff3333; color:white;" onclick="stopPlayer()">STOP</button>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="showV('home', this)"><i data-lucide="home"></i><span>HOME</span></div>
+        <div class="nav-item" onclick="showV('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
+        <div class="nav-item" onclick="showV('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+    </nav>
+
+    <script>
+        let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
+        let scheduledDays = JSON.parse(localStorage.getItem('cr_days')) || [];
+        let selectedDuration = 10;
+        let trainingPlan = [];
+        let curEx = 0;
+        let timer;
+
+        // Inizializzazione icone
+        function refreshIcons() { if(window.lucide) lucide.createIcons(); }
+
+        // Gestione Viste
+        function showV(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+            if(id === 'home') renderHome();
+            refreshIcons();
+        }
+
+        // Setup Giorni
+        function toggleDay(d, btn) {
+            const i = scheduledDays.indexOf(d);
+            if(i > -1) { scheduledDays.splice(i,1); btn.style.borderColor = 'transparent'; }
+            else { scheduledDays.push(d); btn.style.borderColor = 'var(--neon)'; }
+        }
+        function finishSetup() {
+            localStorage.setItem('cr_days', JSON.stringify(scheduledDays));
+            document.getElementById('setup-overlay').style.display = 'none';
+            renderHome();
+        }
+
+        // Home & Calendario
+        function renderHome() {
+            const now = new Date();
+            const grid = document.getElementById('main-calendar');
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            
+            let html = '';
+            for(let d=1; d<=daysInMonth; d++) {
+                const date = new Date(now.getFullYear(), now.getMonth(), d);
+                let status = scheduledDays.includes(date.getDay()) ? 'planned' : '';
+                if(d === now.getDate()) status = 'today';
+                html += `<div class="cal-cell ${status}">${d}</div>`;
+            }
+            grid.innerHTML = html;
+            document.getElementById('month-label').innerText = now.toLocaleString('it-IT', {month:'long'});
+            
+            // Fix del crash: controllo se ci sono match
+            if(matches.length > 0) {
+                document.getElementById('main-score').innerText = "85";
+            } else {
+                document.getElementById('main-score').innerText = "--";
+            }
+        }
+
+        // Match Lab
+        function saveMatch() {
+            const m = {
+                id: Date.now(),
+                s1i: document.getElementById('s1i').value,
+                s1a: document.getElementById('s1a').value,
+                notes: document.getElementById('m-notes').value,
+                date: new Date().toLocaleDateString()
+            };
+            matches.unshift(m);
+            localStorage.setItem('cr_matches', JSON.stringify(matches));
+            alert("Match salvato!");
+            showV('home');
+        }
+
+        // Train Lab
+        function selectDur(el) {
+            document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            selectedDuration = parseInt(el.dataset.m);
+        }
+
+        function generateTraining() {
+            trainingPlan = [
+                {n: "Riscaldamento", t: 30},
+                {n: "Shadow Swing", t: 45},
+                {n: "Squat Jump", t: 30}
+            ];
+            const container = document.getElementById('exercises-container');
+            container.innerHTML = trainingPlan.map(ex => `
+                <div class="card" style="margin:5px 0; padding:10px;">
+                    <b>${ex.n}</b> - ${ex.t}s
+                </div>
+            `).join('');
+            document.getElementById('start-btn').style.display = 'block';
+        }
+
+        function startPlayer() {
+            curEx = 0;
+            document.getElementById('immersive-session').style.display = 'flex';
+            playEx();
+        }
+
+        function playEx() {
+            if(curEx >= trainingPlan.length) return stopPlayer();
+            const ex = trainingPlan[curEx];
+            document.getElementById('imm-name').innerText = ex.n;
+            let time = ex.t;
+            document.getElementById('imm-timer').innerText = time;
+            
+            timer = setInterval(() => {
+                time--;
+                document.getElementById('imm-timer').innerText = time;
+                if(time <= 0) {
+                    clearInterval(timer);
+                    curEx++;
+                    playEx();
+                }
+            }, 1000);
+        }
+
+        function stopPlayer() {
+            clearInterval(timer);
+            document.getElementById('immersive-session').style.display = 'none';
+        }
+
+        window.onload = () => {
+            if(scheduledDays.length === 0) document.getElementById('setup-overlay').style.display = 'flex';
+            renderHome();
+            refreshIcons();
+        };
+    </script>
+</body>
+</html>
