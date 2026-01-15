@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CourtReady Pro</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
-        /* COLORI E VARIABILI */
+        /* --- VARIABILI & RESET --- */
         :root { 
             --neon: #d4ff00; 
             --bg: #000000; 
@@ -15,83 +15,113 @@
             --win: #d4ff00; 
             --loss: #ff3333; 
         }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; outline: none; }
+
+        /* --- STRUTTURA VISTE --- */
+        .view { 
+            display: none; 
+            height: 100%; 
+            width: 100%;
+            flex-direction: column; 
+            overflow-y: auto; 
+            position: absolute; /* Assoluto per evitare scroll fantasma */
+            top: 0; left: 0;
+            z-index: 1; /* Livello base */
+        }
+        .view.active { display: flex; z-index: 2; }
         
-        /* RESET E BASE */
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        .content-scroll { 
+            padding-bottom: 180px; /* Spazio extra per navbar */
+            width: 100%;
+        }
 
-        /* GESTIONE VISTE */
-        .view { display: none; height: 100%; flex-direction: column; overflow-y: auto; position: relative; }
-        .view.active { display: flex; }
-        /* Fix Barra Menu: Padding aumentato a 200px per sicurezza */
-        .content-scroll { padding-bottom: 200px; width: 100%; }
-
-        /* ELEMENTI COMUNI */
+        /* --- COMPONENTI BASE --- */
         .logo-wrap { display: flex; align-items: center; gap: 12px; padding: 40px 25px 10px; }
-        .court-logo { width: 35px; height: 35px; position: relative; border: 2.5px solid var(--neon); border-radius: 4px; }
-        .court-logo::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--neon); }
-        .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); }
+        .court-logo { width: 35px; height: 35px; border: 2.5px solid var(--neon); border-radius: 4px; position: relative; }
+        .court-logo::before { content: ''; position: absolute; top: 50%; width: 100%; height: 2px; background: var(--neon); }
+        .court-logo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 50%; background: var(--neon); transform: translateY(-50%); }
 
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin: 10px 20px; position: relative; }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; cursor: pointer; margin-top: 15px; }
-
-        /* MATCH LAB STYLES */
-        .analytics-card { background: linear-gradient(145deg, #151515, #0a0a0a); border: 1px solid #333; }
-        .stat-main { display: flex; align-items: center; gap: 20px; margin-top: 15px; }
-        .stat-circle { width: 60px; height: 60px; border: 3px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--neon); }
         
+        button, .btn-neon { 
+            background: var(--neon); color: #000; border: none; padding: 18px; 
+            border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; 
+            font-size: 14px; letter-spacing: 0.5px; cursor: pointer; margin-top: 15px; 
+            display: block; position: relative; z-index: 10;
+        }
+        button:active, .btn-neon:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* --- MATCH LAB --- */
         .set-container { display: flex; gap: 8px; margin-bottom: 20px; }
         .set-macro { flex: 1; background: #080808; border: 1px solid #222; border-radius: 12px; padding: 10px 5px; text-align: center; }
-        .set-title { font-size: 9px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .score-split { display: flex; justify-content: center; gap: 10px; align-items: center; }
-        .score-box { display: flex; flex-direction: column; align-items: center; }
-        .score-box label { font-size: 8px; color: #444; margin-bottom: 4px; font-weight: 900; }
-        .score-box input { width: 30px; height: 30px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; font-size: 14px; outline: none; padding: 0; }
+        .set-title { font-size: 9px; font-weight: 800; color: #555; display: block; margin-bottom: 5px; }
         
-        .range-label { display: flex; justify-content: space-between; font-size: 11px; color: #888; font-weight: 700; margin: 15px 0 8px; }
-        input[type=range] { width: 100%; accent-color: var(--neon); margin: 0; height: 4px; background: #333; border-radius: 2px; appearance: none; }
-        textarea { width: 100%; background: #080808; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; font-family: inherit; margin-top: 15px; resize: none; font-size: 12px; }
+        .score-split { display: flex; justify-content: center; gap: 5px; }
+        .score-box label { font-size: 8px; color: #444; display: block; font-weight: 900; }
+        .score-box input { 
+            width: 32px; height: 32px; background: #1a1a1a; border: 1px solid #333; 
+            border-radius: 6px; color: var(--neon); text-align: center; font-weight: 900; 
+            font-size: 14px; padding: 0; margin-top: 2px;
+        }
 
-        .history-item { border-left: 3px solid #333; background: #0c0c0c; padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
-        .history-item:active { background: #1a1a1a; }
+        .history-item { 
+            border-left: 3px solid #333; background: #0c0c0c; padding: 15px; 
+            border-radius: 0 12px 12px 0; margin-bottom: 10px; cursor: pointer; position: relative; z-index: 5;
+        }
         .history-item.win { border-color: var(--win); }
         .history-item.loss { border-color: var(--loss); }
-        .res-tag { font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
-        .win .res-tag { background: var(--win); color: black; }
-        .loss .res-tag { background: var(--loss); color: white; }
 
-        /* OVERLAY DETTAGLIO MATCH */
-        #match-detail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
-        .match-img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; display: none; }
+        /* --- STATS CIRCLE --- */
+        .stat-circle { width: 60px; height: 60px; border: 3px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--neon); }
 
-        /* TRAIN LAB STYLES */
+        /* --- TRAIN LAB --- */
         .option-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 0 20px; }
-        .opt-btn { background: #080808; border: 1px solid #222; padding: 12px 5px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; transition: 0.2s; }
+        .opt-btn { 
+            background: #080808; border: 1px solid #222; padding: 12px 5px; 
+            border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; 
+            cursor: pointer; text-align: center; transition: 0.2s; position: relative; z-index: 5;
+        }
         .opt-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(212, 255, 0, 0.05); }
 
-        /* AI PRE-ANALYSIS BOX */
-        .ai-analysis-box { background: rgba(212, 255, 0, 0.05); border-left: 3px solid var(--neon); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 20px; }
-        .ai-typing { font-size: 11px; color: #ccc; line-height: 1.4; font-family: monospace; }
+        /* --- OVERLAYS (Z-INDEX ALTO) --- */
+        #match-detail { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 5000; display: none; 
+            flex-direction: column; padding: 40px 20px; overflow-y: auto; 
+        }
 
-        /* PLAYER VIDEO STYLES */
-        #immersive-session { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 9999; display: none; flex-direction: column; }
-        .video-player-ui { width: 100%; height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); overflow: hidden; }
-        .tech-grid { position: absolute; width: 100%; height: 100%; opacity: 0.1; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 20px 20px; }
-        .imm-controls { padding: 30px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .timer-big { font-size: 90px; font-weight: 900; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; letter-spacing: -2px; }
-        .progress-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin-top: auto; }
-        .progress-fill { height: 100%; width: 0%; background: var(--neon); transition: width 1s linear; }
+        #immersive-session { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #050505; z-index: 9000; display: none; flex-direction: column; 
+        }
+        .video-player-ui { height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); overflow: hidden; }
 
-        /* NAVBAR */
-        .nav-bar { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .nav-item { color: #444; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
+        /* --- NAVBAR (Z-INDEX ALTO) --- */
+        .nav-bar { 
+            position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; 
+            background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); 
+            border-radius: 20px; display: flex; justify-content: space-around; 
+            align-items: center; border: 1px solid #222; z-index: 4000; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        .nav-item { 
+            color: #444; display: flex; flex-direction: column; align-items: center; 
+            gap: 4px; cursor: pointer; padding: 10px; /* Area click aumentata */
+        }
         .nav-item.active { color: var(--neon); }
+
+        /* Utilities */
+        textarea { width: 100%; background: #080808; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; margin-top: 15px; resize: none; font-family: inherit; }
+        input[type=range] { width: 100%; accent-color: var(--neon); margin: 10px 0; height: 4px; background: #333; }
+        .ai-box { background: rgba(212, 255, 0, 0.05); border-left: 3px solid var(--neon); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 20px; font-size: 11px; color: #ddd; line-height: 1.4; }
+        .match-img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; display: none; }
     </style>
 </head>
 <body>
 
     <div id="match-detail">
-        <div onclick="closeMatchDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer;">
+        <div onclick="closeMatchDetail()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer; padding: 10px 0;">
             <i data-lucide="chevron-left"></i> TORNA ALLO STORICO
         </div>
         <div id="detail-content"></div>
@@ -104,15 +134,15 @@
                 <div style="font-weight: 900; font-style: italic; font-size: 20px;">COURT<span style="color:var(--neon)">READY</span></div>
             </div>
             
-            <div class="card" style="background: linear-gradient(170deg, #1a1a1a 0%, #000 100%); border-color: #333;">
-                <small style="color:#666; font-weight: 800; letter-spacing: 1px;">CONDITIONING SCORE</small>
-                <div style="font-size: 56px; font-weight: 900; margin: 10px 0; color: white;" id="main-score">--</div>
-                <div style="height: 4px; background: #222; border-radius: 2px; width: 100%;"><div id="score-bar" style="height: 100%; width: 0%; background: var(--neon); border-radius: 2px;"></div></div>
+            <div class="card" style="background: linear-gradient(170deg, #1a1a1a 0%, #000 100%);">
+                <small style="color:#666; font-weight: 800;">CONDITIONING SCORE</small>
+                <div style="font-size: 56px; font-weight: 900; margin: 10px 0;" id="main-score">--</div>
+                <div style="height: 4px; background: #222; width: 100%; border-radius: 2px;"><div id="score-bar" style="height: 100%; width: 0%; background: var(--neon); border-radius: 2px;"></div></div>
                 <div id="home-status" style="margin-top:15px; font-size:12px; color:white; font-weight:700;"></div>
             </div>
 
             <div style="padding: 0 20px; margin-top: 10px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase;">Ultima Attività</label>
+                <label style="font-size: 10px; font-weight: 900; color: #444;">ULTIMA ATTIVITÀ</label>
                 <div id="quick-history" style="margin-top: 10px;"></div>
             </div>
         </div>
@@ -122,26 +152,26 @@
         <div class="content-scroll">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Match Lab</h2></div>
 
-            <div class="card analytics-card" id="analytics-section" style="display:none;">
+            <div class="card" id="analytics-section" style="display:none; background: linear-gradient(145deg, #151515, #0a0a0a);">
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <small style="font-size: 10px; font-weight: 900; color: #888;">STATISTICHE STAGIONE</small>
+                    <small style="font-size: 10px; font-weight: 900; color: #888;">SEASON STATS</small>
                     <i data-lucide="bar-chart-2" style="width:14px; color:#555"></i>
                 </div>
-                <div class="stat-main">
+                <div style="display: flex; gap: 20px; align-items: center;">
                     <div class="stat-circle" id="win-pct-circle">0%</div>
-                    <div style="flex:1">
+                    <div style="flex: 1;">
                         <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; font-weight:800;">
-                            <span>VITTORIE</span><span id="win-count" style="color:white">0/0</span>
+                            <span>VITTORIE</span><span id="win-count">0/0</span>
                         </div>
                         <div style="height:6px; background:#222; border-radius:3px;"><div id="win-bar" style="height:100%; background:var(--neon); width:0%; border-radius:3px;"></div></div>
                         
                         <div style="display:flex; justify-content:space-between; margin-top:12px; border-top:1px solid #222; padding-top:8px;">
                             <div style="text-align:center;">
-                                <small style="font-size:8px; color:#555;">GAMES VINTI</small>
+                                <small style="font-size:8px; color:#555;">GAMES W</small>
                                 <div id="total-gw" style="font-size:14px; font-weight:900; color:var(--win);">0</div>
                             </div>
                             <div style="text-align:center;">
-                                <small style="font-size:8px; color:#555;">GAMES PERSI</small>
+                                <small style="font-size:8px; color:#555;">GAMES L</small>
                                 <div id="total-gl" style="font-size:14px; font-weight:900; color:var(--loss);">0</div>
                             </div>
                         </div>
@@ -150,7 +180,7 @@
             </div>
             
             <div class="card">
-                <label style="font-weight: 900; font-size: 10px; color: #555; letter-spacing: 1px; margin-bottom: 15px; display: block;">SCOREBOARD</label>
+                <label style="font-weight: 900; font-size: 10px; color: #555; margin-bottom: 15px; display: block;">SCOREBOARD</label>
                 <div class="set-container">
                     <div class="set-macro"><span class="set-title">SET 1</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s1i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s1a" value="0"></div></div></div>
                     <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><label>IO</label><input type="number" id="s2i" value="0"></div><div class="score-box"><label>AVV</label><input type="number" id="s2a" value="0"></div></div></div>
@@ -160,7 +190,7 @@
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <div style="flex:1">
                         <label style="font-size:9px; color:#555; font-weight:800;">BPM MEDIO</label>
-                        <input type="number" id="m-bpm" placeholder="140" style="width:100%; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px; margin-top:5px; outline:none; font-weight:bold;">
+                        <input type="number" id="m-bpm" placeholder="140" style="width:100%; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px; margin-top:5px;">
                     </div>
                     <div style="flex:1">
                         <label style="font-size:9px; color:#555; font-weight:800;">FOTO</label>
@@ -168,18 +198,18 @@
                     </div>
                 </div>
 
-                <div class="range-label"><span>Focus Mentale</span><span id="fv" style="color:white">50%</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; font-weight:700; margin-top:10px;"><span>Focus Mentale</span><span id="fv" style="color:white">50%</span></div>
                 <input type="range" id="mf" min="0" max="100" value="50" oninput="document.getElementById('fv').innerText = this.value + '%'">
                 
-                <div class="range-label"><span>Condizione Fisica</span><span id="pv" style="color:white">50%</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; font-weight:700; margin-top:10px;"><span>Fatica Fisica</span><span id="pv" style="color:white">50%</span></div>
                 <input type="range" id="mp" min="0" max="100" value="50" oninput="document.getElementById('pv').innerText = this.value + '%'">
 
-                <textarea id="m-notes" rows="3" placeholder="Note tattiche sul match..."></textarea>
+                <textarea id="m-notes" rows="3" placeholder="Note tattiche..."></textarea>
                 <button class="btn-neon" onclick="saveMatch()">SALVA REPORT</button>
             </div>
 
             <div style="padding: 0 20px; margin-top: 20px;">
-                <label style="font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase;">Storico Partite (Clicca)</label>
+                <label style="font-size: 10px; font-weight: 900; color: #444;">STORICO PARTITE</label>
                 <div id="full-history" style="margin-top: 10px;"></div>
             </div>
         </div>
@@ -189,29 +219,29 @@
         <div class="content-scroll" id="train-setup">
             <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Train Lab</h2></div>
             
-            <div style="margin: 0 20px;">
-                <div class="ai-analysis-box">
-                    <div style="font-weight:900; font-size:10px; color:var(--neon); margin-bottom:5px;">AI PRE-ANALYSIS</div>
-                    <div id="pre-train-feedback" class="ai-typing">Analisi dati match in corso...</div>
+            <div style="padding: 0 20px;">
+                <div class="ai-box">
+                    <div style="font-weight:900; font-size:10px; color:var(--neon); margin-bottom:5px;">AI ANALYSIS</div>
+                    <div id="pre-train-feedback">Analisi dati in corso...</div>
                 </div>
             </div>
 
             <div class="card">
-                <label style="font-weight: 900; font-size: 10px; color: #555; letter-spacing: 1px;">MODALITÀ</label>
+                <label style="font-weight: 900; font-size: 10px; color: #555;">MODALITÀ</label>
                 <div class="option-grid">
                     <div class="opt-btn active" onclick="setOpt(this)">CORPO LIBERO</div>
                     <div class="opt-btn" onclick="setOpt(this)">ATTREZZI</div>
                     <div class="opt-btn" onclick="setOpt(this)">MISTO</div>
                 </div>
 
-                <label style="font-weight: 900; font-size: 10px; color: #555; letter-spacing: 1px;">DURATA SESSIONE</label>
+                <label style="font-weight: 900; font-size: 10px; color: #555;">DURATA</label>
                 <div class="option-grid">
                     <div class="opt-btn active" data-m="10" onclick="setOpt(this)">10 MIN</div>
                     <div class="opt-btn" data-m="20" onclick="setOpt(this)">20 MIN</div>
                     <div class="opt-btn" data-m="30" onclick="setOpt(this)">30 MIN</div>
                 </div>
 
-                <button class="btn-neon" onclick="generateTraining()">GENERA SESSIONE AI</button>
+                <button class="btn-neon" onclick="generateTraining()">GENERA SESSIONE</button>
             </div>
         </div>
 
@@ -225,24 +255,20 @@
             
             <div style="padding: 20px;">
                 <button class="btn-neon" onclick="startImmersive()">AVVIA PLAYER</button>
-                <div onclick="backToSetup()" style="text-align:center; font-size:10px; font-weight:900; color:#555; margin-top:20px; cursor:pointer; padding:10px;">ANNULLA E TORNA INDIETRO</div>
+                <div onclick="backToSetup()" style="text-align:center; font-size:10px; font-weight:900; color:#555; margin-top:20px; cursor:pointer; padding: 10px;">ANNULLA</div>
             </div>
         </div>
     </div>
 
     <div id="immersive-session">
         <div class="video-player-ui">
-            <div class="tech-grid"></div>
-            <div class="video-placeholder" id="vid-placeholder">
-                <div style="font-size: 40px; color: #333; margin-bottom: 10px;"><i data-lucide="activity"></i></div>
-                <div style="color: var(--neon); font-family: monospace; font-size: 12px; letter-spacing: 2px;">LIVE FEED</div>
-            </div>
+            <div style="color:var(--neon); font-family:monospace; font-size:12px; letter-spacing:2px;">LIVE FEED</div>
         </div>
-        <div class="imm-controls">
-            <h2 id="imm-name" style="font-size: 32px; margin: 0; font-weight: 900; text-transform: uppercase;">EXERCISE</h2>
-            <div class="timer-big" id="imm-timer">00</div>
-            <div class="progress-bar-bg"><div id="progress-fill" class="progress-fill"></div></div>
-            <div onclick="stopImmersive()" style="color:var(--loss); font-size:12px; font-weight:900; margin-top:30px; cursor:pointer;">CHIUDI SESSIONE</div>
+        <div style="padding:30px; text-align:center; display:flex; flex-direction:column; justify-content:center; flex:1;">
+            <h2 id="imm-name" style="font-size: 32px; margin: 0; font-weight: 900; text-transform:uppercase;">EXERCISE</h2>
+            <div style="font-size: 90px; font-weight: 900; margin: 20px 0; line-height:1;" id="imm-timer">00</div>
+            <div style="width:100%; height:6px; background:#222; border-radius:3px; overflow:hidden;"><div id="progress-fill" style="height:100%; width:0%; background:var(--neon); transition:width 1s linear;"></div></div>
+            <div onclick="stopImmersive()" style="color:var(--loss); font-size:12px; font-weight:900; margin-top:30px; cursor:pointer; padding:10px;">CHIUDI SESSIONE</div>
         </div>
     </div>
 
@@ -253,23 +279,23 @@
     </nav>
 
     <script>
-        lucide.createIcons();
-        
+        // Inizializzazione sicura delle icone
+        function initIcons() {
+            if(window.lucide) { window.lucide.createIcons(); }
+        }
+
+        // --- DATABASE & STATO ---
         let matches = JSON.parse(localStorage.getItem('cr_matches')) || [];
-        
-        // DATABASE ESERCIZI BASE
         const db = [
             { n: "Squat Jump", d: "Esplosività pura dalle gambe", t: 30 },
             { n: "Plank", d: "Tenuta isometrica addome", t: 45 },
-            { n: "Affondi", d: "Controllo e stabilità unilaterale", t: 40 },
-            { n: "Shadow Swing", d: "Simulazione colpi a vuoto", t: 30 },
-            { n: "Mountain Climber", d: "Cardio ad alta intensità", t: 20 }
+            { n: "Affondi", d: "Controllo unilaterale", t: 40 },
+            { n: "Shadow Swing", d: "Simulazione colpi", t: 30 },
+            { n: "Mountain Climber", d: "Cardio intenso", t: 20 }
         ];
+        let currentPlan = [], curIdx = 0, timerInt;
 
-        let currentPlan = [];
-        let curIdx = 0;
-        let timerInt;
-
+        // --- NAVIGAZIONE ---
         function showView(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -277,7 +303,7 @@
             if(el) el.classList.add('active');
             
             if(id === 'home' || id === 'match') renderHistory();
-            if(id === 'train') updateTrainAnalysis(); // Aggiorna box analisi
+            if(id === 'train') updateTrainAnalysis();
         }
 
         function setOpt(el) {
@@ -285,25 +311,24 @@
             el.classList.add('active');
         }
 
-        // --- MATCH LAB LOGIC (CON SALVATAGGIO FOTO) ---
+        // --- MATCH LOGIC ---
         function saveMatch() {
             const m = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
                 s1i: +document.getElementById('s1i').value, s1a: +document.getElementById('s1a').value,
                 s2i: +document.getElementById('s2i').value, s2a: +document.getElementById('s2a').value,
                 s3i: +document.getElementById('s3i').value, s3a: +document.getElementById('s3a').value,
                 phys: +document.getElementById('mp').value,
                 focus: +document.getElementById('mf').value,
-                notes: document.getElementById('m-notes').value,
                 bpm: document.getElementById('m-bpm').value,
-                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
-                id: Date.now()
+                notes: document.getElementById('m-notes').value
             };
-            
+
             let w = 0, l = 0;
             if(m.s1i > m.s1a) w++; else if(m.s1a > m.s1i) l++;
             if(m.s2i > m.s2a) w++; else if(m.s2a > m.s2i) l++;
             if(m.s3i > m.s3a) w++; else if(m.s3a > m.s3i) l++;
-            
             m.result = w > l ? 'VIT' : 'SCO';
             m.gW = (m.s1i||0) + (m.s2i||0) + (m.s3i||0);
             m.gL = (m.s1a||0) + (m.s2a||0) + (m.s3a||0);
@@ -313,7 +338,7 @@
             if(fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    m.img = e.target.result; // Salva base64
+                    m.img = e.target.result; 
                     matches.unshift(m);
                     localStorage.setItem('cr_matches', JSON.stringify(matches));
                     showView('home');
@@ -330,159 +355,158 @@
             const list = document.getElementById('full-history');
             const quick = document.getElementById('quick-history');
             
+            // Render List
             if(!matches.length) {
-                list.innerHTML = '<div style="text-align:center; padding:20px; color:#444; font-size:12px;">Nessun match registrato</div>';
-                if(quick) quick.innerHTML = list.innerHTML;
-                document.getElementById('home-status').innerText = "Inizia registrando una partita";
+                const empty = '<div style="text-align:center; color:#555; font-size:12px; padding:20px;">Nessun match registrato</div>';
+                list.innerHTML = empty;
+                if(quick) quick.innerHTML = empty;
+                document.getElementById('home-status').innerText = "Inizia ora";
                 return;
             }
 
             const html = matches.map(m => `
                 <div class="history-item ${m.result === 'VIT' ? 'win' : 'loss'}" onclick="openMatchDetail(${m.id})">
-                    <span class="res-tag">${m.result}</span>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:900; font-size:16px; color:white;">
-                            ${m.s1i}-${m.s1a} ${m.s2i ? '/ '+m.s2i+'-'+m.s2a : ''}
-                        </span>
-                        <span style="font-size:10px; color:#666">${m.date}</span>
+                    <span style="background:${m.result==='VIT'?'var(--win)':'var(--loss)'}; color:${m.result==='VIT'?'black':'white'}; font-size:9px; font-weight:900; padding:2px 6px; border-radius:4px;">${m.result}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                        <span style="font-weight:900; font-size:16px;">${m.s1i}-${m.s1a} ${m.s2i?'/ '+m.s2i+'-'+m.s2a:''}</span>
+                        <span style="font-size:10px; color:#666;">${m.date}</span>
                     </div>
                 </div>
             `).join('');
 
             list.innerHTML = html;
-            if(quick) quick.innerHTML = html.slice(0, 300).split('</div>')[0] + '</div>'; 
-            
-            // HOME & STATS LOGIC
-            if(matches.length > 0) {
-                const last = matches[0];
-                const condScore = Math.max(0, 100 - (last.phys * 0.5)).toFixed(0);
-                document.getElementById('main-score').innerText = condScore;
-                document.getElementById('score-bar').style.width = condScore + "%";
-                
-                // Modifica Home: Risultato esplicito
-                const scoreStr = `${last.s1i}-${last.s1a} / ${last.s2i}-${last.s2a}`;
-                document.getElementById('home-status').innerHTML = `
-                    <span style="color:${last.result==='VIT'?'var(--win)':'var(--loss)'}">${last.result==='VIT'?'VITTORIA':'SCONFITTA'}</span>
-                    <span style="color:#666; margin-left:5px;">(${scoreStr})</span>
-                `;
-                
-                // Analytics e Games Counter
-                const wins = matches.filter(x => x.result === 'VIT').length;
-                let totGw = 0, totGl = 0;
-                matches.forEach(m => { totGw += (m.gW||0); totGl += (m.gL||0); });
+            if(quick) quick.innerHTML = html.split('</div>')[0] + '</div>'; // Solo il primo elemento
 
-                document.getElementById('analytics-section').style.display = 'block';
-                document.getElementById('win-count').innerText = wins + " / " + matches.length;
-                const pct = Math.round((wins/matches.length)*100);
-                document.getElementById('win-pct-circle').innerText = pct + "%";
-                document.getElementById('win-bar').style.width = pct + "%";
-                
-                // Update Games Counters
-                document.getElementById('total-gw').innerText = totGw;
-                document.getElementById('total-gl').innerText = totGl;
-            }
+            // Stats Update
+            const last = matches[0];
+            const cond = Math.max(0, 100 - (last.phys * 0.5)).toFixed(0);
+            document.getElementById('main-score').innerText = cond;
+            document.getElementById('score-bar').style.width = cond + "%";
+            document.getElementById('home-status').innerHTML = `<span style="color:${last.result==='VIT'?'var(--win)':'var(--loss)'}">${last.result==='VIT'?'VITTORIA':'SCONFITTA'}</span> <span style="color:#888">(${last.s1i}-${last.s1a} / ${last.s2i}-${last.s2a})</span>`;
+
+            // Analytics Section
+            const wins = matches.filter(m => m.result === 'VIT').length;
+            let gw = 0, gl = 0;
+            matches.forEach(m => { gw += (m.gW||0); gl += (m.gL||0); });
+
+            document.getElementById('analytics-section').style.display = 'block';
+            document.getElementById('win-count').innerText = wins + "/" + matches.length;
+            const pct = Math.round((wins/matches.length)*100);
+            document.getElementById('win-pct-circle').innerText = pct + "%";
+            document.getElementById('win-bar').style.width = pct + "%";
+            document.getElementById('total-gw').innerText = gw;
+            document.getElementById('total-gl').innerText = gl;
+            
+            initIcons();
         }
 
+        // --- DETAIL OVERLAY ---
         function openMatchDetail(id) {
             const m = matches.find(x => x.id === id);
-            const content = document.getElementById('detail-content');
-            
-            // Logica Immagine
-            let imgHtml = '';
-            if(m.img) {
-                imgHtml = `<img src="${m.img}" class="match-img-preview" style="display:block;">`;
-            }
+            let imgHtml = m.img ? `<img src="${m.img}" class="match-img-preview" style="display:block">` : '';
 
-            content.innerHTML = `
+            document.getElementById('detail-content').innerHTML = `
                 <div class="card" style="margin:0; border-color:var(--neon);">
                     ${imgHtml}
-                    <h2 style="font-size:40px; margin:0; text-transform:uppercase;">${m.result === 'VIT' ? 'VITTORIA' : 'SCONFITTA'}</h2>
+                    <h2 style="font-size:40px; margin:0;">${m.result==='VIT'?'VITTORIA':'SCONFITTA'}</h2>
                     <p style="color:var(--neon); font-weight:800;">${m.date}</p>
                     <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                    
-                    <div style="background:#080808; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;">
-                        <div style="font-size:24px; font-weight:900; letter-spacing:2px;">
-                             ${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}
-                        </div>
+                    <div style="background:#080808; padding:15px; border-radius:12px; text-align:center; font-size:24px; font-weight:900;">
+                        ${m.s1i}-${m.s1a} / ${m.s2i}-${m.s2a} / ${m.s3i}-${m.s3a}
                     </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div style="background:#111; padding:10px; border-radius:8px;">
-                            <small style="color:#555; font-size:9px;">FATICA</small><br>
-                            <b style="font-size:16px;">${m.phys}%</b>
-                        </div>
-                        <div style="background:#111; padding:10px; border-radius:8px;">
-                            <small style="color:#555; font-size:9px;">FOCUS</small><br>
-                            <b style="font-size:16px;">${m.focus}%</b>
-                        </div>
-                        <div style="background:#111; padding:10px; border-radius:8px;">
-                            <small style="color:#555; font-size:9px;">BPM AVG</small><br>
-                            <b style="font-size:16px;">${m.bpm || '--'}</b>
-                        </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                        <div style="background:#111; padding:10px; border-radius:8px;"><small style="color:#666">FATICA</small><br><b>${m.phys}%</b></div>
+                        <div style="background:#111; padding:10px; border-radius:8px;"><small style="color:#666">FOCUS</small><br><b>${m.focus}%</b></div>
                     </div>
-                    
                     <div style="margin-top:20px;">
-                        <small style="color:#555; font-weight:900;">NOTE COACH</small>
-                        <p style="font-size:13px; color:#ccc; line-height:1.4;">${m.notes || 'Nessuna nota registrata.'}</p>
+                        <small style="color:#555; font-weight:900;">NOTE</small>
+                        <p style="color:#ccc; font-size:13px; line-height:1.4;">${m.notes || 'Nessuna nota.'}</p>
                     </div>
                 </div>
             `;
             document.getElementById('match-detail').style.display = 'flex';
+            initIcons();
         }
         function closeMatchDetail() { document.getElementById('match-detail').style.display = 'none'; }
 
-        // --- TRAIN LAB LOGIC (ANALYSIS & FEEDBACK) ---
+        // --- TRAIN & PLAYER ---
         function updateTrainAnalysis() {
             const box = document.getElementById('pre-train-feedback');
-            if(!matches.length) {
-                box.innerText = "Nessun dato match disponibile. Creerò una sessione standard di attivazione.";
-                return;
-            }
+            if(!matches.length) { box.innerText = "Nessun dato. Piano standard."; return; }
             const last = matches[0];
-            let analysis = "";
-            
-            // Logica AI Semplice per Feedback Testuale
-            if(last.phys > 75) {
-                analysis += `Fatica alta rilevata (${last.phys}%). `;
-                if(last.result === 'SCO') analysis += "La sconfitta suggerisce di lavorare sul recupero mentale. ";
-                analysis += "Priorità: Scarico attivo e mobilità.";
-            } else {
-                analysis += `Buona condizione fisica (${last.phys}%). `;
-                if(last.result === 'VIT') analysis += "Ottimo momentum! ";
-                analysis += "Priorità: Mantenimento potenza ed esplosività.";
-            }
-            box.innerText = analysis;
+            box.innerText = last.phys > 70 
+                ? `Rilevata fatica alta (${last.phys}%) nell'ultimo match. Il coach suggerisce recupero.` 
+                : `Condizione ottima (${last.phys}%). Focus su potenza ed esplosività.`;
         }
 
         function generateTraining() {
             const mins = parseInt(document.querySelector('[data-m].active').dataset.m);
-            const targetSec = mins * 60;
-            let currentSec = 0;
-            currentPlan = [];
-            
-            // AI Logic
             const lastPhys = matches.length ? matches[0].phys : 50;
-            const aiLabel = document.getElementById('ai-feedback');
+            const feedback = document.getElementById('ai-feedback');
             
-            let currentPool = [...db];
-            if(lastPhys > 75) {
-                aiLabel.innerText = "COACH: FATICA ALTA -> RECUPERO";
-                currentPool = [
-                   { n: "Stretching Dinamico", d: "Mobilità anca e schiena", t: 60 },
-                   { n: "Respirazione Core", d: "Focus diaframmatico", t: 45 },
-                   { n: "Plank", d: "Tenuta isometrica", t: 30 }
-                ];
+            let pool = [...db];
+            if(lastPhys > 70) {
+                feedback.innerText = "MODE: RECUPERO (FATICA ALTA)";
+                pool = [{n:"Stretching", t:60}, {n:"Mobilità", t:45}, {n:"Plank", t:30}];
             } else {
-                aiLabel.innerText = "COACH: SEI FRESCO -> POTENZA";
+                feedback.innerText = "MODE: POTENZA";
             }
 
-            while(currentSec < targetSec) {
-                const ex = currentPool[Math.floor(Math.random() * currentPool.length)];
+            let sec = 0, target = mins * 60;
+            currentPlan = [];
+            while(sec < target) {
+                const ex = pool[Math.floor(Math.random()*pool.length)];
                 currentPlan.push({...ex});
-                currentSec += ex.t + 10; 
+                sec += ex.t + 10;
             }
 
-            document.getElementById('exercises-container').innerHTML = currentPlan.map((e,i) => `
-                <div style="background:#111; padding:15px; border-radius:12px; margin-bottom:8px; border:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-weight:900; font
+            document.getElementById('exercises-container').innerHTML = currentPlan.map(e => `
+                <div style="background:#111; padding:15px; border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><b style="color:white; font-size:13px;">${e.n}</b></div>
+                    <div style="color:var(--neon); font-weight:900;">${e.t}s</div>
+                </div>
+            `).join('');
+
+            document.getElementById('train-setup').style.display = 'none';
+            document.getElementById('train-list').style.display = 'block';
+        }
+
+        function backToSetup() {
+            document.getElementById('train-list').style.display = 'none';
+            document.getElementById('train-setup').style.display = 'block';
+        }
+
+        function startImmersive() {
+            curIdx = 0;
+            document.getElementById('immersive-session').style.display = 'flex';
+            runStep();
+        }
+
+        function runStep() {
+            if(curIdx >= currentPlan.length) { stopImmersive(); return; }
+            const ex = currentPlan[curIdx];
+            document.getElementById('imm-name').innerText = ex.n;
+            let t = ex.t;
+            document.getElementById('imm-timer').innerText = t;
+
+            timerInt = setInterval(() => {
+                t--;
+                document.getElementById('imm-timer').innerText = t < 10 ? "0"+t : t;
+                const pct = ((ex.t - t) / ex.t) * 100;
+                document.getElementById('progress-fill').style.width = pct + "%";
+                if(t <= 0) { clearInterval(timerInt); curIdx++; runStep(); }
+            }, 1000);
+        }
+
+        function stopImmersive() {
+            clearInterval(timerInt);
+            document.getElementById('immersive-session').style.display = 'none';
+        }
+
+        window.onload = function() {
+            renderHistory();
+            initIcons();
+        };
+    </script>
+</body>
+</html>
