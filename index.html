@@ -36,10 +36,10 @@
         .cal-header { display: flex; justify-content: space-between; align-items: center; padding: 0 5px 15px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .cal-day-name { text-align: center; font-size: 9px; color: #555; font-weight: 800; margin-bottom: 5px; }
-        .cal-cell { aspect-ratio: 1; border-radius: 10px; background: #080808; border: 1px solid #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #444; }
+        .cal-cell { aspect-ratio: 1; border-radius: 10px; background: #080808; border: 1px solid #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #444; cursor: default; }
         .cal-cell.today { border-color: white; color: white; }
         .cal-cell.planned { background: var(--plan); color: #888; }
-        .cal-cell.done { background: rgba(212, 255, 0, 0.15); border: 1px solid var(--win); color: var(--win); }
+        .cal-cell.done { background: rgba(212, 255, 0, 0.15); border: 1px solid var(--win); color: var(--win); cursor: pointer; }
         .cal-cell.missed { background: rgba(255, 51, 51, 0.15); border: 1px solid var(--loss); color: var(--loss); }
 
         /* --- STILI ORIGINALI MATCH & TRAIN --- */
@@ -66,7 +66,7 @@
         .opt-btn { background: #080808; border: 1px solid #222; padding: 12px 5px; border-radius: 12px; color: #666; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; }
         .opt-btn.active { border-color: var(--neon); color: var(--neon); }
 
-        #match-detail, #immersive-session { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        #match-detail, #immersive-session, #generic-modal { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
         #immersive-session { background: #050505; z-index: 9000; overflow: hidden; }
         .video-player-ui { height: 45vh; background: #111; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--neon); }
 
@@ -77,7 +77,19 @@
         textarea { width: 100%; background: #080808; border: 1px solid #222; border-radius: 12px; color: white; padding: 15px; margin-top: 15px; resize: none; font-family: inherit; }
         input[type=range] { width: 100%; accent-color: var(--neon); margin: 10px 0; }
         .ai-box { background: rgba(212, 255, 0, 0.05); border-left: 3px solid var(--neon); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 20px; font-size: 11px; color: #ddd; }
-        .match-img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; display: none; }
+        
+        /* FIX FILE INPUT */
+        .file-input-wrapper { flex: 1; overflow: hidden; position: relative; }
+        input[type=file] { width: 100%; font-size: 10px; color: #555; }
+
+        /* GOALS PAGE */
+        .goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .goal-card { background: #111; border: 1px solid #222; border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; }
+        .goal-card.unlocked { border-color: var(--neon); box-shadow: 0 0 15px rgba(212, 255, 0, 0.1); }
+        .goal-icon { width: 40px; height: 40px; margin: 0 auto 10px; color: #333; }
+        .unlocked .goal-icon { color: var(--neon); }
+        .goal-title { font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase; }
+        .unlocked .goal-title { color: white; }
     </style>
 </head>
 <body>
@@ -100,6 +112,13 @@
             </div>
             <button class="btn-neon" onclick="finishSetup()">COMPLETA</button>
         </div>
+    </div>
+
+    <div id="generic-modal">
+        <div onclick="closeModal()" style="display:flex; align-items:center; gap:10px; color:var(--neon); font-weight:900; margin-bottom:30px; cursor:pointer;">
+            <i data-lucide="chevron-left"></i> CHIUDI
+        </div>
+        <div id="modal-content"></div>
     </div>
 
     <div id="match-detail">
@@ -131,7 +150,7 @@
             </div>
 
             <div style="padding: 0 20px;">
-                <div onclick="logExtraWorkout()" style="background:rgba(212,255,0,0.05); border:1px dashed var(--neon); padding:15px; border-radius:12px; text-align:center; font-size:10px; font-weight:800; color:var(--neon); cursor:pointer;">
+                <div onclick="goToTrainForExtra()" style="background:rgba(212,255,0,0.05); border:1px dashed var(--neon); padding:15px; border-radius:12px; text-align:center; font-size:10px; font-weight:800; color:var(--neon); cursor:pointer;">
                     + REGISTRA ALLENAMENTO EXTRA OGGI
                 </div>
             </div>
@@ -168,7 +187,12 @@
                     <div class="set-macro"><span class="set-title">SET 2</span><div class="score-split"><div class="score-box"><input type="number" id="s2i" value="0"></div><div class="score-box"><input type="number" id="s2a" value="0"></div></div></div>
                     <div class="set-macro"><span class="set-title">SET 3</span><div class="score-split"><div class="score-box"><input type="number" id="s3i" value="0"></div><div class="score-box"><input type="number" id="s3a" value="0"></div></div></div>
                 </div>
-                <div style="display:flex; gap:10px;"><input type="number" id="m-bpm" placeholder="BPM" style="flex:1; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px;"><input type="file" id="m-img" accept="image/*" style="flex:1; font-size:9px;"></div>
+                <div style="display:flex; gap:10px; align-items: center;">
+                    <input type="number" id="m-bpm" placeholder="BPM" style="flex:1; background:#080808; border:1px solid #222; border-radius:8px; color:white; padding:10px; height: 40px;">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="m-img" accept="image/*">
+                    </div>
+                </div>
                 <input type="range" id="mf" min="0" max="100" value="50">
                 <input type="range" id="mp" min="0" max="100" value="50">
                 <textarea id="m-notes" rows="3" placeholder="Note..."></textarea>
@@ -199,6 +223,13 @@
         </div>
     </div>
 
+    <div id="goals" class="view">
+        <div class="content-scroll">
+            <div style="padding: 40px 25px 15px;"><h2 style="font-size: 28px; margin: 0; font-weight: 900;">Goals & Badges</h2></div>
+            <div class="goal-grid" id="goals-container"></div>
+        </div>
+    </div>
+
     <div id="immersive-session">
         <div class="video-player-ui"><div style="color:var(--neon); font-family:monospace; font-size:12px;">LIVE FEED</div></div>
         <div style="padding:30px; text-align:center; flex:1; display:flex; flex-direction:column; justify-content:center;">
@@ -213,6 +244,7 @@
         <div class="nav-item active" onclick="showView('home', this)"><i data-lucide="calendar"></i><span>PLAN</span></div>
         <div class="nav-item" onclick="showView('match', this)"><i data-lucide="trophy"></i><span>MATCH</span></div>
         <div class="nav-item" onclick="showView('train', this)"><i data-lucide="zap"></i><span>TRAIN</span></div>
+        <div class="nav-item" onclick="showView('goals', this)"><i data-lucide="medal"></i><span>GOALS</span></div>
     </nav>
 
     <script>
@@ -226,6 +258,14 @@
             'PADEL': [{ n: "Shadow Bandeja", d: "Tecnica aerea", t: 30 }, { n: "Pared Defense", d: "Difesa vetri", t: 30 }],
             'GEN': [{ n: "Squat Jump", d: "Esplosività", t: 30 }, { n: "Plank", d: "Core", t: 45 }, { n: "Mountain Climber", d: "Cardio", t: 20 }]
         };
+
+        const goalsList = [
+            { id: 'first_match', title: 'Battesimo del Fuoco', desc: 'Completa il tuo primo match', req: () => matches.length >= 1, icon: 'zap' },
+            { id: 'win_streak', title: 'Imbattibile', desc: 'Vinci 3 match di fila', req: () => matches.slice(0,3).every(m => m.result === 'VIT') && matches.length >= 3, icon: 'flame' },
+            { id: 'train_master', title: 'Stacanovista', desc: '10 Allenamenti completati', req: () => Object.values(historyCal).filter(v => v === 'done').length >= 10, icon: 'award' },
+            { id: 'perfect_week', title: 'Settimana d\'Oro', desc: 'Vinci un match senza perdere un set', req: () => matches.some(m => m.result === 'VIT' && m.gL === 0), icon: 'star' }
+        ];
+
         let currentPlan = [], curIdx = 0, timerInt;
 
         window.onload = () => {
@@ -234,7 +274,6 @@
             if(window.lucide) lucide.createIcons();
         };
 
-        // --- SETUP WIZARD ---
         function saveStep1(sport) { userConfig.sport = sport; document.getElementById('step-1').classList.remove('active'); document.getElementById('step-2').classList.add('active'); }
         function toggleDay(d, el) { if(userConfig.days.includes(d)) userConfig.days = userConfig.days.filter(x => x !== d); else userConfig.days.push(d); el.classList.toggle('selected'); }
         function finishSetup() { localStorage.setItem('cr_config', JSON.stringify(userConfig)); document.getElementById('setup-wizard').style.display = 'none'; updateUI(); }
@@ -243,9 +282,9 @@
             document.getElementById('user-sport-tag').innerText = userConfig.sport + " PRO";
             renderCalendar();
             renderHistory();
+            renderGoals();
         }
 
-        // --- CALENDAR ---
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = '';
@@ -261,21 +300,61 @@
                 const iso = dateObj.toISOString().split('T')[0];
                 const dayOfWeek = dateObj.getDay();
                 let status = '';
-                if(historyCal[iso] === 'done') status = 'done';
+                let clickAction = '';
+                if(historyCal[iso] === 'done') {
+                    status = 'done';
+                    clickAction = `onclick="openDaySummary('${iso}')"`;
+                }
                 else if(dateObj < new Date().setHours(0,0,0,0)) { if(userConfig.days.includes(dayOfWeek)) status = 'missed'; }
                 else if(userConfig.days.includes(dayOfWeek)) status = 'planned';
-                grid.innerHTML += `<div class="cal-cell ${d===now.getDate()?'today':''} ${status}">${d}</div>`;
+                grid.innerHTML += `<div class="cal-cell ${d===now.getDate()?'today':''} ${status}" ${clickAction}>${d}</div>`;
             }
         }
+
+        function openDaySummary(date) {
+            const modal = document.getElementById('generic-modal');
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <div class="card" style="text-align:center;">
+                    <div style="color:var(--neon); margin-bottom:15px;"><i data-lucide="check-circle" style="width:40px; height:40px;"></i></div>
+                    <h2 style="margin:0;">WORKOUT COMPLETATO</h2>
+                    <p style="color:#666;">Data: ${date}</p>
+                    <div style="background:#080808; padding:15px; border-radius:12px; margin-top:20px; text-align:left;">
+                        <small style="color:#444; font-weight:900;">DETTAGLI SESSIONE</small>
+                        <p style="font-size:13px; margin:10px 0 0;">Hai mantenuto la costanza. Il tuo conditioning score è migliorato grazie a questa sessione.</p>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            initIcons();
+        }
+
+        function closeModal() { document.getElementById('generic-modal').style.display = 'none'; }
+        function goToTrainForExtra() { showView('train', document.querySelectorAll('.nav-item')[2]); }
 
         function logExtraWorkout() {
             const iso = new Date().toISOString().split('T')[0];
             historyCal[iso] = 'done';
             localStorage.setItem('cr_calendar', JSON.stringify(historyCal));
             renderCalendar();
+            renderGoals();
         }
 
-        // --- MATCH LOGIC (ORIGINALE) ---
+        function renderGoals() {
+            const container = document.getElementById('goals-container');
+            container.innerHTML = goalsList.map(g => {
+                const unlocked = g.req();
+                return `
+                    <div class="goal-card ${unlocked ? 'unlocked' : ''}">
+                        <i data-lucide="${g.icon}" class="goal-icon"></i>
+                        <div class="goal-title">${g.title}</div>
+                        <p style="font-size:9px; color:#555; margin-top:5px;">${g.desc}</p>
+                    </div>
+                `;
+            }).join('');
+            initIcons();
+        }
+
         function saveMatch() {
             const m = {
                 id: Date.now(),
@@ -287,9 +366,9 @@
                 bpm: document.getElementById('m-bpm').value, notes: document.getElementById('m-notes').value
             };
             let w = 0, l = 0;
-            if(m.s1i > m.s1a) w++; else if(m.s1a > m.s1i) l++;
-            if(m.s2i > m.s2a) w++; else if(m.s2a > m.s2i) l++;
-            if(m.s3i > m.s3a) w++; else if(m.s3a > m.s3i) l++;
+            if(m.s1i > m.s1a) w++; else if (m.s1a > m.s1i) l++;
+            if(m.s2i > m.s2a) w++; else if (m.s2a > m.s2i) l++;
+            if(m.s3i > m.s3a) w++; else if (m.s3a > m.s3i) l++;
             m.result = w > l ? 'VIT' : 'SCO';
             m.gW = m.s1i + (m.s2i||0) + (m.s3i||0); m.gL = m.s1a + (m.s2a||0) + (m.s3a||0);
 
@@ -304,7 +383,7 @@
         function finishSaveMatch(m) {
             matches.unshift(m);
             localStorage.setItem('cr_matches', JSON.stringify(matches));
-            showView('home');
+            showView('home', document.querySelectorAll('.nav-item')[0]);
         }
 
         function renderHistory() {
@@ -337,13 +416,13 @@
         }
         function closeMatchDetail() { document.getElementById('match-detail').style.display = 'none'; }
 
-        // --- TRAIN LAB (ORIGINALE) ---
         function setOpt(el) { el.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
         function showView(id, el) { 
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById(id).classList.add('active'); 
             if(el) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
             if(id==='home') renderCalendar(); renderHistory();
+            if(id==='goals') renderGoals();
         }
 
         function generateTraining() {
@@ -358,7 +437,12 @@
 
         function startImmersive() { curIdx = 0; document.getElementById('immersive-session').style.display = 'flex'; runStep(); }
         function runStep() {
-            if(curIdx >= currentPlan.length) { stopImmersive(); logExtraWorkout(); return; }
+            if(curIdx >= currentPlan.length) { 
+                stopImmersive(); 
+                logExtraWorkout(); 
+                showView('home', document.querySelectorAll('.nav-item')[0]);
+                return; 
+            }
             const ex = currentPlan[curIdx]; document.getElementById('imm-name').innerText = ex.n;
             let t = ex.t; document.getElementById('imm-timer').innerText = t;
             timerInt = setInterval(() => {
